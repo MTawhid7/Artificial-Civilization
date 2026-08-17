@@ -38,6 +38,14 @@ import numpy as np  # noqa: E402
 
 VERDICT_COLOR = {"FIRING": "#1a7f37", "candidate": "#bf8700", "silent": "#8b949e"}
 
+# Fields inside a detector's `detail` worth a panel of their own, because they
+# answer a different question from the headline magnitude. `advantage_delta` is
+# the one that matters for A1: the magnitude says the policy works, the delta says
+# selection improved it.
+EXTRA_PANELS: dict[str, tuple[str, str]] = {
+    "gradient_ascent": ("advantage_delta", "selection gain\n(last tenth − first tenth)"),
+}
+
 
 def plot(experiment_dir: Path) -> Path:
     payload = json.loads((experiment_dir / "results.json").read_text())
@@ -51,9 +59,13 @@ def plot(experiment_dir: Path) -> Path:
     detectors = [k for k in summary[0] if k not in ("params", "n_seeds")]
     x = [entry["params"][axis_name] for entry in summary]
 
+    n_cols = 2 + any(d in EXTRA_PANELS for d in detectors)
     fig, axes = plt.subplots(
-        len(detectors), 2, figsize=(12, 3.4 * len(detectors)), sharex=True, squeeze=False
+        len(detectors), n_cols, figsize=(6 * n_cols, 3.4 * len(detectors)),
+        sharex=True, squeeze=False,
     )
+    for ax in axes.ravel():
+        ax.set_visible(False)
 
     for row, detector in enumerate(detectors):
         per_point = {
@@ -68,6 +80,7 @@ def plot(experiment_dir: Path) -> Path:
 
         # --- left: the raw effect, which is the thing that was measured --------
         ax = axes[row, 0]
+        ax.set_visible(True)
         for xv, firings in per_point.items():
             vals = [f["magnitude"] for f in firings]
             ax.scatter([xv] * len(vals), vals, s=18, alpha=0.45, color="#57606a", zorder=2)
@@ -80,8 +93,9 @@ def plot(experiment_dir: Path) -> Path:
         if row == 0:
             ax.set_title("raw effect — what was measured", fontsize=10)
 
-        # --- right: z, annotated with n so the dependence stays visible --------
+        # --- middle: z, annotated with n so the dependence stays visible -------
         ax = axes[row, 1]
+        ax.set_visible(True)
         for xv, firings in per_point.items():
             vals = [f["effect_size"] for f in firings]
             ax.scatter([xv] * len(vals), vals, s=18, alpha=0.45, color="#57606a", zorder=2)
@@ -104,8 +118,33 @@ def plot(experiment_dir: Path) -> Path:
                 ha="center", fontsize=7, color="#57606a",
             )
 
+        # --- optional third: a detail field that answers a different question ---
+        if detector not in EXTRA_PANELS or n_cols < 3:
+            continue
+        field, label = EXTRA_PANELS[detector]
+        ax = axes[row, 2]
+        ax.set_visible(True)
+        vals_by_x = {
+            xv: [f["detail"][field] for f in firings if field in f["detail"]]
+            for xv, firings in per_point.items()
+        }
+        if not any(vals_by_x.values()):
+            ax.set_visible(False)
+            continue
+        for xv, vals in vals_by_x.items():
+            ax.scatter([xv] * len(vals), vals, s=18, alpha=0.45, color="#57606a", zorder=2)
+        means = [float(np.mean(vals_by_x[xv])) if vals_by_x[xv] else np.nan for xv in x]
+        ax.plot(x, means, color="#24292f", lw=1.4, zorder=3)
+        ax.scatter(x, means, c=colors, s=90, zorder=4, edgecolors="white", linewidths=1.2)
+        ax.axhline(0, color="#8b949e", lw=0.8, zorder=1)
+        ax.set_ylabel(label)
+        ax.grid(alpha=0.2, zorder=0)
+        if row == 0:
+            ax.set_title("did selection improve it?", fontsize=10)
+
     for ax in axes[-1, :]:
-        ax.set_xlabel(axis_name)
+        if ax.get_visible():
+            ax.set_xlabel(axis_name)
     handles = [
         plt.Line2D([], [], marker="o", ls="", color=c, label=f"{v}  (n seeds firing)")
         for v, c in VERDICT_COLOR.items()
