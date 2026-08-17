@@ -59,6 +59,7 @@ class TickContext:
     mutation_rate: float
     mutation_scale: float
     birth_cap: int
+    inherit: bool
     sated_gradient_factor: float
     aggregate_every: int
 
@@ -84,6 +85,7 @@ class TickContext:
             mutation_rate=float(cfg.get("population.mutation_rate")),
             mutation_scale=float(cfg.get("population.mutation_scale")),
             birth_cap=int(cfg.get("population.birth_cap")),
+            inherit=bool(cfg.get("population.inherit")),
             sated_gradient_factor=float(cfg.get("intelligence.sated_gradient_factor")),
             aggregate_every=int(cfg.get("run.aggregate_every", 100) or 100),
             masks=s0.sector_masks(world.view_radius),
@@ -234,12 +236,16 @@ def _reproduce(world: World, ctx: TickContext, genes: dict, rng: RngStreams) -> 
     so the streams advance identically whatever the populations happen to be.
     """
     fertile = world.alive & (world.energy > genes["reproduce_at"])
-    noise = s0.mutation_noise(
-        (world.n_worlds, ctx.birth_cap, world.genome_size),
-        ctx.mutation_rate,
-        ctx.mutation_scale,
-        rng.mutation,
-    )
+    shape = (world.n_worlds, ctx.birth_cap, world.genome_size)
+    noise = s0.mutation_noise(shape, ctx.mutation_rate, ctx.mutation_scale, rng.mutation)
+
+    # Drawn only when inheritance is off. Drawing it unconditionally would be
+    # tidier — the control would then consume the RNG identically to the treatment
+    # and their worlds would stay matched — but it would also shift the mutation
+    # stream for every heritable run ever recorded, invalidating results already in
+    # hand. The matching buys little here anyway: random genomes make the two
+    # trajectories diverge on the first birth regardless.
+    orphan = None if ctx.inherit else rng.mutation.random(shape, dtype=np.float32)
 
     counts = np.zeros(world.n_worlds, dtype=np.int64)
     child_worlds: list[np.ndarray] = []
@@ -267,8 +273,14 @@ def _reproduce(world: World, ctx: TickContext, genes: dict, rng: RngStreams) -> 
         world.y[w, slots] = world.y[w, parents]
         world.heading[w, slots] = world.heading[w, parents]
         world.energy[w, slots] = np.maximum(dowry, np.float32(ctx.birth_energy))
-        world.genome[w, slots] = s0.apply_mutation(
-            world.genome[w, parents], noise[w, : slots.size]
+        # With inheritance off, a child's genes are drawn fresh rather than copied.
+        # Population diversity stays at its founding distribution forever, so
+        # nothing can accumulate — which is exactly what makes it a control for
+        # "did selection do this, or did the world just change underneath us?"
+        world.genome[w, slots] = (
+            s0.apply_mutation(world.genome[w, parents], noise[w, : slots.size])
+            if ctx.inherit
+            else orphan[w, : slots.size]
         )
 
         counts[w] = slots.size

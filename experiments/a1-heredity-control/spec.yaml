@@ -1,0 +1,77 @@
+name: a1-heredity-control
+stage: A1
+
+# The control for a1-gradient-ascent's evolutionary claim.
+#
+# That experiment reports `advantage_delta`: agents ascend gradients better in the
+# last tenth of a run than in the first. The obvious reading is that selection
+# improved the trait. There is a second reading that has nothing to do with
+# selection:
+#
+#   The landscape is not the same at tick 15,000 as at tick 0. Agents have eaten
+#   the easy patches, population has grown from 120 toward carrying capacity, and
+#   the local gradients an agent faces late in a run may simply be easier to climb
+#   — or easier to appear to climb — than the ones it faced early.
+#
+# `population.inherit: false` separates the two. Children get freshly drawn random
+# genes instead of their parent's, so genetic composition stays pinned at the
+# founding distribution forever and nothing can accumulate. Everything else —
+# world, physics, population dynamics, depletion, the detector — is identical.
+#
+#   inherit: true   → advantage_delta = selection + environment
+#   inherit: false  → advantage_delta = environment alone
+#
+# The difference is the part selection is responsible for.
+#
+# Prediction: delta is positive with heredity and ~zero without. If the control
+# also shows a positive delta, then a1-gradient-ascent's headline claim is
+# measuring the world changing rather than the population adapting, and it must be
+# reported that way.
+#
+# Patchiness is held at 0.6 — mid-range, large sample, not saturated.
+
+seeds: [0, 1, 2, 3, 4]
+
+sweep:
+  population.inherit: [true, false]
+
+base:
+  world:
+    grid: 64
+    patchiness: 0.6
+    regrowth: 0.05
+    seed_rain: 0.004
+    resource_capacity: 1.0
+
+  primitives:
+    p1: { level: 0 }
+    p10: { level: 0, rate: 0.0 }
+
+  intelligence:
+    stage: S0
+    genome_size: 8
+    view_radius: 2
+    sated_gradient_factor: 0.25
+
+  population:
+    initial: 120
+    capacity: 900
+    mutation_rate: 0.02
+    mutation_scale: 0.05
+    birth_cap: 32
+
+  agent:
+    metabolism: 0.5
+    max_age: 400
+    birth_energy: 20.0
+    gather_efficiency: 4.0
+    start_energy: 50.0
+
+  run:
+    worlds: 16
+    ticks: 15000
+    checkpoint_every: 15000
+    aggregate_every: 50
+    log_tier: sampled
+    sample_rate: 32
+    shard_ticks: 5000

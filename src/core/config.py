@@ -60,7 +60,10 @@ DEFAULTS: dict[str, Any] = {
     "intelligence": {"stage": "S0", "genome_size": 8, "view_radius": 2,
                      "sated_gradient_factor": 0.25},
     "population": {"initial": 200, "capacity": 1000, "mutation_rate": 0.02,
-                   "mutation_scale": 0.05, "birth_cap": 64},
+                   "mutation_scale": 0.05, "birth_cap": 64,
+                   # False draws each child's genes fresh: the no-heredity
+                   # control for any claim that selection caused something.
+                   "inherit": True},
     "agent": {"metabolism": 0.5, "max_age": 400, "birth_energy": 20.0,
               "gather_efficiency": 10.0, "start_energy": 50.0},
     "run": {"worlds": 32, "ticks": 50_000, "checkpoint_every": 2000,
