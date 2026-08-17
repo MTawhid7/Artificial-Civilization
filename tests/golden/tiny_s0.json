@@ -1,4 +1,8 @@
 {
-  "state_hash": "f28930568d97e595d5185d69385c548c",
-  "config_hash": "8a96f75ebc49bf5d5216c64096e41011"
+  "darwin-arm64": {
+    "config_hash": "8a96f75ebc49bf5d5216c64096e41011",
+    "tick_10": "7eeaefef8302de1b94db4bc8162c9fd9",
+    "tick_500": "f28930568d97e595d5185d69385c548c",
+    "world_init": "09c9dc7a1b404323bf051d336e0fde62"
+  }
 }

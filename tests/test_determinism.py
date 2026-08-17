@@ -11,6 +11,7 @@ The order below is roughly the order the bugs appear in practice.
 from __future__ import annotations
 
 import json
+import platform
 from pathlib import Path
 
 import numpy as np
@@ -255,22 +256,65 @@ def test_config_hash_ignores_key_order():
 GOLDEN = GOLDEN_DIR / "tiny_s0.json"
 
 
-def test_cross_machine(tiny_config):
-    """State hash must match a committed golden value.
+def _platform_tag() -> str:
+    return f"{platform.system().lower()}-{platform.machine().lower()}"
 
-    Expected to fail first and teach the most (docs/11-engineering.md). A failure
-    here means a float reduction, a library version, or an index dtype differs
-    from the machine that recorded the golden — all of which are real
-    reproducibility defects, not test flakiness.
+
+def _stage_hashes(tiny_config) -> dict:
+    """Hashes at three points, so a divergence can be located rather than guessed.
+
+    `world_init` is taken straight after the generators and before any tick. If it
+    already differs across machines, the cause is in world generation — which is
+    where `np.exp` lives — and no amount of care in the tick loop will help.
     """
-    world = _advance(_fresh(tiny_config), 500)
-    actual = {"state_hash": world.state_hash(), "config_hash": tiny_config.config_hash}
+    rng = RngStreams(7)
+    world = init_world(tiny_config, rng)
+    out = {"config_hash": tiny_config.config_hash, "world_init": world.state_hash()}
 
-    if not GOLDEN.exists():
+    ctx = TickContext.build(tiny_config, world)
+    pending, acc = PendingQueue.empty(), Accumulators.empty()
+    for _ in range(10):
+        step(world, ctx, rng, pending, acc, None)
+    out["tick_10"] = world.state_hash()
+    for _ in range(490):
+        step(world, ctx, rng, pending, acc, None)
+    out["tick_500"] = world.state_hash()
+    return out
+
+
+def test_cross_machine(tiny_config):
+    """State hashes must match the golden recorded for THIS platform.
+
+    Determinism is guaranteed within a platform, not across instruction sets
+    *(→ D-057)*. Bit-identical float across ISAs would mean giving up `np.exp`,
+    and every forking, checkpointing, and replay operation this project performs
+    happens on one machine.
+
+    The golden therefore holds one entry per platform, and the test still does the
+    job that matters: catching the day a code change silently alters results on the
+    machine you are actually using. Cross-platform differences are reported for
+    information, and the per-stage hashes say where they begin.
+    """
+    tag = _platform_tag()
+    actual = _stage_hashes(tiny_config)
+
+    golden = json.loads(GOLDEN.read_text()) if GOLDEN.exists() else {}
+    if tag not in golden:
+        golden[tag] = actual
         GOLDEN.parent.mkdir(parents=True, exist_ok=True)
-        GOLDEN.write_text(json.dumps(actual, indent=2) + "\n")
-        pytest.skip(f"recorded new golden hash at {GOLDEN}; commit it")
+        GOLDEN.write_text(json.dumps(golden, indent=2, sort_keys=True) + "\n")
+        pytest.skip(f"recorded golden for {tag}; commit it")
 
-    expected = json.loads(GOLDEN.read_text())
+    expected = golden[tag]
     assert actual["config_hash"] == expected["config_hash"], "the tiny config itself changed"
-    assert actual["state_hash"] == expected["state_hash"]
+    for stage in ("world_init", "tick_10", "tick_500"):
+        assert actual[stage] == expected[stage], f"{tag} diverged from its own golden at {stage}"
+
+    # Informational: where do platforms first disagree?
+    for other, ref in sorted(golden.items()):
+        if other == tag or ref.get("config_hash") != actual["config_hash"]:
+            continue
+        first = next(
+            (s for s in ("world_init", "tick_10", "tick_500") if ref.get(s) != actual[s]), None
+        )
+        print(f"  vs {other}: {'identical' if first is None else f'first differs at {first}'}")
