@@ -47,6 +47,13 @@ jobs:
             exit 1
           fi
 
+      - name: Check documentation links and anchors
+        # docs/ is the single source of truth and is cross-referenced ~300 times.
+        # DECISIONS.md carries explicit <a id="d-nnn"> anchors because GitHub's
+        # heading slugs include the whole heading text, so "#d-051" alone would
+        # silently scroll nowhere.
+        run: uv run python tools/check_links.py .
+
       - name: Confirm no phenomenon names in the core
         # docs/11-engineering.md: words like war, trade, and revolution name
         # measurements, and live only in src/lens/.

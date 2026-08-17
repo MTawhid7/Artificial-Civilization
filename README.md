@@ -16,8 +16,16 @@ The simulation is the instrument. The histories are the data. The science is com
 
 ## Status
 
-**Stage A0 — Skeleton.** Building the deterministic core: array-based world, event log,
-checkpoints, forking, and the determinism test gate. No results yet.
+**Stage A0 — Skeleton: shipped.** The deterministic core runs. Array-based world, event log,
+checkpoints, forking, and a determinism gate that holds: replay is bit-identical, and a no-op fork
+reproduces its parent exactly — including with effects scheduled across the checkpoint boundary.
+
+Measured on the target machine: **11 ms/tick** at 32 worlds × 1,000 agents, 4.68 ms per
+world-year, 9 MB of Chronicle per world over 50,000 ticks. Full numbers and the three findings
+that changed the design are in
+[experiments/a0-baseline/result.md](experiments/a0-baseline/result.md).
+
+**Now:** A1 — first evolution. Detectors and their null models are in place.
 
 Design is frozen and lives in [`docs/`](docs/). Start with
 [docs/README.md](docs/README.md) for the reading order — or
@@ -33,8 +41,19 @@ Requires [uv](https://docs.astral.sh/uv/) and Python 3.13.
 ```bash
 uv sync --all-extras          # exact versions from uv.lock
 uv run pytest                 # the determinism gate — must be green before anything else
+
+# measure this machine; every scale decision depends on these numbers
 uv run python -m bench.bench_tick --scales all
+
+# a run: 32 worlds from one seed, written to corpus/runs/<run_id>/
+uv run python -m forge.run configs/frozen/a0_smoke.yaml --seed 0 --ticks 5000
+
+# a sweep: every parameter point, every seed, scored by the detector suite
+uv run python -m forge.sweep experiments/a1-patchiness/spec.yaml
 ```
+
+Runs land in `corpus/`, which is git-ignored — a run is regenerable from `(config, seed)` by
+construction, so there is nothing there worth committing.
 
 ---
 

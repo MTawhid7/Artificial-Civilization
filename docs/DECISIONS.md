@@ -9,6 +9,7 @@ Status is `settled`, `open`, or `superseded by D-nnn`.
 
 ---
 
+<a id="d-001"></a>
 ### D-001 · settled · The product is a corpus of worlds, not a world
 
 Optimize for worlds-per-dollar, not fidelity. The unit of scientific work is a sweep — N
@@ -25,6 +26,7 @@ the default shape of this genre, and the reason the genre produces demos instead
 
 ---
 
+<a id="d-002"></a>
 ### D-002 · settled · Primitives, not phenomena
 
 Implement twelve primitives — eleven world, one interior. Never implement "war," "trade," or "government." No phenomenon
@@ -41,6 +43,7 @@ hybrid where "hard" phenomena get modules (the hybrid always expands).
 
 ---
 
+<a id="d-003"></a>
 ### D-003 · settled · No English inside the core; LLMs only at the boundary
 
 The simulation speaks numbers. LLMs appear only as Historian (narrative from logs) and Analyst
@@ -56,6 +59,7 @@ experimental condition A/B'd against a numeric baseline, never as the default su
 
 ---
 
+<a id="d-004"></a>
 ### D-004 · settled · One shared network per lineage, not one per agent
 
 All agents in a lineage share a network. Individuality comes from a per-agent genome embedding
@@ -72,6 +76,7 @@ civilization project.
 
 ---
 
+<a id="d-005"></a>
 ### D-005 · settled · Structure-of-arrays from commit #1; worlds are a batch axis
 
 Agents are columns, not objects — even in A1, where a list of objects would be easier.
@@ -87,6 +92,7 @@ cheaply.
 
 ---
 
+<a id="d-006"></a>
 ### D-006 · settled · The Chronicle Gap is the project's distinctive bet
 
 Maintain ground truth and agent belief as separate stores. Instrument their divergence.
@@ -101,6 +107,7 @@ most likely source of a genuinely novel result, and it makes the best visualizat
 
 ---
 
+<a id="d-007"></a>
 ### D-007 · settled · The only fitness is offspring
 
 Never reward cooperation, trade, technology, or complexity.
@@ -116,6 +123,7 @@ means nothing.
 
 ---
 
+<a id="d-008"></a>
 ### D-008 · settled · Evolution outer loop + local plasticity inner loop; not PPO
 
 Evolution shapes shared weights across generations; a genome-encoded local plasticity rule
@@ -133,6 +141,7 @@ condition*, not a default.
 
 ---
 
+<a id="d-009"></a>
 ### D-009 · **open** · Is the S4 planner learned or hand-written?
 
 A hand-written planner over a *learned* forward model may be acceptable as an
@@ -147,6 +156,7 @@ trade-off under selection.
 
 ---
 
+<a id="d-010"></a>
 ### D-010 · settled · Level-of-detail decisions must be deterministic
 
 Promotion/demotion of regions between full simulation and aggregate integration is a pure
@@ -161,6 +171,7 @@ runs irreproducible across machines with no visible symptom.
 
 ---
 
+<a id="d-011"></a>
 ### D-011 · settled · Detector before mechanism
 
 No mechanism is built until its detector, null model, threshold, and unit tests exist.
@@ -176,6 +187,7 @@ knowing anything.
 
 ---
 
+<a id="d-012"></a>
 ### D-012 · settled · The freeze protocol
 
 Add one primitive → viability sweep → lock defaults in `configs/frozen/` → add detectors →
@@ -191,6 +203,7 @@ Freezing makes it searchable.
 
 ---
 
+<a id="d-013"></a>
 ### D-013 · settled · The Atlas reads a digest, never live state
 
 Sim writes Chronicle → digest builder produces ~5 MB of ~2,000 downsampled frames → Atlas
@@ -207,6 +220,7 @@ viewer useless for the corpus, which is the actual product).
 
 ---
 
+<a id="d-014"></a>
 ### D-014 · settled · Interventions are typed, never arbitrary code
 
 Forks apply one of a fixed set of typed interventions (`RESOURCE_SHOCK`, `SET_TRUTH`, …).
@@ -221,6 +235,7 @@ reuse the exact same path.
 
 ---
 
+<a id="d-015"></a>
 ### D-015 · settled · Primitives are gated by intelligence stages
 
 A config enabling a primitive past its stage gate fails loudly at load.
@@ -235,6 +250,7 @@ it produces noise that passes a casual glance.
 
 ---
 
+<a id="d-016"></a>
 ### D-016 · settled · Cognition costs energy
 
 Hidden units, memory slots, and planning horizon all draw metabolic energy per tick.
@@ -247,6 +263,7 @@ variability threshold where brains start paying for themselves becomes a real ex
 
 ---
 
+<a id="d-017"></a>
 ### D-017 · settled · Parquet + DuckDB, no database server
 
 Chronicle as Parquet shards on disk; analysis as SQL over files.
@@ -259,6 +276,7 @@ and inspectable. A server is operational overhead with no benefit at this scale.
 
 ---
 
+<a id="d-018"></a>
 ### D-018 · **superseded by [D-046](DECISIONS.md#d-046)** · Python/NumPy first, JAX second
 
 Core in NumPy SoA, with the state layout designed so a JAX backend could drop in without touching
@@ -275,6 +293,7 @@ where design churn is highest).
 
 ---
 
+<a id="d-019"></a>
 ### D-019 · settled · `CONCEPT.md` superseded by `docs/`
 
 The original concept document has been absorbed into `docs/` and deleted. `docs/README.md` is
@@ -286,6 +305,7 @@ intelligence, and visualization designs.
 
 ---
 
+<a id="d-020"></a>
 ### D-020 · settled · Depth enters through generators, not config surface
 
 Richness is *structure that exists*, not *knobs a researcher tunes*. One or two hyper-parameters
@@ -307,6 +327,7 @@ artifacts of tuning); keeping primitives shallow to stay sweepable (loses the ph
 
 ---
 
+<a id="d-021"></a>
 ### D-021 · settled · Cross-primitive influence is one modulator table
 
 A discovery making a material valuable (P8→P1), a technology reducing fog (P8→P2), a weapon
@@ -329,6 +350,7 @@ rather than decorative.
 
 ---
 
+<a id="d-022"></a>
 ### D-022 · settled · Depth is gated by policy capacity, exactly like breadth
 
 D-015 gated *which primitives* exist by intelligence stage. It now also gates *how deep* each
@@ -345,6 +367,7 @@ neutral; it is a tax that also makes results harder to interpret.
 
 ---
 
+<a id="d-023"></a>
 ### D-023 · settled · No `deceive()` action — deception must be available, not provided
 
 Signals are cheap and unverified. Lying is therefore *possible*; whether it is selected for is
@@ -358,6 +381,7 @@ conditions deception pays, and providing it as a primitive answers that question
 
 ---
 
+<a id="d-024"></a>
 ### D-024 · settled · Coercion expands its action space, not its resolution function
 
 Full action taxonomy (steal, damage, displace, blockade, impose cost, capture, coerce behavior).
@@ -375,6 +399,7 @@ terrain as formula terms.
 
 ---
 
+<a id="d-025"></a>
 ### D-025 · settled · Multi-timescale causality is one pending-effects queue
 
 Delayed effects, accumulators, threshold crossings, and generational consequences are served by
@@ -392,6 +417,7 @@ dangerous class of determinism bug.
 
 ---
 
+<a id="d-026"></a>
 ### D-026 · settled · Values are an evolved proxy reward; fitness is still offspring
 
 The fitness function and the agent's reward function are **different objects**. Evolution selects
@@ -417,6 +443,7 @@ ethics); values as terminal goals selection acts on directly (circular); no valu
 
 ---
 
+<a id="d-027"></a>
 ### D-027 · settled · Value dimensions are generated, never named
 
 The generator samples K outcome-channels from what the world makes observable — own energy,
@@ -433,6 +460,7 @@ as an *interpretive lens* over generated dimensions; fatal as the generator.
 
 ---
 
+<a id="d-028"></a>
 ### D-028 · settled · Cognition is a state variable that develops over a lifetime
 
 Decompose into `potential → learning capacity → knowledge → reasoning → competence`. Only
@@ -448,6 +476,7 @@ problem complexity.
 
 ---
 
+<a id="d-029"></a>
 ### D-029 · settled · No named cognitive biases
 
 Bad reasoning emerges from resource limits — bounded memory, small samples, finite planning
@@ -462,6 +491,7 @@ propositions indefinitely. That is a feature, and it is free.
 
 ---
 
+<a id="d-030"></a>
 ### D-030 · settled · Motives are separated by ablation, never by declaration
 
 Identical altruistic behaviors are decomposed into reputation / reciprocity / kin / delayed
@@ -480,6 +510,7 @@ Confusing the two answers a different question.
 
 ---
 
+<a id="d-031"></a>
 ### D-031 · settled · "Emergent human stories" is replaced by a blind test
 
 The project's most ambitious goal is restated as E17: human raters sort Historian-rendered agent
@@ -495,6 +526,7 @@ pipeline or the test measures writing rather than lives.
 
 ---
 
+<a id="d-032"></a>
 ### D-032 · settled · Stagnation is the object of study, not the failure to avoid
 
 `plateau_height` and `time_to_plateau` are measured dependent variables. We do not set
@@ -517,6 +549,7 @@ D-011's failure mode wearing a new hat); claiming open-endedness as an objective
 
 ---
 
+<a id="d-033"></a>
 ### D-033 · settled · Discovery payoffs are heavy-tailed, and exploration rate is evolved not reasoned
 
 Most discoveries are worthless; rare ones are transformative. Exploration rate is a genetic
@@ -537,6 +570,7 @@ anyone can tell, how it works in humans.
 
 ---
 
+<a id="d-034"></a>
 ### D-034 · settled · Curiosity is attention allocation, not a parameter
 
 Given S2 plasticity proportional to prediction error plus finite attention, well-modeled domains
@@ -553,6 +587,7 @@ being specified.
 
 ---
 
+<a id="d-035"></a>
 ### D-035 · settled · Selection scores lineages over a multi-generation window
 
 The outer evolutionary loop uses geometric mean fitness across generations, not arithmetic mean
@@ -566,6 +601,7 @@ lineage that never explores is one environmental shift away from zero.
 
 ---
 
+<a id="d-036"></a>
 ### D-036 · settled · Intelligence is measured as predictive compression
 
 `model_compression` — observations predicted by the population's collective models, per unit of
@@ -587,6 +623,7 @@ doing science"). *(→ [12-risks.md](12-risks.md))*
 
 ---
 
+<a id="d-037"></a>
 ### D-037 · settled · S7 model criticism is a distinct architectural rung
 
 Representing a model *as an object*, generating structural alternatives, and holding a competing
@@ -605,6 +642,7 @@ sustain it. E21 is the joint test.
 
 ---
 
+<a id="d-038"></a>
 ### D-038 · settled · Environment co-evolution via niche construction, not environment generation
 
 Agents grow the world's structure by creating substances (P1ᴸ³) and processes (P8ᴸ³) that did not
@@ -626,6 +664,7 @@ hand-authored tech tree with more branches (same problem, less honest).
 
 ---
 
+<a id="d-039"></a>
 ### D-039 · settled · Mechanism C gains a transmission-bottleneck axis
 
 Communication sweeps two variables: channel capacity **and** data-per-learner-per-generation.
@@ -639,6 +678,7 @@ after B2 hardens.
 
 ---
 
+<a id="d-040"></a>
 ### D-040 · settled · Diversity comes from spatial structure, never from novelty selection
 
 Partial connectivity, geographic isolation, and migration maintain population diversity. We do not
@@ -659,6 +699,7 @@ bonus.
 
 ---
 
+<a id="d-041"></a>
 ### D-041 · settled · Measure both compression and evolutionary activity statistics
 
 `model_compression` is the intelligence metric; Bedau's evolutionary activity statistics are the
@@ -670,6 +711,7 @@ negative result publishable rather than merely private.
 
 ---
 
+<a id="d-042"></a>
 ### D-042 · settled · Substance properties lie on a trade-off manifold
 
 No substance maximizes every property. Improving hardness costs toughness; improving conductivity
@@ -685,6 +727,7 @@ improvement.
 
 ---
 
+<a id="d-043"></a>
 ### D-043 · settled · Ladder density is an explicit generator parameter
 
 The process-space generator carries a hyper-parameter controlling the fraction of discoveries that
@@ -700,6 +743,7 @@ consequential single parameter in the project.
 
 ---
 
+<a id="d-044"></a>
 ### D-044 · settled · Ecological inheritance is a third channel
 
 Adaptation decomposes into genetic, cultural, and **ecological** inheritance — the transformed
@@ -713,6 +757,7 @@ largest channel exactly in the runs where technology took off — the case we mo
 
 ---
 
+<a id="d-045"></a>
 ### D-045 · settled · Transmission bias is genetic, not chosen
 
 Who an agent copies — prestige, success, conformity, kin — is a vector of evolved coefficients.
@@ -729,6 +774,7 @@ on record decay rate, which would relocate the mechanism entirely.
 
 ---
 
+<a id="d-046"></a>
 ### D-046 · settled · NumPy on CPU only; no GPU backend
 
 The core runs on NumPy through Accelerate. No JAX/Metal, no PyTorch MPS.
@@ -744,6 +790,7 @@ stays, so a backend can still be added if the project ever moves to different ha
 
 ---
 
+<a id="d-047"></a>
 ### D-047 · settled · Tiered logging is mandatory, not an optimization
 
 Chronicle events are always-logged, sampled, aggregated, or snapshotted. Target ≤ 50 MB per
@@ -759,6 +806,7 @@ when the detector is written, not discovered later.
 
 ---
 
+<a id="d-048"></a>
 ### D-048 · settled · A live viewer is permitted as a development tool
 
 A throwaway viewer may read sampled live state at low frequency on runs flagged non-scientific.
@@ -773,6 +821,7 @@ index.
 
 ---
 
+<a id="d-049"></a>
 ### D-049 · settled · Level of detail is cut
 
 No promotion/demotion between full simulation and aggregate integration.
@@ -785,6 +834,7 @@ of determinism bug for free.
 
 ---
 
+<a id="d-050"></a>
 ### D-050 · settled · The roadmap is ordered by payoff, not only by dependency
 
 Stages that produce something worth showing are pulled as early as their dependencies allow — the
@@ -799,6 +849,7 @@ maximizes that risk. Ordering by payoff costs nothing scientifically: the gating
 
 ---
 
+<a id="d-051"></a>
 ### D-051 · settled · Regeneration needs a recolonization term; zero must not be absorbing
 
 P1's regrowth is `dR = (1 - R/K) * (rate * R + seed_rain * K)`, not the pure logistic
@@ -824,6 +875,7 @@ the entire point of having regeneration classes.
 
 ---
 
+<a id="d-052"></a>
 ### D-052 · settled · The Chronicle samples agents, not agent-ticks
 
 The sampled tier keys its 1-in-K decision on `agent_id` alone. A sampled agent is logged for its
@@ -846,6 +898,7 @@ changing `log_tier` cannot change what happens *(→ [D-047](DECISIONS.md#d-047)
 
 ---
 
+<a id="d-053"></a>
 ### D-053 · settled · Fixed-shape RNG draws are sized by config constants, not by capacity
 
 Every random draw is at a shape fixed by `(config, seed)` — never by the living population. Where

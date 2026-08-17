@@ -1,6 +1,12 @@
 # Artificial Civilization — Documentation
 
-**Status:** design frozen, ready to implement. Nothing in `src/` yet — start at [10-roadmap.md § A0](10-roadmap.md#a0--skeleton).
+**Status:** **A0 shipped**, A1 in progress. The deterministic core runs and the determinism gate
+holds; measured results are in [`experiments/a0-baseline/result.md`](../experiments/a0-baseline/result.md).
+Next up is [10-roadmap.md § A1](10-roadmap.md#a1--first-evolution).
+
+Three decisions were added *by* implementation rather than before it — [D-051](DECISIONS.md#d-051),
+[D-052](DECISIONS.md#d-052), [D-053](DECISIONS.md#d-053) — each because a measurement contradicted
+something these documents assumed. Expect more of that; the docs are canonical but not infallible.
 
 **Scope:** hobby project on an 8 GB M1 Air. Read
 [00-feasibility.md](00-feasibility.md) first — it constrains everything else, and several
