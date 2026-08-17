@@ -83,6 +83,7 @@ def choose_action(
     density: np.ndarray,
     masks: np.ndarray,
     rng_policy: np.random.Generator,
+    sated_gradient_factor: float = 0.25,
 ) -> np.ndarray:
     """Return an action in 0..3 for every agent slot, living or not.
 
@@ -109,7 +110,17 @@ def choose_action(
     # Hunger sharpens the gradient response rather than switching it on. A hard
     # switch would put a discontinuity in the fitness landscape that selection
     # would sit exactly on top of.
-    gradient_weight = np.where(hungry, p["gradient"], p["gradient"] * 0.25)
+    #
+    # `sated_gradient_factor` is the one piece of hunger-conditioned behavior that
+    # is *structural* rather than evolved: at 0.25 a sated agent weighs the
+    # gradient a quarter as much as a hungry one, and at 1.0 hunger does not
+    # affect gradient-following at all. It is a parameter rather than a constant
+    # because it turns out to drive the sign of `directed_foraging`, and a
+    # detector must never be measuring a number hidden in the policy — see
+    # experiments/a1-patchiness/result.md.
+    gradient_weight = np.where(
+        hungry, p["gradient"], p["gradient"] * np.float32(sated_gradient_factor)
+    )
     logits = gradient_weight[..., None] * sector
 
     onehot = np.equal(np.arange(4, dtype=np.int8)[None, None, :], heading[..., None])

@@ -59,6 +59,7 @@ class TickContext:
     mutation_rate: float
     mutation_scale: float
     birth_cap: int
+    sated_gradient_factor: float
     aggregate_every: int
 
     masks: np.ndarray  # [4, P] direction sectors
@@ -83,6 +84,7 @@ class TickContext:
             mutation_rate=float(cfg.get("population.mutation_rate")),
             mutation_scale=float(cfg.get("population.mutation_scale")),
             birth_cap=int(cfg.get("population.birth_cap")),
+            sated_gradient_factor=float(cfg.get("intelligence.sated_gradient_factor")),
             aggregate_every=int(cfg.get("run.aggregate_every", 100) or 100),
             masks=s0.sector_masks(world.view_radius),
             world_offset=(np.arange(w, dtype=np.int64) * (g * g))[:, None],
@@ -126,7 +128,8 @@ def step(
 
     # --- 4. DECIDE ------------------------------------------------------------
     action = s0.choose_action(
-        world._obs, world.energy, world.heading, world.genome, density, ctx.masks, rng.policy
+        world._obs, world.energy, world.heading, world.genome, density, ctx.masks,
+        rng.policy, ctx.sated_gradient_factor,
     )
 
     # --- 5. RESOLVE -----------------------------------------------------------
