@@ -44,20 +44,38 @@ DELTA_Y = np.array([-1, 0, 1, 0], dtype=np.int16)
 DELTA_X = np.array([0, 1, 0, -1], dtype=np.int16)
 
 
-def sector_masks(view_radius: int) -> np.ndarray:
-    """A [4, P] mask selecting the cells lying in each direction from the agent.
+def sector_masks(view_radius: int) -> list[tuple[tuple[slice, slice], np.float32]]:
+    """Slices selecting the cells in each direction, plus a 1/count weight.
 
-    Sectors overlap on the diagonals and exclude the centre cell. Overlapping is
-    deliberate: a rich patch to the north-east should raise the score of both
+    Sectors overlap on the diagonals and exclude the centre row/column. Overlapping
+    is deliberate: a rich patch to the north-east should raise the score of both
     north and east rather than being arbitrarily assigned to one.
+
+    **Not a `[4, P]` float mask, and deliberately not a matmul.** The obvious
+    implementation is `obs @ masks.T`, which dispatches to BLAS — and BLAS picks
+    its own summation order per platform. That produced a real cross-machine hash
+    mismatch between arm64/Accelerate and x86_64/OpenBLAS: a last-ulp difference in
+    one sector score flips an occasional action choice, and two runs of the same
+    seed diverge within a few hundred ticks. Determinism rule 4 — fixed-order float
+    reductions — is not satisfied by anything that dispatches to a tuned kernel.
+
+    Slices rather than index arrays because slices are *views*: fancy indexing
+    copies each sector out of the patch, which measured 32% slower over the whole
+    tick. The weight makes each score a mean rather than a sum, so widening
+    `view_radius` does not silently amplify `gradient_sensitivity`.
     """
     d = view_radius
-    oy, ox = np.mgrid[-d : d + 1, -d : d + 1]
-    oy, ox = oy.ravel(), ox.ravel()
-    masks = np.stack([oy < 0, ox > 0, oy > 0, ox < 0]).astype(np.float32)
-    # Normalize so sector score is a mean, not a sum: otherwise a larger view
-    # radius would silently amplify gradient_sensitivity.
-    return masks / np.maximum(masks.sum(axis=1, keepdims=True), 1.0)
+    side = 2 * d + 1
+    all_ = slice(None)
+    # (rows, cols) into a [side, side] patch — N, E, S, W, matching DELTA_Y/X.
+    regions = [
+        (slice(0, d), all_),        # north: rows above centre
+        (all_, slice(d + 1, side)), # east:  columns right of centre
+        (slice(d + 1, side), all_), # south
+        (all_, slice(0, d)),        # west
+    ]
+    counts = [d * side, d * side, d * side, d * side]
+    return [(r, np.float32(1.0 / max(c, 1))) for r, c in zip(regions, counts)]
 
 
 def decode(genome: np.ndarray) -> dict[str, np.ndarray]:
@@ -103,8 +121,15 @@ def choose_action(
     """
     p = decode(genome)
 
-    # Perceived resource in each direction: [W, N, P] @ [P, 4] -> [W, N, 4]
-    sector = obs @ masks.T
+    # Perceived resource in each direction, [W, N, 4]. Summed over slice views in
+    # a fixed order rather than by matmul — see `sector_masks` for why this is not
+    # `obs @ masks.T`.
+    side = int(round(obs.shape[2] ** 0.5))
+    patch = obs.reshape(obs.shape[0], obs.shape[1], side, side)
+    sector = np.empty(obs.shape[:2] + (4,), dtype=np.float32)
+    for d, (region, weight) in enumerate(masks):
+        np.multiply(patch[:, :, region[0], region[1]].sum(axis=(2, 3)), weight,
+                    out=sector[:, :, d])
 
     hungry = energy < p["hunger_threshold"]
     # Hunger sharpens the gradient response rather than switching it on. A hard
