@@ -47,6 +47,14 @@ jobs:
             exit 1
           fi
 
+      - name: Show the golden hashes this platform produced
+        # A platform with no committed golden records one and skips. It lives only
+        # in the runner, so print it: paste the new entry into
+        # tests/golden/tiny_s0.json and the gate starts enforcing on that platform
+        # from the next push. See D-057.
+        if: always()
+        run: cat tests/golden/tiny_s0.json
+
       - name: Check documentation links and anchors
         # docs/ is the single source of truth and is cross-referenced ~300 times.
         # DECISIONS.md carries explicit <a id="d-nnn"> anchors because GitHub's
