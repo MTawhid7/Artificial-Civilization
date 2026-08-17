@@ -127,7 +127,7 @@ the two produces a biased estimate that looks fine.
 | Group | Events |
 |---|---|
 | vitals | `BIRTH`, `DEATH`, `MUTATION` |
-| space | `MOVE`, `EXPLORE_CELL` |
+| space | `MOVE`, `EXPLORE_CELL`, `PERCEIVE` |
 | resource | `GATHER`, `DEPLETE`, `REGROW` |
 | exchange | `TRANSFER`, `CLAIM_MAKE`, `CLAIM_BREAK` |
 | social | `SIGNAL`, `TEACH`, `IMITATE` |

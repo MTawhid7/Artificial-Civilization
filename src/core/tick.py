@@ -127,7 +127,10 @@ def step(
     density = _observe(world, cell, ctx)
 
     # --- 4. DECIDE ------------------------------------------------------------
-    action = s0.choose_action(
+    # `sector` is what each agent perceived in each direction. It is carried out of
+    # the policy so the Chronicle can record the alternatives that were on offer:
+    # whether a choice was good is a question about the options, not the outcome.
+    action, sector = s0.choose_action(
         world._obs, world.energy, world.heading, world.genome, density, ctx.masks,
         rng.policy, ctx.sated_gradient_factor,
     )
@@ -169,7 +172,8 @@ def step(
 
     # --- 9. EMIT --------------------------------------------------------------
     if chronicle is not None:
-        _emit(world, ctx, chronicle, tick, action, gained, died, dead_ids, dead_worlds, born)
+        _emit(world, ctx, chronicle, tick, action, sector, gained, died, dead_ids,
+              dead_worlds, born)
 
     # --- 10. LEARN ------------------------------------------------------------
     # S0 has no within-life learning. Selection happens through birth and death,
@@ -304,6 +308,7 @@ def _emit(
     chronicle: ChronicleWriter,
     tick: int,
     action: np.ndarray,
+    sector: np.ndarray,
     gained: np.ndarray,
     died: np.ndarray,
     dead_ids: np.ndarray,
@@ -332,6 +337,32 @@ def _emit(
         got = alive & (gained > 0)
         if got.any():
             chronicle.emit(tick, S.GATHER, w_idx[got], world.id[got], a=gained[got])
+
+        # PERCEIVE — the decision context, not the decision's consequences.
+        #
+        # Three numbers summarize what was on offer: the score of the direction
+        # actually taken, the mean of the four, and the best of the four. The
+        # choice of *those* three is what makes `gradient_ascent`'s null exact
+        # rather than simulated. A direction-blind agent picks uniformly, so its
+        # expected chosen score IS the mean — meaning `chosen - mean` has
+        # expectation exactly zero, for any landscape whatsoever, with no
+        # surrogate to generate. Dividing by `best - mean` puts perfect
+        # gradient-following at 1.0, and `chosen == best` recovers the plain
+        # "did it take the best option" share.
+        #
+        # Logging perception rather than a verdict keeps the core/lens split
+        # intact. The Chronicle records what the agent saw; whether that adds up
+        # to foraging is the lens's question to answer.
+        chosen = np.take_along_axis(
+            sector, action.astype(np.intp)[:, :, None], axis=2
+        )[:, :, 0]
+        chronicle.emit(
+            tick, S.PERCEIVE, w_idx[alive], world.id[alive],
+            obj=action[alive].astype(np.uint32),
+            a=chosen[alive],
+            b=sector.mean(axis=2)[alive],
+            c=sector.max(axis=2)[alive],
+        )
 
     if (tick + 1) % ctx.aggregate_every == 0:
         rows = []

@@ -77,6 +77,7 @@ measure the decision directly rather than its consequences.
 | **Random-delegation** | delegation edges rewired at random, degree preserved | hierarchy has structure |
 | **Thin-tail** | discovery payoffs from a thin-tailed distribution | heavy tails sustain exploration |
 | **Random-model** | models with matched parameter count, randomly structured | compression reflects understanding |
+| **Blind-choice** | *derived, not simulated*: an agent ignoring its options picks uniformly, so its expected chosen score **is** the mean of what was on offer | the choice used the information available |
 
 Rule of thumb: the null should be the *most flattering* alternative explanation you can
 construct. If the claim survives that, it survives.
@@ -96,7 +97,7 @@ Depth requirements noted as `P1ᴸ²` where relevant.
 | `pop_stability` | population bounded, non-monotonic, over ≥20 seeds | drift-only |
 | `migration_wave` | net directional flux of agents between regions above baseline | spatial-scramble |
 | ~~`directed_foraging`~~ | ~~mean path straightness when energy < threshold~~ — **withdrawn**, conditions on an outcome of the behavior *(→ [D-056](DECISIONS.md#d-056))* | shuffled |
-| `gradient_ascent` ⌛ | share of moves whose direction points up the local resource gradient, vs the best available alternative | shuffled |
+| `gradient_ascent` | `(chosen − mean) / (best − mean)` over the four perceived directions, from `PERCEIVE` events | **blind-choice** |
 | `exploration_rate` | new cells entering `known_mask` per agent-tick | drift-only |
 
 ### Scarcity & economy

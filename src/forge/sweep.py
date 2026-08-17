@@ -24,12 +24,14 @@ import yaml
 
 from core.config import Config, resolve
 from forge.run import run
-from lens import directed_foraging, pop_stability
+from lens import gradient_ascent, pop_stability
 from lens.base import ChronicleReader, Firing
 
+# `directed_foraging` is deliberately absent: withdrawn under D-056, and a
+# withdrawn detector must not keep producing numbers that end up in a table.
 DETECTORS = {
     "pop_stability": pop_stability.compute,
-    "directed_foraging": directed_foraging.compute,
+    "gradient_ascent": gradient_ascent.compute,
 }
 
 

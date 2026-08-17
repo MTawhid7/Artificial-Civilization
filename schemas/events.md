@@ -29,11 +29,25 @@ decade gaps exist so a group can grow without disturbing its neighbours.
 | 1 | `BIRTH` | always | child id | parent id | — | — | — |
 | 2 | `DEATH` | always | agent id | — | age at death | — | — |
 | 10 | `MOVE` | sampled | agent id | — | x after moving | y after moving | energy |
+| 12 | `PERCEIVE` | sampled | agent id | direction taken, 0..3 | score of chosen direction | mean of the four | best of the four |
 | 20 | `GATHER` | sampled | agent id | — | energy gained | — | — |
 
-`MOVE` carries position *and* energy so that `directed_foraging` — path
-straightness conditioned on hunger — is computable from the sampled tier alone.
-A detector that needed a join back to per-tick state would not survive tiering.
+`MOVE` carries position and energy so trajectories are reconstructable from the
+sampled tier alone; a detector needing a join back to per-tick state would not
+survive tiering.
+
+`PERCEIVE` records **the decision context, not the decision's consequences** — what
+the agent saw in each direction at the moment it chose. Those particular three
+numbers are what make `gradient_ascent`'s null exact rather than simulated: an
+agent ignoring its options picks uniformly, so its expected chosen score *is* the
+mean, and `chosen − mean` has expectation zero for any landscape whatsoever.
+Dividing by `best − mean` puts perfect gradient-following at 1.0.
+
+Logging perception rather than a verdict is what keeps the core/lens split intact.
+The Chronicle records what the agent saw; whether that adds up to foraging is the
+lens's question. Contrast the withdrawn `directed_foraging`, which conditioned on
+energy — an *outcome* of movement — and inverted its own conclusion
+*(→ [D-056](../docs/DECISIONS.md#d-056))*.
 
 ## Declared, not yet emitted
 

@@ -1,0 +1,78 @@
+name: a1-gradient-ascent
+stage: A1
+
+# The A1 hypothesis, re-run against a detector that measures the decision rather
+# than its consequences.
+#
+# `directed_foraging` was withdrawn (D-056): it conditioned on energy, which the
+# movement it measured causes, and inverted its own conclusion in 39 runs.
+# `gradient_ascent` asks instead whether the direction an agent chose was good
+# *relative to the four options it could see* — a property of the choice, with
+# nothing downstream of the choice anywhere in it.
+#
+# Two questions, and they are not the same question:
+#
+#   1. Do agents ascend resource gradients?  (magnitude vs the blind-choice null)
+#      A positive answer here is the POLICY working, not evolution happening. At
+#      S0 the policy already weighs the gradient and the founding cohort draws
+#      gradient_sensitivity uniformly, so agents ascend from tick zero.
+#
+#   2. Does selection IMPROVE it, and more so in patchy worlds?
+#      (`advantage_delta`: last tenth of the run vs the first tenth)
+#      This is the real A1 claim. A patchy world should reward gradient-following
+#      more than a uniform one, so the improvement should grow with patchiness.
+#
+# Prediction: magnitude positive everywhere; advantage_delta positive, and rising
+# with patchiness. A flat delta means selection is not acting on the trait, which
+# would be a genuine negative result about this world rather than about the
+# detector.
+#
+# Calibration note: capacity is 900, not the 500 used in a1-patchiness. At 500 the
+# low-patchiness end ran at 86-88% of the array ceiling, where population is
+# regulated by the array rather than by the world, making those points
+# incomparable with the rest. At 900 the range runs 43% down to 5%.
+
+seeds: [0, 1, 2, 3, 4]
+
+sweep:
+  world.patchiness: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+
+base:
+  world:
+    grid: 64
+    regrowth: 0.05
+    seed_rain: 0.004
+    resource_capacity: 1.0
+
+  primitives:
+    p1: { level: 0 }
+    p10: { level: 0, rate: 0.0 }
+
+  intelligence:
+    stage: S0
+    genome_size: 8
+    view_radius: 2
+    sated_gradient_factor: 0.25
+
+  population:
+    initial: 120
+    capacity: 900
+    mutation_rate: 0.02
+    mutation_scale: 0.05
+    birth_cap: 32
+
+  agent:
+    metabolism: 0.5
+    max_age: 400
+    birth_energy: 20.0
+    gather_efficiency: 4.0
+    start_energy: 50.0
+
+  run:
+    worlds: 16
+    ticks: 15000        # ~40 generations at a ~380-tick lifespan
+    checkpoint_every: 15000
+    aggregate_every: 50
+    log_tier: sampled
+    sample_rate: 32
+    shard_ticks: 5000

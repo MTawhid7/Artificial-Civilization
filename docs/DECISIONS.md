@@ -1028,6 +1028,37 @@ later. Revisit if the corpus ever needs to be produced on more than one machine.
 
 ---
 
+<a id="d-058"></a>
+### D-058 · settled · The Chronicle logs the decision context, so nulls can be derived rather than simulated
+
+Where a detector needs to judge a choice, the core logs **what the agent perceived when it chose** —
+not a verdict about the choice. `PERCEIVE` carries the score of the direction taken, the mean of the
+four on offer, and the best of the four.
+
+**Why those three:** they make the null *exact*. An agent ignoring the gradient picks uniformly, so
+its expected chosen score **is** the mean of the four — therefore `chosen − mean` has expectation
+exactly zero, conditional on the landscape, for any landscape, with nothing to simulate and no
+distributional assumption. Dividing by `best − mean` puts perfect gradient-following at 1.0 and
+makes the statistic comparable across worlds of different richness.
+
+**Why this matters beyond one detector.** [D-056](DECISIONS.md#d-056) killed `directed_foraging`
+with a confound its permutation null could not see, and *every* permutation null shares that blind
+spot: permutation preserves whatever it does not disturb. A null whose centre is derived has no
+structure left to preserve. Prefer a designed control over a shuffle wherever the arithmetic allows
+one — `referential_validity` is the same pattern.
+
+**The line this does not cross.** Logging perception is not logging a measurement. The Chronicle
+records what the agent saw; whether that adds up to foraging is the lens's question, and the lens
+still has to combine perception with choice and compare against the null. A `FORAGED_WELL` event
+would be the circular version, and is exactly what the no-phenomenon-names rule forbids.
+
+**Cost accepted:** one extra sampled-tier row per logged agent-tick, roughly a third more Chronicle
+volume at the sampled tier. Cheap against a detector whose null cannot be argued with.
+
+*(→ [07-detectors.md](07-detectors.md#the-null-model-catalogue), `schemas/events.md`)*
+
+---
+
 ## Open questions
 
 Tracked here so they are not mistaken for oversights. Each blocks a specific version.

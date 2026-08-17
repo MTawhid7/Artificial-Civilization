@@ -102,8 +102,8 @@ def choose_action(
     masks: np.ndarray,
     rng_policy: np.random.Generator,
     sated_gradient_factor: float = 0.25,
-) -> np.ndarray:
-    """Return an action in 0..3 for every agent slot, living or not.
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return `(action, sector)` for every agent slot, living or not.
 
     Args:
         obs:      [W, N, P] resource values in the local patch.
@@ -111,13 +111,19 @@ def choose_action(
         heading:  [W, N] last direction, 0..3.
         genome:   [W, N, G] genes in [0, 1].
         density:  [W, N] agents sharing this agent's cell, including itself.
-        masks:    [4, P] from `sector_masks`.
+        masks:    from `sector_masks` — slice regions and their weights.
         rng_policy: the `policy` stream.
 
-    The Gumbel-max draw is taken at [W, N, 4] for every slot, including dead ones.
-    Drawing only for the living would make the stream's position depend on the
-    population, and a fork would then diverge from its parent silently — the whole
-    reason `test_noop_fork` exists.
+    Returns the action in 0..3, and the `[W, N, 4]` perceived resource per
+    direction. `sector` is returned rather than kept private because it is *what
+    the agent saw when it decided*, and the Chronicle needs it: `gradient_ascent`
+    asks whether the direction chosen was good **relative to the alternatives that
+    were on offer**, which is unanswerable from positions alone.
+
+    The random draw is taken at full `[W, N]` shape for every slot, including dead
+    ones. Drawing only for the living would make the stream's position depend on
+    the population, and a fork would then diverge from its parent silently — the
+    whole reason `test_noop_fork` exists.
     """
     p = decode(genome)
 
@@ -165,7 +171,8 @@ def choose_action(
     weights = np.exp(scaled)
     cumulative = np.cumsum(weights, axis=2)
     draw = rng_policy.random(logits.shape[:2], dtype=np.float32) * cumulative[:, :, -1]
-    return np.count_nonzero(cumulative < draw[..., None], axis=2).astype(np.int8)
+    action = np.count_nonzero(cumulative < draw[..., None], axis=2).astype(np.int8)
+    return action, sector
 
 
 def mutation_noise(
