@@ -25,7 +25,18 @@ world-year, 9 MB of Chronicle per world over 50,000 ticks. Full numbers and the 
 that changed the design are in
 [experiments/a0-baseline/result.md](experiments/a0-baseline/result.md).
 
-**Now:** A1 — first evolution. Detectors and their null models are in place.
+**Stage A1 — First evolution: shipped.** Agents evolve. Over a run they get measurably better at
+choosing the direction with more food in it, and a no-heredity control shows 95% of that
+improvement is selection rather than the world changing underneath them.
+
+The result nobody predicted: **patchier worlds select for more random movement, not less.** Agents
+did not stop caring about the local resource gradient — gradient sensitivity rose slightly
+everywhere — they stopped acting on it deterministically, because in a mostly-barren world the
+local gradient is mostly noise. They evolved to calibrate how much to trust local information to
+how much that information was worth. See
+[experiments/a1-gradient-ascent/result.md](experiments/a1-gradient-ascent/result.md).
+
+**Next:** A2 — the fingerprint wall.
 
 Design is frozen and lives in [`docs/`](docs/). Start with
 [docs/README.md](docs/README.md) for the reading order — or

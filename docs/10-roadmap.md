@@ -68,28 +68,36 @@ on the agent, not the agent-tick, or trajectories are unreconstructable
 **Build:** genome of ~8 floats driving a reactive foraging rule. Patchy resource distribution.
 `pop_stability` and `directed_foraging` detectors with nulls and unit tests.
 
-**Ship criteria** — **not met.** See [a1-patchiness](../experiments/a1-patchiness/result.md) and
-[a1-hunger-coupling](../experiments/a1-hunger-coupling/result.md).
-- [x] population bounded oscillation, no extinction or explosion — holds for patchiness ≥ 0.8;
-      below that the config saturates against the array capacity and needs recalibrating
-- [ ] trait means drift measurably and **track the resource distribution** — not yet analyzed
-- [ ] ~~`directed_foraging` beats its shuffled null~~ — **the detector was withdrawn**
-      *(→ [D-056](DECISIONS.md#d-056))*. It beat its null in 39 runs, in the wrong direction, and
-      was still measuring the wrong thing. Replacement: `gradient_ascent`.
+**Ship criteria** — **met.** See [a1-gradient-ascent](../experiments/a1-gradient-ascent/result.md),
+with its control [a1-heredity-control](../experiments/a1-heredity-control/result.md).
+- [x] population bounded oscillation, no extinction or explosion — at patchiness ≥ 0.4, across 80
+      world-instances; marginal below, where 2–3 worlds in 16 leave the viable band
+- [x] trait means drift measurably and **track the resource distribution** — 7 of 8 genes move off
+      their 0.500 founding value; exploration temperature tracks patchiness at r = +0.937 and
+      heading persistence at r = −0.848
+- [x] a foraging detector beats its null — `gradient_ascent`, 30 runs of 30, 5 seeds of 5, at all
+      six patchiness levels *(the originally-specified `directed_foraging` was withdrawn first —
+      → [D-056](DECISIONS.md#d-056))*
 
 **Time:** ~1 week. **Payoff:** the first real one. Sweep patchiness, get a dose-response curve,
 and you have proven the entire pipeline — sim → log → sweep → detector → null → plot — at the
 cheapest possible moment.
 
-What that pipeline actually produced, first time out, was **two negative results and two
-methodological corrections** — that z must never be plotted alone when population varies across a
-sweep *(→ [D-054](DECISIONS.md#d-054))*, and that a detector must never condition on a variable its
-behavior influences *(→ [D-056](DECISIONS.md#d-056))*. Both were caught in under an hour of compute
-by the null models and the seed scatter.
+**What it actually produced.** The dose-response came out *negative* — gradient-following gets
+weaker as resources clump — and the gene means explain why: patchier worlds select for **more
+exploration randomness and less commitment to a heading**, while gradient sensitivity holds steady.
+Agents did not stop caring about the local gradient; they stopped acting on it deterministically,
+because in a mostly-barren world the local gradient is mostly noise.
 
-That is the stage doing its job. A detector that produces a clean, confident, wrongly-signed
-dose-response is exactly the failure this project exists to catch, and catching it in week two
-rather than month eight is the whole argument for ordering A1 this early.
+> Agents evolved to calibrate how much to trust local information to how much that information was
+> worth. Nobody wrote that, and it is the S0 shadow of something Phase D depends on.
+
+Getting there cost three withdrawn or corrected claims, all caught by the machinery rather than by
+luck: z must not be plotted alone when population varies *(→ [D-054](DECISIONS.md#d-054))*, a
+detector must not condition on a variable its behavior influences
+*(→ [D-056](DECISIONS.md#d-056))*, and an evolutionary claim needs a no-heredity control
+*(→ [D-059](DECISIONS.md#d-059))*. That is the stage doing its job, in week two rather than
+month eight.
 
 > Do not skip ahead from here. Every later stage is a variation on machinery you now trust.
 

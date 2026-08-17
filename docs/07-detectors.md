@@ -77,6 +77,7 @@ measure the decision directly rather than its consequences.
 | **Random-delegation** | delegation edges rewired at random, degree preserved | hierarchy has structure |
 | **Thin-tail** | discovery payoffs from a thin-tailed distribution | heavy tails sustain exploration |
 | **Random-model** | models with matched parameter count, randomly structured | compression reflects understanding |
+| **No-heredity** | children get freshly drawn genes; composition pinned at the founding distribution *(→ [D-059](DECISIONS.md#d-059))* | selection caused the change, rather than the world drifting |
 | **Blind-choice** | *derived, not simulated*: an agent ignoring its options picks uniformly, so its expected chosen score **is** the mean of what was on offer | the choice used the information available |
 
 Rule of thumb: the null should be the *most flattering* alternative explanation you can
@@ -415,6 +416,13 @@ Reported as z alone, it would have been a confident and entirely wrong result.
 
 **Rule: report the raw effect and z together, always, with `n` alongside.** If the raw effect is
 flat, the finding is that it is flat, whatever z does. `tools/plot_sweep.py` enforces the pairing.
+
+There is a second route to the same error, and it is worse *(→ [D-060](DECISIONS.md#d-060))*.
+**Anything that homogenizes replicates inflates its own z.** In the heredity control, the arm with
+the *smaller* effect scored the *larger* z — 0.100 at z = 46.8 against 0.267 at z = 4.7 — because
+giving every world the same random gene distribution collapsed between-world variance 26-fold. The
+more thoroughly a control removes the mechanism, the more significant it can look. **Two arms of an
+experiment are never ranked by their z-scores.**
 
 ---
 

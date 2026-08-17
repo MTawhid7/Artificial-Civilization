@@ -1059,6 +1059,54 @@ volume at the sampled tier. Cheap against a detector whose null cannot be argued
 
 ---
 
+<a id="d-059"></a>
+### D-059 · settled · Every "selection caused this" claim ships a no-heredity control
+
+`population.inherit: false` gives each child freshly drawn random genes instead of its parent's,
+pinning genetic composition at the founding distribution while leaving world, physics, population
+dynamics, and the detector untouched. Any claim that selection produced an effect is reported with
+that arm beside it.
+
+**Why:** a within-run "it improved over time" comparison confounds adaptation with the world
+changing underneath the population — agents strip the easy patches, population grows toward
+carrying capacity, and late-run conditions differ from early-run ones for reasons that have nothing
+to do with genes. Measured: `gradient_ascent`'s selection gain is **+0.214 with heredity and +0.010
+without**, so the environment accounts for 5% and selection for 95%. Without the control that split
+was assertion.
+
+**Cost:** one extra run per claim, and one wasted RNG draw per tick in control runs only. Cheap.
+
+**Implementation note:** the fresh-genome draw is taken *only* when inheritance is off. Drawing it
+unconditionally would keep both arms RNG-matched, which is tidier, but would shift the mutation
+stream for every heritable run ever recorded. Matching buys little anyway — random genomes make the
+arms diverge on the first birth regardless.
+
+*(→ `experiments/a1-heredity-control/`)*
+
+---
+
+<a id="d-060"></a>
+### D-060 · settled · Two arms of an experiment are never ranked by their z-scores
+
+When comparing conditions, compare raw effects. z is reported alongside, never instead.
+
+**Why:** [D-054](DECISIONS.md#d-054) covers z inflating with sample size. The heredity control found
+a second route, and a worse one. The no-heredity arm scored a raw effect **2.7× smaller** and a z
+**10× larger** (0.100 at z = 46.8, against 0.267 at z = 4.7) — because giving every world the same
+random gene distribution collapsed between-world variance 26-fold, and z divides by that spread.
+
+The nasty part is that **the intervention under test is what shrank the variance.** Any manipulation
+that homogenizes replicates inflates its own z, so the more thoroughly a control removes the
+mechanism, the more significant it looks. Ranking the two arms by z would have been arithmetically
+correct and exactly backwards.
+
+**Rule:** z answers "distinguishable from chance, at this sample size, with this between-replicate
+spread". It never answers "bigger".
+
+*(→ [07-detectors.md](07-detectors.md#never-plot-z-alone-across-a-sweep), `experiments/a1-heredity-control/`)*
+
+---
+
 ## Open questions
 
 Tracked here so they are not mistaken for oversights. Each blocks a specific version.
