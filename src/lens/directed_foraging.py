@@ -1,4 +1,30 @@
-"""`directed_foraging` — do agents commit to a direction when they are hungry?
+"""`directed_foraging` — WITHDRAWN. Kept as a worked example of a broken detector.
+
+    !! This detector does not measure what its name claims. Do not use its output
+    !! as evidence. See D-056 and experiments/a1-hunger-coupling/result.md.
+
+It conditions on energy, which the behavior it measures *causes*: extraction empties
+a cell, so an agent travelling straight keeps entering fresh ground and eats well,
+while one that doubles back re-crosses what it stripped. Straightness correlates
+with energy gained (+0.224) at over twice the strength of energy held (+0.102). The
+detector reads that backwards and reports satiation as the cause of straight
+movement rather than its consequence.
+
+Its shuffled null does not catch this. Permuting hunger labels within an agent
+controls for differences between agents; the confound is within-agent and temporal,
+and permutation destroys the ordering that carries it.
+
+It is kept in the tree, unrewritten, because "here is a detector that beat its null
+in 39 runs and was still wrong" is worth more as a standing example than a deleted
+file. Its replacement is `gradient_ascent`, which measures the decision (does the
+chosen direction point up the local gradient?) rather than the decision's
+consequences.
+
+The original docstring follows.
+
+---
+
+`directed_foraging` — do agents commit to a direction when they are hungry?
 
 **Definition.** Mean path straightness over windows of consecutive moves, compared
 between hungry and sated windows. Straightness is net displacement divided by path

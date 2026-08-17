@@ -1,0 +1,771 @@
+{
+  "spec": {
+    "name": "a1-hunger-coupling",
+    "stage": "A1",
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "sweep": {
+      "intelligence.sated_gradient_factor": [
+        0.25,
+        0.5,
+        1.0
+      ]
+    },
+    "base": {
+      "world": {
+        "grid": 64,
+        "patchiness": 0.6,
+        "regrowth": 0.05,
+        "seed_rain": 0.004,
+        "resource_capacity": 1.0
+      },
+      "primitives": {
+        "p1": {
+          "level": 0
+        },
+        "p10": {
+          "level": 0,
+          "rate": 0.0
+        }
+      },
+      "intelligence": {
+        "stage": "S0",
+        "genome_size": 8,
+        "view_radius": 2
+      },
+      "population": {
+        "initial": 120,
+        "capacity": 500,
+        "mutation_rate": 0.02,
+        "mutation_scale": 0.05,
+        "birth_cap": 32
+      },
+      "agent": {
+        "metabolism": 0.5,
+        "max_age": 400,
+        "birth_energy": 20.0,
+        "gather_efficiency": 4.0,
+        "start_energy": 50.0
+      },
+      "run": {
+        "worlds": 16,
+        "ticks": 15000,
+        "checkpoint_every": 15000,
+        "aggregate_every": 50,
+        "log_tier": "sampled",
+        "sample_rate": 32,
+        "shard_ticks": 5000
+      }
+    }
+  },
+  "wall_seconds": 546.8,
+  "results": [
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 0.25
+      },
+      "seed": 0,
+      "run_id": "69d878b4dc5908e63635aec1",
+      "ms_per_tick": 3.0818,
+      "chronicle_mb": 23.98,
+      "final_population": [
+        331,
+        228,
+        237,
+        423,
+        259,
+        312,
+        500,
+        234,
+        500,
+        322,
+        488,
+        264,
+        237,
+        181,
+        500,
+        500
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.3454463055080543,
+          "null_mean": 0.13141518163797886,
+          "null_std": 0.016021185341059393,
+          "effect_size": 13.359256466595667,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            14999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.3454463055080543,
+            "bounded_fraction": 0.8125,
+            "bounded_worlds": 13,
+            "n_worlds": 16,
+            "mean_population": 316.9395833333333,
+            "capacity": 500
+          }
+        },
+        "directed_foraging": {
+          "detector": "directed_foraging",
+          "magnitude": -0.0982539082734547,
+          "null_mean": -0.050261987382324576,
+          "null_std": 0.0013074718971785113,
+          "effect_size": -36.705890960023986,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            14999
+          ],
+          "n_observations": 243725,
+          "detail": {
+            "straightness_hungry": 0.49449262445296827,
+            "straightness_sated": 0.592746532726423,
+            "hunger_cut_energy": 15.167496709823608,
+            "n_hungry_windows": 75856,
+            "window_length": 8
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 0.25
+      },
+      "seed": 1,
+      "run_id": "7d9ff6887fe2ef8a3d0a5f34",
+      "ms_per_tick": 3.2808,
+      "chronicle_mb": 25.33,
+      "final_population": [
+        379,
+        500,
+        314,
+        266,
+        448,
+        400,
+        456,
+        374,
+        500,
+        364,
+        181,
+        500,
+        139,
+        246,
+        281,
+        448
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.3217894222555712,
+          "null_mean": 0.13046322868183538,
+          "null_std": 0.015448951063983063,
+          "effect_size": 12.384413205876772,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            14999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.3217894222555712,
+            "bounded_fraction": 0.8125,
+            "bounded_worlds": 13,
+            "n_worlds": 16,
+            "mean_population": 330.7429166666667,
+            "capacity": 500
+          }
+        },
+        "directed_foraging": {
+          "detector": "directed_foraging",
+          "magnitude": -0.144785483849395,
+          "null_mean": -0.06437011253622753,
+          "null_std": 0.0013611870342327612,
+          "effect_size": -59.07738561328122,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            14999
+          ],
+          "n_observations": 260617,
+          "detail": {
+            "straightness_hungry": 0.414667858053774,
+            "straightness_sated": 0.559453341903169,
+            "hunger_cut_energy": 14.75,
+            "n_hungry_windows": 80822,
+            "window_length": 8
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 0.25
+      },
+      "seed": 2,
+      "run_id": "478290f9ef442ca344a51ace",
+      "ms_per_tick": 3.1932,
+      "chronicle_mb": 25.67,
+      "final_population": [
+        495,
+        283,
+        206,
+        410,
+        500,
+        244,
+        500,
+        267,
+        468,
+        224,
+        193,
+        500,
+        375,
+        314,
+        342,
+        278
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.33633421436589894,
+          "null_mean": 0.13218395039812111,
+          "null_std": 0.016055468382904472,
+          "effect_size": 12.715310391389938,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            14999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.33633421436589894,
+            "bounded_fraction": 0.8125,
+            "bounded_worlds": 13,
+            "n_worlds": 16,
+            "mean_population": 331.0020833333333,
+            "capacity": 500
+          }
+        },
+        "directed_foraging": {
+          "detector": "directed_foraging",
+          "magnitude": -0.09290105791808739,
+          "null_mean": -0.04917545514336131,
+          "null_std": 0.0011794651198027508,
+          "effect_size": -37.07240005710265,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            14999
+          ],
+          "n_observations": 258706,
+          "detail": {
+            "straightness_hungry": 0.4351402197472673,
+            "straightness_sated": 0.5280412776653547,
+            "hunger_cut_energy": 14.739567184448243,
+            "n_hungry_windows": 79806,
+            "window_length": 8
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 0.5
+      },
+      "seed": 0,
+      "run_id": "dc7b07554660fe8c64ce61ce",
+      "ms_per_tick": 3.3297,
+      "chronicle_mb": 23.63,
+      "final_population": [
+        324,
+        235,
+        210,
+        366,
+        272,
+        151,
+        500,
+        237,
+        500,
+        231,
+        500,
+        434,
+        231,
+        184,
+        238,
+        500
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.35990715175850757,
+          "null_mean": 0.13188257190001182,
+          "null_std": 0.01538981141654331,
+          "effect_size": 14.816593503763162,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            14999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.35990715175850757,
+            "bounded_fraction": 0.8125,
+            "bounded_worlds": 13,
+            "n_worlds": 16,
+            "mean_population": 301.3658333333333,
+            "capacity": 500
+          }
+        },
+        "directed_foraging": {
+          "detector": "directed_foraging",
+          "magnitude": -0.10715126893396604,
+          "null_mean": -0.05593328890164228,
+          "null_std": 0.0011758831466203879,
+          "effect_size": -43.55703215879029,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            14999
+          ],
+          "n_observations": 239241,
+          "detail": {
+            "straightness_hungry": 0.4580320780372487,
+            "straightness_sated": 0.5651833469712148,
+            "hunger_cut_energy": 15.531238374710084,
+            "n_hungry_windows": 74185,
+            "window_length": 8
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 0.5
+      },
+      "seed": 1,
+      "run_id": "24729a86eadbe6be156ce122",
+      "ms_per_tick": 3.3129,
+      "chronicle_mb": 26.82,
+      "final_population": [
+        472,
+        500,
+        500,
+        488,
+        357,
+        381,
+        500,
+        500,
+        500,
+        401,
+        348,
+        500,
+        148,
+        218,
+        290,
+        500
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.25437735625181446,
+          "null_mean": 0.12742417824150842,
+          "null_std": 0.017771559685551684,
+          "effect_size": 7.143614868734298,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            14999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.25437735625181446,
+            "bounded_fraction": 0.75,
+            "bounded_worlds": 12,
+            "n_worlds": 16,
+            "mean_population": 356.1845833333333,
+            "capacity": 500
+          }
+        },
+        "directed_foraging": {
+          "detector": "directed_foraging",
+          "magnitude": -0.16455986667542827,
+          "null_mean": -0.06062866473977314,
+          "null_std": 0.0012887834161413488,
+          "effect_size": -80.64287655627031,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            14999
+          ],
+          "n_observations": 278651,
+          "detail": {
+            "straightness_hungry": 0.36307218230109867,
+            "straightness_sated": 0.5276320489765269,
+            "hunger_cut_energy": 14.183110809326173,
+            "n_hungry_windows": 85777,
+            "window_length": 8
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 0.5
+      },
+      "seed": 2,
+      "run_id": "666673618077fa9f4a32f327",
+      "ms_per_tick": 3.3622,
+      "chronicle_mb": 26.06,
+      "final_population": [
+        500,
+        393,
+        245,
+        402,
+        500,
+        218,
+        500,
+        299,
+        417,
+        234,
+        308,
+        500,
+        413,
+        500,
+        240,
+        484
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.26992337357390617,
+          "null_mean": 0.12707187480685644,
+          "null_std": 0.017134326549307546,
+          "effect_size": 8.337152811694418,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            14999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.26992337357390617,
+            "bounded_fraction": 0.75,
+            "bounded_worlds": 12,
+            "n_worlds": 16,
+            "mean_population": 352.3695833333333,
+            "capacity": 500
+          }
+        },
+        "directed_foraging": {
+          "detector": "directed_foraging",
+          "magnitude": -0.13172096624874557,
+          "null_mean": -0.05322358376805191,
+          "null_std": 0.0012326902059559106,
+          "effect_size": -63.67973242703062,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            14999
+          ],
+          "n_observations": 270522,
+          "detail": {
+            "straightness_hungry": 0.38075445145001546,
+            "straightness_sated": 0.512475417698761,
+            "hunger_cut_energy": 15.094121913909913,
+            "n_hungry_windows": 82607,
+            "window_length": 8
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 1.0
+      },
+      "seed": 0,
+      "run_id": "5f297bf919747c74ac3b9183",
+      "ms_per_tick": 3.2618,
+      "chronicle_mb": 24.36,
+      "final_population": [
+        422,
+        239,
+        196,
+        201,
+        421,
+        246,
+        500,
+        240,
+        500,
+        223,
+        454,
+        500,
+        229,
+        237,
+        247,
+        500
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.3742127219868435,
+          "null_mean": 0.13041854433041183,
+          "null_std": 0.015558114566413626,
+          "effect_size": 15.669905027099299,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            14999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.3742127219868435,
+            "bounded_fraction": 0.75,
+            "bounded_worlds": 12,
+            "n_worlds": 16,
+            "mean_population": 324.9608333333333,
+            "capacity": 500
+          }
+        },
+        "directed_foraging": {
+          "detector": "directed_foraging",
+          "magnitude": -0.13880610728295273,
+          "null_mean": -0.06763052414748247,
+          "null_std": 0.0011040641818037837,
+          "effect_size": -64.46688907087443,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            14999
+          ],
+          "n_observations": 250439,
+          "detail": {
+            "straightness_hungry": 0.3737336617716738,
+            "straightness_sated": 0.5125397690546265,
+            "hunger_cut_energy": 15.53551607131958,
+            "n_hungry_windows": 76903,
+            "window_length": 8
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 1.0
+      },
+      "seed": 1,
+      "run_id": "3bc72738196555caecbcbd7c",
+      "ms_per_tick": 3.3828,
+      "chronicle_mb": 26.3,
+      "final_population": [
+        287,
+        500,
+        500,
+        290,
+        396,
+        442,
+        411,
+        500,
+        500,
+        359,
+        180,
+        500,
+        139,
+        226,
+        246,
+        406
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.30296560744278467,
+          "null_mean": 0.12984690253189066,
+          "null_std": 0.017160513437231396,
+          "effect_size": 10.088200772320496,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            14999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.30296560744278467,
+            "bounded_fraction": 0.75,
+            "bounded_worlds": 12,
+            "n_worlds": 16,
+            "mean_population": 342.70124999999996,
+            "capacity": 500
+          }
+        },
+        "directed_foraging": {
+          "detector": "directed_foraging",
+          "magnitude": -0.15079581963463612,
+          "null_mean": -0.04912828172579288,
+          "null_std": 0.001303521461105083,
+          "effect_size": -77.99452555438008,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            14999
+          ],
+          "n_observations": 270283,
+          "detail": {
+            "straightness_hungry": 0.37538389793776156,
+            "straightness_sated": 0.5261797175723977,
+            "hunger_cut_energy": 14.60068398475647,
+            "n_hungry_windows": 82829,
+            "window_length": 8
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 1.0
+      },
+      "seed": 2,
+      "run_id": "b1793fae8725db89b6e0f9e6",
+      "ms_per_tick": 3.5252,
+      "chronicle_mb": 26.66,
+      "final_population": [
+        441,
+        436,
+        189,
+        314,
+        500,
+        426,
+        500,
+        306,
+        500,
+        258,
+        500,
+        500,
+        500,
+        500,
+        350,
+        241
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.3077739860165173,
+          "null_mean": 0.12914315932087717,
+          "null_std": 0.015785535517686453,
+          "effect_size": 11.316108122876054,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            14999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.3077739860165173,
+            "bounded_fraction": 0.6875,
+            "bounded_worlds": 11,
+            "n_worlds": 16,
+            "mean_population": 366.11125,
+            "capacity": 500
+          }
+        },
+        "directed_foraging": {
+          "detector": "directed_foraging",
+          "magnitude": -0.15930227525536989,
+          "null_mean": -0.05894405615524081,
+          "null_std": 0.0013313233975068399,
+          "effect_size": -75.38229951345346,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            14999
+          ],
+          "n_observations": 278974,
+          "detail": {
+            "straightness_hungry": 0.31706262836571414,
+            "straightness_sated": 0.476364903621084,
+            "hunger_cut_energy": 15.058040618896484,
+            "n_hungry_windows": 84785,
+            "window_length": 8
+          }
+        }
+      }
+    }
+  ],
+  "summary": [
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 0.25
+      },
+      "n_seeds": 3,
+      "pop_stability": {
+        "mean_effect_size": 12.82,
+        "mean_magnitude": 0.33452,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      },
+      "directed_foraging": {
+        "mean_effect_size": -44.285,
+        "mean_magnitude": -0.11198,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      }
+    },
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 0.5
+      },
+      "n_seeds": 3,
+      "pop_stability": {
+        "mean_effect_size": 10.099,
+        "mean_magnitude": 0.29474,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      },
+      "directed_foraging": {
+        "mean_effect_size": -62.627,
+        "mean_magnitude": -0.13448,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      }
+    },
+    {
+      "params": {
+        "intelligence.sated_gradient_factor": 1.0
+      },
+      "n_seeds": 3,
+      "pop_stability": {
+        "mean_effect_size": 12.358,
+        "mean_magnitude": 0.32832,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      },
+      "directed_foraging": {
+        "mean_effect_size": -72.615,
+        "mean_magnitude": -0.14963,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      }
+    }
+  ]
+}

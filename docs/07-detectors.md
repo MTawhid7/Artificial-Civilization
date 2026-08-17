@@ -41,6 +41,23 @@ Every detector ships with:
 
 A detector without a null model is not a detector. It is a plot.
 
+### Never condition on a variable the behavior influences
+
+*(→ [D-056](DECISIONS.md#d-056))* Before writing a detector that splits behavior by agent state,
+ask: **could the behavior I am measuring have produced the variable I am splitting on?**
+
+Energy, health, wealth, population, and knowledge are all downstream of action. `directed_foraging`
+was specified as "path straightness when energy < threshold" and came out backwards in 39 runs,
+because straight movement *earns* energy — extraction empties a cell, so travelling straight keeps
+finding fresh ground. The detector conditioned on the outcome and reported it as the cause.
+
+**A null model does not save you here.** A permutation null controls for differences between
+agents; this confound lives within an agent, across time, and permutation destroys the ordering
+that carries it. Every permutation-based null shares that blind spot.
+
+Condition on something upstream instead — a genome value, a world property, a fixed cohort — or
+measure the decision directly rather than its consequences.
+
 ---
 
 ## The null model catalogue
@@ -78,7 +95,8 @@ Depth requirements noted as `P1ᴸ²` where relevant.
 |---|---|---|
 | `pop_stability` | population bounded, non-monotonic, over ≥20 seeds | drift-only |
 | `migration_wave` | net directional flux of agents between regions above baseline | spatial-scramble |
-| `directed_foraging` | mean path straightness when energy < threshold | shuffled |
+| ~~`directed_foraging`~~ | ~~mean path straightness when energy < threshold~~ — **withdrawn**, conditions on an outcome of the behavior *(→ [D-056](DECISIONS.md#d-056))* | shuffled |
+| `gradient_ascent` ⌛ | share of moves whose direction points up the local resource gradient, vs the best available alternative | shuffled |
 | `exploration_rate` | new cells entering `known_mask` per agent-tick | drift-only |
 
 ### Scarcity & economy
@@ -380,6 +398,22 @@ A detector "fires" only when **all** hold:
 
 Anything failing (2) is logged as a **candidate**, never reported as a result. Candidates are
 useful — they're where hypotheses come from — but they are not findings.
+
+### Never plot z alone across a sweep
+
+*(→ [D-054](DECISIONS.md#d-054))* A z-score is an effect divided by a null width, and null width
+shrinks as the sample grows. **Population is an outcome variable in this project**, so any swept
+parameter that changes population changes every sample size, and therefore changes every z — for
+reasons that have nothing to do with the behavior being measured.
+
+This is not hypothetical. In `a1-patchiness`, z traced a clean monotonic dose-response against
+patchiness at *r = 0.97*, exactly the shape the hypothesis predicted. It was an artifact: patchy
+worlds supported fewer agents (442 → 79), which logged fewer windows (367k → 63k), which tightened
+the null. The raw effect moved by about one between-seed standard deviation and never changed sign.
+Reported as z alone, it would have been a confident and entirely wrong result.
+
+**Rule: report the raw effect and z together, always, with `n` alongside.** If the raw effect is
+flat, the finding is that it is flat, whatever z does. `tools/plot_sweep.py` enforces the pairing.
 
 ---
 

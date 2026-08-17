@@ -68,15 +68,28 @@ on the agent, not the agent-tick, or trajectories are unreconstructable
 **Build:** genome of ~8 floats driving a reactive foraging rule. Patchy resource distribution.
 `pop_stability` and `directed_foraging` detectors with nulls and unit tests.
 
-**Ship criteria**
-- [ ] population bounded oscillation, no extinction or explosion, across ≥20 seeds
-- [ ] trait means drift measurably and **track the resource distribution**
-- [ ] `directed_foraging` beats its shuffled null
+**Ship criteria** — **not met.** See [a1-patchiness](../experiments/a1-patchiness/result.md) and
+[a1-hunger-coupling](../experiments/a1-hunger-coupling/result.md).
+- [x] population bounded oscillation, no extinction or explosion — holds for patchiness ≥ 0.8;
+      below that the config saturates against the array capacity and needs recalibrating
+- [ ] trait means drift measurably and **track the resource distribution** — not yet analyzed
+- [ ] ~~`directed_foraging` beats its shuffled null~~ — **the detector was withdrawn**
+      *(→ [D-056](DECISIONS.md#d-056))*. It beat its null in 39 runs, in the wrong direction, and
+      was still measuring the wrong thing. Replacement: `gradient_ascent`.
 
 **Time:** ~1 week. **Payoff:** the first real one. Sweep patchiness, get a dose-response curve,
 and you have proven the entire pipeline — sim → log → sweep → detector → null → plot — at the
-cheapest possible moment. Agents that commit to a direction when hungry beat random walkers, and
-**nobody wrote that rule.**
+cheapest possible moment.
+
+What that pipeline actually produced, first time out, was **two negative results and two
+methodological corrections** — that z must never be plotted alone when population varies across a
+sweep *(→ [D-054](DECISIONS.md#d-054))*, and that a detector must never condition on a variable its
+behavior influences *(→ [D-056](DECISIONS.md#d-056))*. Both were caught in under an hour of compute
+by the null models and the seed scatter.
+
+That is the stage doing its job. A detector that produces a clean, confident, wrongly-signed
+dose-response is exactly the failure this project exists to catch, and catching it in week two
+rather than month eight is the whole argument for ordering A1 this early.
 
 > Do not skip ahead from here. Every later stage is a variation on machinery you now trust.
 

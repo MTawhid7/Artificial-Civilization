@@ -915,6 +915,79 @@ keeps the rule and drops the waste, and doubles as a cap on explosive growth.
 
 ---
 
+<a id="d-054"></a>
+### D-054 · settled · Raw effect and z are reported together; z is never plotted alone
+
+Every sweep result reports the raw effect size, the z against the null, and the sample size `n`.
+`tools/plot_sweep.py` renders raw and z side by side and refuses to do otherwise.
+
+**Why:** z is an effect divided by a null width, and null width shrinks with sample size.
+Population is an *outcome variable* here, so any swept parameter that moves population moves every
+sample size and therefore every z-score — independently of behavior.
+
+Measured in `a1-patchiness`: z rose monotonically with patchiness at *r = 0.97*, precisely the
+predicted dose-response. It was entirely an artifact of population falling from 442 to 79, which
+cut logged windows from 367k to 63k and tightened the null accordingly. The raw effect was flat
+within one between-seed standard deviation and never changed sign. Reported as z alone, this would
+have been a confident, publishable-looking, wrong result.
+
+**Consequence:** "the effect grew" is a claim about the raw statistic. z answers only "is it
+distinguishable from chance *at this sample size*", which is a different question and is not the
+one a dose-response curve is asking.
+
+*(→ [07-detectors.md](07-detectors.md#never-plot-z-alone-across-a-sweep))*
+
+---
+
+<a id="d-055"></a>
+### D-055 · settled · Behavioral coupling constants in a policy are config, not literals
+
+Any constant in a policy that conditions one behavior on another — the degree to which hunger
+sharpens gradient-following, for instance — is a named config parameter, never a numeric literal.
+
+**Why:** a detector must never be measuring a number hidden in the policy. `directed_foraging`
+came out robustly negative in A1, and the leading explanation was a `0.25` sitting in
+`choose_action` that made sated agents weigh the resource gradient less, so hungry agents steered
+by a noisy gradient while sated agents coasted straight. With the constant buried, that hypothesis
+could only be argued. As a parameter it can be swept to zero effect and *tested*.
+
+**The general form:** at S0 the policy necessarily has structure, and every piece of that structure
+is a claim about behavior that we made rather than evolved. Those claims must be visible and
+falsifiable. Where a structural constant proves load-bearing, the next stage should evolve it
+rather than set it.
+
+*(→ [04-intelligence.md](04-intelligence.md), `experiments/a1-hunger-coupling/`)*
+
+---
+
+<a id="d-056"></a>
+### D-056 · settled · A detector must not condition on a variable its behavior influences
+
+No detector conditions the behavior it measures on a state variable that behavior affects. Energy,
+health, wealth, population, and knowledge are all *downstream of action*; splitting behavior by any
+of them and reading the difference causally inverts the arrow.
+
+**Why:** `directed_foraging` was specified as "path straightness when energy < threshold" and came
+out robustly backwards — hungry agents *less* straight — in 39 runs across two experiments. The
+cause was not the policy, which was tested and eliminated. It was that **straight movement causes
+satiation**: extraction empties a cell, so an agent travelling straight keeps entering fresh ground
+while one that doubles back re-crosses what it stripped. Straightness correlates with energy
+*gained* (+0.224) at over twice the strength of energy *held* (+0.102). The detector conditioned on
+the outcome and reported it as the cause.
+
+**A null model does not fix this.** The shuffled null permuted hunger labels within each agent,
+which controls for differences between agents — but the confound is within-agent and temporal, and
+permutation destroys exactly the ordering that carries it. Any null built by permutation has this
+blind spot.
+
+**The test to apply when writing a detector:** could the behavior I am measuring have *produced*
+the variable I am splitting on? If yes, either condition on something upstream (a genome value, a
+world property, a fixed cohort) or measure the decision directly rather than its consequences.
+
+*(→ [07-detectors.md](07-detectors.md#detector-contract), `experiments/a1-hunger-coupling/`)*
+
+---
+
 ## Open questions
 
 Tracked here so they are not mistaken for oversights. Each blocks a specific version.
