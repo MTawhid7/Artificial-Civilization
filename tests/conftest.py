@@ -1,0 +1,35 @@
+"""Shared fixtures. Runs here are deliberately tiny — determinism is a property
+of the machinery, not of scale, and a gate that takes ten minutes gets skipped."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+from core.config import resolve
+
+GOLDEN_DIR = Path(__file__).parent / "golden"
+
+TINY = {
+    "world": {"grid": 24, "patchiness": 0.6, "regrowth": 0.05},
+    "primitives": {"p1": {"level": 0}, "p10": {"level": 0, "rate": 0.0}},
+    "intelligence": {"stage": "S0", "genome_size": 8, "view_radius": 2},
+    "population": {"initial": 40, "capacity": 120, "mutation_rate": 0.05,
+                   "mutation_scale": 0.05},
+    "agent": {"metabolism": 0.5, "max_age": 200, "birth_energy": 15.0,
+              "gather_efficiency": 4.0, "start_energy": 40.0},
+    "run": {"worlds": 4, "ticks": 200, "checkpoint_every": 25,
+            "aggregate_every": 50, "log_tier": "sampled", "sample_rate": 8,
+            "shard_ticks": 100},
+}
+
+
+@pytest.fixture
+def tiny_config():
+    return resolve(TINY, source="tests/conftest.py::TINY")
+
+
+@pytest.fixture
+def corpus(tmp_path) -> Path:
+    return tmp_path / "corpus"
