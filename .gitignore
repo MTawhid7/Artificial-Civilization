@@ -1,0 +1,29 @@
+# --- Simulation output -------------------------------------------------------
+# The corpus is regenerable from (config, seed) by construction — that is the
+# whole point of invariant I1. Never commit it.
+corpus/
+*.parquet
+*.npz
+*.msgpack
+bench/results/*.json
+
+# Golden hashes ARE committed — they are the cross-machine determinism gate.
+!tests/golden/*.json
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# --- Environment -------------------------------------------------------------
+.venv/
+.env
+
+# --- Editors / OS ------------------------------------------------------------
+.DS_Store
+.vscode/
+.idea/
+*.swp

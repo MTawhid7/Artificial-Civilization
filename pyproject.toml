@@ -1,0 +1,38 @@
+[project]
+name = "artificial-civilization"
+version = "0.1.0"
+description = "A comparative history laboratory: thousands of divergent histories from controlled initial conditions."
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+
+# Pinned by uv.lock, which is committed. Determinism is version-sensitive —
+# see docs/11-engineering.md, determinism rule 5.
+dependencies = [
+    "numpy>=2.2,<3",
+    "pyarrow>=19,<21",
+    "pyyaml>=6,<7",
+]
+
+[project.optional-dependencies]
+# Analysis and plotting. Deliberately NOT core dependencies: nothing under
+# src/core/ may import these.
+analysis = [
+    "duckdb>=1.1,<2",
+    "matplotlib>=3.9,<4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<9",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/core", "src/chronicle", "src/lens", "src/forge"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
