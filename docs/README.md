@@ -1,12 +1,23 @@
 # Artificial Civilization — Documentation
 
-**Status:** **A0 shipped**, A1 in progress. The deterministic core runs and the determinism gate
-holds; measured results are in [`experiments/a0-baseline/result.md`](../experiments/a0-baseline/result.md).
-Next up is [10-roadmap.md § A1](10-roadmap.md#a1--first-evolution).
+**Status:** **A0 and A1 shipped.** The deterministic core runs, the determinism gate holds, and
+agents demonstrably evolve. Next up is [10-roadmap.md § A2](10-roadmap.md#a2--first-picture).
 
-Three decisions were added *by* implementation rather than before it — [D-051](DECISIONS.md#d-051),
-[D-052](DECISIONS.md#d-052), [D-053](DECISIONS.md#d-053) — each because a measurement contradicted
-something these documents assumed. Expect more of that; the docs are canonical but not infallible.
+| Stage | Result |
+|---|---|
+| A0 — skeleton | [`experiments/a0-baseline/`](../experiments/a0-baseline/result.md) — 11 ms/tick, 4.68 ms per world-year, forking exact |
+| A1 — first evolution | [`experiments/a1-gradient-ascent/`](../experiments/a1-gradient-ascent/result.md) — patchier worlds select for **more random movement** |
+| A1 — control | [`experiments/a1-heredity-control/`](../experiments/a1-heredity-control/result.md) — 95% of the gain is selection, not drift |
+| A1 — negative | [`a1-patchiness`](../experiments/a1-patchiness/result.md), [`a1-hunger-coupling`](../experiments/a1-hunger-coupling/result.md) — a detector that beat its null in 39 runs and was still wrong |
+
+**Ten decisions were added *by* implementation rather than before it** — [D-051](DECISIONS.md#d-051)
+through [D-060](DECISIONS.md#d-060) — every one because a measurement contradicted something these
+documents assumed. Three of them ([D-054](DECISIONS.md#d-054), [D-056](DECISIONS.md#d-056),
+[D-060](DECISIONS.md#d-060)) are corrections to how we measure, not to what we built, and each was
+caught by a null model or a control rather than by inspection.
+
+Expect more of that. These documents are canonical, not infallible, and the gap between them and
+the code is where the findings have come from so far.
 
 **Scope:** hobby project on an 8 GB M1 Air. Read
 [00-feasibility.md](00-feasibility.md) first — it constrains everything else, and several
