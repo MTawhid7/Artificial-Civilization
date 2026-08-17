@@ -26,9 +26,18 @@ assumption. This is a designed control in the sense of
 [07-detectors.md](../../docs/07-detectors.md), like `referential_validity`, rather
 than a permutation.
 
-The spread still has to come from somewhere, so a bootstrap over moves supplies
-the standard error. That is a statement about sampling noise; the *centre* of the
-null is not estimated, it is derived.
+The spread still has to come from somewhere, and **the unit it comes from is the
+world, not the move.** A run of 16 worlds produces millions of moves, but they are
+not millions of independent observations: agents within a world share one
+landscape, and each agent contributes hundreds of correlated steps. Treating moves
+as independent gave z ≈ 90 on a single run — a number that says far more about how
+many rows were logged than about how the agents behaved, and the same error
+[D-054](../../docs/DECISIONS.md#d-054) was written to prevent.
+
+So the statistic is averaged within each world first, and the spread is taken
+across worlds. `n` is 16, not 2.9 million. Worlds are the designed replicate axis
+*(→ [00-feasibility.md](../../docs/00-feasibility.md))* — "seeds are the unit of
+replication, not agents" — and this is that rule applied to a within-run statistic.
 
 **Why the exact null matters here.** `directed_foraging` was killed by a confound
 its permutation null could not see, and permutation nulls share that blind spot
@@ -61,7 +70,7 @@ from lens.base import ChronicleReader, Firing
 
 THRESHOLD = 3.0
 MIN_MOVES = 500
-N_BOOTSTRAP = 400
+MIN_WORLDS = 4   # fewer than this and the across-world spread is meaningless
 FLAT_EPS = 1e-6  # below this, all four directions look identical — no choice to make
 
 
@@ -70,7 +79,8 @@ def compute(reader: ChronicleReader, rng: np.random.Generator | None = None) -> 
 
     rows = reader.sql(
         f"""
-        select tick, a as chosen, b as mean_score, c as best_score, object as direction
+        select tick, world_id, a as chosen, b as mean_score, c as best_score,
+               object as direction
         from {{events}} where event_type = {S.PERCEIVE}
         """
     ).fetchnumpy()
@@ -79,6 +89,7 @@ def compute(reader: ChronicleReader, rng: np.random.Generator | None = None) -> 
         return _empty("no PERCEIVE events; the run predates the gradient_ascent schema")
 
     tick = rows["tick"].astype(np.int64)
+    world = rows["world_id"].astype(np.int64)
     chosen = rows["chosen"].astype(np.float64)
     mean_score = rows["mean_score"].astype(np.float64)
     best_score = rows["best_score"].astype(np.float64)
@@ -94,16 +105,23 @@ def compute(reader: ChronicleReader, rng: np.random.Generator | None = None) -> 
         return _empty(f"only {int(usable.sum())} moves on non-flat ground; need {MIN_MOVES}")
 
     advantage = (chosen[usable] - mean_score[usable]) / headroom[usable]
-    observed = float(advantage.mean())
+    world_u = world[usable]
 
-    # Bootstrap the standard error. The null's centre is 0 by derivation, not by
-    # simulation — see the module docstring.
-    n = advantage.size
-    boot = np.empty(N_BOOTSTRAP, dtype=np.float64)
-    for i in range(N_BOOTSTRAP):
-        boot[i] = advantage[rng.integers(0, n, n)].mean()
-    null_std = float(boot.std())
+    # Average within world, then take the spread across worlds. See the module
+    # docstring: moves are not independent observations, worlds are.
+    per_world = np.array(
+        [advantage[world_u == w].mean() for w in np.unique(world_u)], dtype=np.float64
+    )
+    observed = float(per_world.mean())
+    n_worlds = per_world.size
+    if n_worlds < MIN_WORLDS:
+        return _empty(f"only {n_worlds} worlds; need {MIN_WORLDS} to estimate a spread")
+
+    # Standard error of the mean across worlds. The null's centre is 0 by
+    # derivation, not by simulation, so this is the only quantity estimated.
+    null_std = float(per_world.std(ddof=1) / np.sqrt(n_worlds))
     z = observed / max(null_std, 1e-12)
+    n = int(advantage.size)
 
     took_best = float(np.isclose(chosen[usable], best_score[usable]).mean())
     counts = np.bincount(direction[usable], minlength=4).astype(np.float64)
@@ -119,19 +137,26 @@ def compute(reader: ChronicleReader, rng: np.random.Generator | None = None) -> 
     late = usable_tick >= hi - span // 10
     evolution: dict[str, float] = {}
     if early.sum() >= MIN_MOVES // 10 and late.sum() >= MIN_MOVES // 10:
-        a_early, a_late = float(advantage[early].mean()), float(advantage[late].mean())
-        se = float(
-            np.sqrt(
-                advantage[early].var(ddof=1) / early.sum()
-                + advantage[late].var(ddof=1) / late.sum()
-            )
-        )
-        evolution = {
-            "advantage_early": a_early,
-            "advantage_late": a_late,
-            "advantage_delta": a_late - a_early,
-            "advantage_delta_z": (a_late - a_early) / max(se, 1e-12),
-        }
+        # Paired by world: each world is its own before/after, which removes
+        # between-world landscape variation from the comparison entirely.
+        deltas, firsts, lasts = [], [], []
+        for w in np.unique(world_u):
+            in_w = world_u == w
+            e, l = in_w & early, in_w & late
+            if e.sum() and l.sum():
+                firsts.append(advantage[e].mean())
+                lasts.append(advantage[l].mean())
+                deltas.append(lasts[-1] - firsts[-1])
+        if len(deltas) >= MIN_WORLDS:
+            d = np.array(deltas)
+            evolution = {
+                "advantage_early": float(np.mean(firsts)),
+                "advantage_late": float(np.mean(lasts)),
+                "advantage_delta": float(d.mean()),
+                "advantage_delta_z": float(d.mean() / max(d.std(ddof=1) / np.sqrt(d.size), 1e-12)),
+                "worlds_improved": int((d > 0).sum()),
+                "n_worlds": int(d.size),
+            }
 
     return Firing(
         detector="gradient_ascent",

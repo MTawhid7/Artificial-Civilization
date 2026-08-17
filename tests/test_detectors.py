@@ -28,9 +28,16 @@ GRID = 64
 CAPACITY = 400
 
 
+N_WORLDS = 8
+
+
 def _perceptions(n: int, skill: float, seed: int = 0, flat_share: float = 0.0) -> dict:
-    """Synthetic PERCEIVE rows for an agent that picks the best direction with
+    """Synthetic PERCEIVE rows for agents that pick the best direction with
     probability `skill`, and uniformly at random otherwise.
+
+    Spread across `N_WORLDS` because worlds are the replication unit: the detector
+    averages within a world and takes its spread across worlds, so a single-world
+    fixture cannot exercise it.
 
     `skill=0.0` is the blind-choice null made flesh: the detector must read ~0 on
     it, which is the property the whole design rests on.
@@ -47,7 +54,7 @@ def _perceptions(n: int, skill: float, seed: int = 0, flat_share: float = 0.0) -
 
     return {
         "tick": np.arange(n) % 500,
-        "world_id": np.zeros(n, dtype=np.int64),
+        "world_id": np.arange(n) % N_WORLDS,
         "subject": (np.arange(n) % 50) + 1,
         "direction": picked,
         "chosen": scores[np.arange(n), picked],
