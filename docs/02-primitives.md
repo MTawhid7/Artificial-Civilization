@@ -118,7 +118,7 @@ can change while physical quantity does not.
 
 | Level | Content |
 |---|---|
-| **L0** | one resource kind, uniform regrowth, patchiness parameter |
+| **L0** | one resource kind, logistic regrowth **plus a recolonization term**, patchiness parameter |
 | **L1** | multiple kinds; per-kind regeneration class (finite / slow / fast / effectively unlimited); quality field; rising marginal extraction cost as good deposits deplete |
 | **L2** | substitution matrix; extraction alters future regeneration; usefulness modulated by P8; undiscovered deposits found via P2 |
 
@@ -137,6 +137,19 @@ conflict, and unexpected prosperity all come from this one structure.
 
 **Key derived quantity:** `effective_scarcity = f(physical_stock, extract_cost, usefulness,
 substitutes_available)`. Its divergence from `physical_stock` is a detector.
+
+**Regrowth must not make zero absorbing** *(→ [D-051](DECISIONS.md#d-051))*. Pure logistic
+`dR = rate·R·(1 − R/K)` gives a stripped cell zero growth forever. Measured in A0: 98% of cells
+hit zero within 50 ticks and total resource never moved again — every world became a countdown
+rather than a history. The form actually used is
+
+```
+dR = (1 − R/K) · (rate·R + seed_rain·K)
+```
+
+where `seed_rain` is recolonization from beyond the cell. At L1 a `finite` regeneration class
+sets it to zero *deliberately*, and exhaustion becomes permanent — which is the point of having
+regeneration classes at all.
 
 ---
 

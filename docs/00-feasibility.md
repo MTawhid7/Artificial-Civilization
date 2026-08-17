@@ -47,33 +47,69 @@ only where population size is itself the variable — mainly the cultural-evolut
 
 ---
 
-## Analytic budget
+## Measured budget
 
-Estimates, not measurements — **Stage A0 replaces these with real numbers**
-*(→ [10-roadmap.md](10-roadmap.md#a0--skeleton))*.
+**Measured in A0, not estimated.** Machine: Apple M1, 8 GB, numpy 2.5.2 through Accelerate,
+Python 3.13. Reproduce with `uv run python -m bench.bench_tick --scales all`; raw output is in
+`bench/results/`.
 
-Assumptions: NumPy through Accelerate, ~100 GFLOP/s fp32 on the performance cores, ~68 GB/s memory
-bandwidth (far less for scattered gathers).
+The original estimates were **wrong by roughly an order of magnitude** at S0 — 1–2 ms/tick
+predicted against 8.9 measured. The prediction assumed the gather was bandwidth-bound at
+sequential rates; it is a scattered gather, which is several times worse, and it dominates
+everything else.
 
 ### Per-tick cost, batched over worlds
 
 State is `[W, N, …]`; a tick is array ops over the whole batch.
 
-| Configuration | Dominant cost | Est. ms/tick |
+| Configuration | Dominant cost | ms/tick |
 |---|---|---|
-| **S0 reactive** — W=32, N=1000, 96² grid | observation gather | **1–2** |
-| **S1 neural** — same, 120 inputs → 64 hidden | policy matmul (~490 MFLOP) | **8–12** |
-| **S3 + memory** — same, plus episodic retrieval | gather + matmul | **12–20** |
+| **S0** — W=8, N=500, 96² grid | observation gather | **1.2** |
+| **S0** — W=32, N=1000, 96² grid *(the default)* | observation gather | **8.9** |
+| **S0** — W=64, N=2000, 96² grid | observation gather | **36.0** |
+| **S0, full tick loop** — W=32, N=1000, at steady state | gather + policy + births | **11.0** |
+
+The last row is the real simulation rather than the synthetic harness: it includes births, deaths,
+mutation, contention resolution, and event emission. Treat **11 ms/tick** as the planning number.
+
+### Where a tick goes, at the default scale
+
+| Phase | ms | Note |
+|---|---|---|
+| observe | 3.6 | the scattered gather — irreducible memory traffic |
+| resolve (gather) | 1.9 | contention sort |
+| vitals | 1.6 | per-world birth loop |
+| decide | 0.8 | S0 is cheap; S1 will not be |
+| move | 0.9 | |
+| world | 0.3 | regrowth over the whole grid |
+| metabolism, emit | <0.1 | |
+
+**The observation gather is the single largest performance lever**, and it scales linearly in patch
+cells: 9 cells → 1.4 ms, 25 → 3.5 ms, 49 → 6.9 ms. `view_radius` is therefore a budget decision,
+not only a modelling one. Wrapping the grid in a halo to remove per-agent modulo arithmetic cut
+this phase by 2.2×.
+
+### Thermal throttling is worse than assumed
+
+| | ms/tick |
+|---|---|
+| first 30 s of sustained load | 8.9 |
+| after 15 min of sustained load | 16.8 |
+
+**Throttle factor: 1.88×** — not the 1.3–1.5× assumed above. Every long-run projection must carry
+it. A run that benchmarks at 9 minutes takes 17.
 
 ### What that buys
 
-| Run | S0 | S1 |
+| Run | S0 measured | S0 with throttling |
 |---|---|---|
-| 100k ticks × 32 worlds | ~3 min | ~20 min *(≈30 with throttling)* |
-| overnight (8 h) | ~150 sweeps | ~16–20 sweeps |
+| 50k ticks × 32 worlds | ~9 min | **~17 min** |
+| 100k ticks × 32 worlds | ~18 min | **~35 min** |
+| overnight (8 h) | — | ~14 runs at 100k ticks |
 
-**A 32-seed sweep in under half an hour is the target.** That is the number that decides whether
-this stays fun: if a sweep fits in a coffee break, you iterate. If it takes a day, you stop.
+**A 32-seed sweep in under half an hour is the target**, and at 50k ticks it is met. At 100k ticks
+it is not, so 100k-tick sweeps are overnight work. That is the number that decides whether this
+stays fun: if a sweep fits in a coffee break, you iterate. If it takes a day, you stop.
 
 ### Time scale
 

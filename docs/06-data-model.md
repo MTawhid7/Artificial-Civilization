@@ -107,6 +107,21 @@ a, b, c     float32    -- event-specific payload
 Fixed-width rows keep the log cheap to write and trivial to scan. Semantics of `a/b/c` per
 event type are documented in `schemas/events.md` and versioned with this file.
 
+### The sampled tier samples agents, not agent-ticks
+
+*(→ [D-052](DECISIONS.md#d-052))* The 1-in-K decision is a hash of `agent_id` alone. A sampled
+agent is logged **for its whole life**; an unsampled one is never logged.
+
+Keying on `(tick, agent_id)` instead looks equivalent and is not. Measured in A0: 4.83 positions
+per agent scattered across a 191-tick lifespan, no two consecutive — from which path straightness,
+and every other trajectory detector, is uncomputable. Following a cohort costs exactly the same
+number of rows.
+
+The consequence is a rule about which tier answers which question: **population-level rates never
+come from the sampled tier.** They come from the aggregated tier. The sampled tier answers
+questions about *lives*, the aggregated tier answers questions about *populations*, and confusing
+the two produces a biased estimate that looks fine.
+
 ### Event types (v0.1)
 
 | Group | Events |

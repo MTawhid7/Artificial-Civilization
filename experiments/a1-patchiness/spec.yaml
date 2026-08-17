@@ -1,0 +1,60 @@
+name: a1-patchiness
+stage: A1
+
+# Hypothesis
+#
+#   Directed foraging is worth more in a patchy world than in a uniform one, so
+#   `directed_foraging` should rise with `world.patchiness` — a dose-response
+#   curve, not a single yes/no.
+#
+# Prediction if the hypothesis is wrong: the effect is flat across patchiness, or
+# absent everywhere. Both are results and both get written into result.md.
+#
+# What makes this a finding rather than a restatement of the code: nothing in
+# s0_reactive.py implements "move straight when hungry". The genome makes it
+# reachable and equally makes the opposite reachable. The only thing selection
+# was told to prefer is offspring (D-007).
+
+seeds: [0, 1, 2, 3, 4]
+
+sweep:
+  world.patchiness: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+
+base:
+  world:
+    grid: 64
+    regrowth: 0.05
+    seed_rain: 0.004
+    resource_capacity: 1.0
+
+  primitives:
+    p1: { level: 0 }
+    p10: { level: 0, rate: 0.0 }
+
+  intelligence:
+    stage: S0
+    genome_size: 8
+    view_radius: 2
+
+  population:
+    initial: 120
+    capacity: 500
+    mutation_rate: 0.02
+    mutation_scale: 0.05
+    birth_cap: 32
+
+  agent:
+    metabolism: 0.5
+    max_age: 400
+    birth_energy: 20.0
+    gather_efficiency: 4.0
+    start_energy: 50.0
+
+  run:
+    worlds: 16          # 16 replicate worlds per run; seeds vary on top
+    ticks: 15000        # ~40 generations at a ~380-tick lifespan
+    checkpoint_every: 15000
+    aggregate_every: 50
+    log_tier: sampled
+    sample_rate: 32
+    shard_ticks: 5000

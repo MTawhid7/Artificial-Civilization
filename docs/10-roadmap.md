@@ -44,18 +44,24 @@ purpose.
 ms/tick at three scales and write the numbers into that doc, replacing the estimates. Every later
 scale decision depends on them.
 
-**Ship criteria**
-- [ ] replay from `(config, seed)` is bit-identical, verified in CI
-- [ ] no-op fork at tick T reproduces the parent exactly
-- [ ] a 32-world × 50k-tick run completes in under 10 minutes
-- [ ] Chronicle for that run is under 50 MB
-- [ ] cost-per-world-year recorded as a tracked baseline
+**Ship criteria** — **done**, see [experiments/a0-baseline/result.md](../experiments/a0-baseline/result.md)
+- [x] replay from `(config, seed)` is bit-identical, verified in CI
+- [x] no-op fork at tick T reproduces the parent exactly *(and with pending effects queued)*
+- [x] a 32-world × 50k-tick run completes in under 10 minutes — 9.2 min idle, 10.4 min loaded
+- [x] Chronicle for that run is under 50 MB — **9.0 MB per world**; 287 MB for all 32
+- [x] cost-per-world-year recorded as a tracked baseline — **4.68 ms**
 
 **Time:** ~1 week. **Payoff:** none. This is the tax.
 
 > The no-op fork test is the one people skip. A fork that doesn't reproduce its parent means
 > determinism is already broken, and finding that in week one instead of month eight is worth
 > more than anything else in this stage.
+
+Three things A0 changed rather than confirmed, all measured: pure logistic regrowth makes zero an
+absorbing state and kills every world *([D-051](DECISIONS.md#d-051))*; Chronicle sampling must key
+on the agent, not the agent-tick, or trajectories are unreconstructable
+*([D-052](DECISIONS.md#d-052))*; and the ms/tick estimates in
+[00-feasibility.md](00-feasibility.md) were about 10× optimistic at S0.
 
 ## A1 — First evolution
 

@@ -60,7 +60,13 @@ Invariant I1 *(→ [05-architecture.md](05-architecture.md#i1--determinism))* is
 break and the most expensive to repair. Non-negotiable rules:
 
 1. **One explicit RNG**, split by purpose (`rng.world`, `rng.mutation`, `rng.policy`). Never
-   the global default. Never reseed mid-run.
+   the global default. Never reseed mid-run. Streams are keyed by a **hash of the name**, not by
+   spawn index, so adding a stream later does not renumber — and therefore does not invalidate —
+   every run already in the corpus.
+1b. **Draw at a shape fixed by config, then mask** *(→ [D-053](DECISIONS.md#d-053))*. Never draw
+   per living agent: stream position must not depend on how many agents are alive, or a fork
+   diverges from its parent the moment the populations differ by one. Where full capacity is
+   wasteful, bound the shape with a config constant (`birth_cap`) rather than with population.
 2. **No wall-clock**, no `time()`, no `uuid4()`, no unseeded shuffles.
 3. **No iteration-order dependence.** Sort by agent id before any operation whose result
    depends on order.
@@ -84,17 +90,23 @@ break and the most expensive to repair. Non-negotiable rules:
 ### CI gate
 
 ```
-test_determinism:    run 1,000 ticks twice → hash Chronicle → assert equal
-test_noop_fork:      fork at T with no intervention → assert branch == parent
-test_cross_machine:  assert Chronicle hash matches a committed golden hash
-test_generator_repro: same (config, seed) → identical generated structure
-test_pending_fork:   fork at T with effects pending → assert branch == parent
+test_determinism:      run 1,000 ticks twice → hash state + Chronicle → assert equal
+test_noop_fork:        fork at T with no intervention → assert branch == parent
+test_cross_machine:    assert state hash matches a committed golden hash
+test_generator_repro:  same (config, seed) → identical generated structure
+test_pending_fork:     fork at T with effects pending → assert branch == parent
 test_gate_enforcement: config violating a depth gate → assert load fails loudly
+test_log_tier_invariance: same seed at two log tiers → assert identical state
 ```
 
 The cross-machine test will fail first and teach you the most. `test_pending_fork` is the one
 that catches the most dangerous bug class: a checkpoint missing scheduled effects produces forks
 that silently diverge from their parents with no visible symptom.
+
+`test_log_tier_invariance` was added during A0 and is not in the original list. It catches the
+inverse hazard: if the sampled tier ever drew from an RNG stream, *how much history you wrote down
+would change what happened*. Observation would alter the observed. Sampling is therefore a hash of
+the agent id, never a draw *(→ [D-052](DECISIONS.md#d-052))*.
 
 ---
 

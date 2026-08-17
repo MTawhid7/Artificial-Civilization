@@ -799,6 +799,69 @@ maximizes that risk. Ordering by payoff costs nothing scientifically: the gating
 
 ---
 
+### D-051 · settled · Regeneration needs a recolonization term; zero must not be absorbing
+
+P1's regrowth is `dR = (1 - R/K) * (rate * R + seed_rain * K)`, not the pure logistic
+`dR = rate * R * (1 - R/K)`.
+
+**Why:** pure logistic makes zero an absorbing state — a cell stripped bare has zero growth and
+stays empty forever. Measured in A0 at the default settings: 98% of cells hit zero within 50 ticks,
+total resource then never moved again, and every world died. No parameter choice fixed it; they
+only changed the date. That is not a harsh world, it is a broken one, and it would have made the
+entire simulation a countdown rather than a history.
+
+`seed_rain` represents recolonization from beyond the cell — a seed bank, a neighbouring patch, a
+migrating population. It vanishes at capacity, so abundance stays bounded and worth competing for.
+Adding it moved a 12-point viability scan from uniformly EXTINCT to uniformly VIABLE.
+
+**Consequence at L1:** regeneration classes become meaningful rather than cosmetic. A `finite`
+resource sets `seed_rain` to zero *on purpose*, and then exhaustion really is permanent — which is
+the entire point of having regeneration classes.
+
+**Rejected:** tuning extraction rates instead. The absorbing state is structural; no rate avoids it.
+
+*(→ [02-primitives.md](02-primitives.md#p1--scarcity))*
+
+---
+
+### D-052 · settled · The Chronicle samples agents, not agent-ticks
+
+The sampled tier keys its 1-in-K decision on `agent_id` alone. A sampled agent is logged for its
+entire life; an unsampled one is never logged.
+
+**Why:** keying on `(tick, agent_id)` scatters the samples. Measured in A0: 4.83 positions per
+agent spread across a 191-tick lifespan — isolated snapshots with no two consecutive. Path
+straightness, and every other trajectory-based detector, is uncomputable from that. Keying on the
+agent follows a cohort from birth to death **at identical row cost**. A cohort you can follow beats
+a scatter you cannot.
+
+**Cost accepted:** the cohort is fixed rather than refreshed, so rare events among unsampled agents
+are missed. Population-level rates must therefore never come from the sampled tier — they come from
+the aggregated tier, which is where they already belonged.
+
+**Constraint retained:** sampling still consumes no randomness. It is a hash, not a draw, so
+changing `log_tier` cannot change what happens *(→ [D-047](DECISIONS.md#d-047))*.
+
+*(→ [06-data-model.md](06-data-model.md#chronicle-the-event-log)) · verified by `test_log_tier_invariance`*
+
+---
+
+### D-053 · settled · Fixed-shape RNG draws are sized by config constants, not by capacity
+
+Every random draw is at a shape fixed by `(config, seed)` — never by the living population. Where
+that shape would be wastefully large, a config constant bounds it: mutation noise is drawn at
+`[worlds, birth_cap, genes]` rather than `[worlds, agent_capacity, genes]`.
+
+**Why:** the discipline exists because a draw sized by population makes stream position depend on
+how many agents happen to be alive, so a fork diverges from its parent the moment the populations
+differ by one — silently, with no symptom. But drawing at full capacity cost 2.3 ms per tick to
+generate 256,000 numbers for roughly sixty births, a sixth of the whole tick budget. `birth_cap`
+keeps the rule and drops the waste, and doubles as a cap on explosive growth.
+
+*(→ [11-engineering.md](11-engineering.md#determinism-rules)) · verified by `test_noop_fork`*
+
+---
+
 ## Open questions
 
 Tracked here so they are not mistaken for oversights. Each blocks a specific version.

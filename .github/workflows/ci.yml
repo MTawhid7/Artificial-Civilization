@@ -1,0 +1,57 @@
+name: determinism gate
+
+# Invariant I1 is the easiest to break and the most expensive to repair, so it is
+# checked on every push rather than before a release.
+#
+# The cross-machine test is the point of running this in CI at all. The golden
+# hash is recorded on a local M1; GitHub's runners are different hardware with a
+# different BLAS. When it fails there, it has found a real reproducibility defect
+# — a float reduction order, a library version, an index dtype — not test
+# flakiness. See docs/11-engineering.md.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync the locked environment
+        # --frozen: fail rather than silently re-resolving. Determinism is
+        # version-sensitive, so a drifting lockfile is a defect, not a nuisance.
+        run: uv sync --all-extras --frozen
+
+      - name: Run the gate
+        run: uv run pytest -q --tb=short
+
+      - name: Confirm the core imports nothing from the analysis layer
+        # A dependency from core/ to duckdb or matplotlib would let a measurement
+        # influence the thing it measures. Cheap to check, expensive to discover.
+        run: |
+          if grep -rnE '^\s*(import|from)\s+(duckdb|matplotlib)' src/core/; then
+            echo "::error::src/core/ must not import the analysis layer"
+            exit 1
+          fi
+
+      - name: Confirm no phenomenon names in the core
+        # docs/11-engineering.md: words like war, trade, and revolution name
+        # measurements, and live only in src/lens/.
+        run: |
+          if grep -rniE '\b(war|alliance|revolution|plague|empire|religion)\b' src/core/; then
+            echo "::error::phenomenon named in src/core/ — those words belong in src/lens/"
+            exit 1
+          fi

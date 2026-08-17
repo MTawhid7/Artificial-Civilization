@@ -1,8 +1,16 @@
 # A0 smoke config — the shape the ship criteria are measured against.
 #
-# 32 worlds x 1,000 agents x 50k ticks, under 10 minutes, Chronicle under 50 MB.
-# See docs/00-feasibility.md for where these numbers come from and
-# docs/10-roadmap.md#a0--skeleton for what they gate.
+# 32 worlds x 1,000 agents x 50k ticks. See docs/00-feasibility.md for the
+# measured results and docs/10-roadmap.md#a0--skeleton for what they gate.
+#
+# NOTE: this config runs at array capacity on purpose — measured mean population
+# is 937 of 1,000. That makes it a deliberate worst case for throughput, which is
+# what A0 is measuring, and it means the timings here are an upper bound: a world
+# in the viable band has fewer agents and ticks faster.
+#
+# It is therefore NOT a config to draw conclusions from. A population pinned
+# against the array ceiling is regulated by the array, not by the world.
+# For a viable-band configuration see experiments/a1-patchiness/spec.yaml.
 
 world:
   grid: 96
