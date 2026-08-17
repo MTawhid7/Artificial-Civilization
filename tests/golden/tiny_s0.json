@@ -4,5 +4,11 @@
     "tick_10": "7eeaefef8302de1b94db4bc8162c9fd9",
     "tick_500": "f28930568d97e595d5185d69385c548c",
     "world_init": "09c9dc7a1b404323bf051d336e0fde62"
+  },
+  "linux-x86_64": {
+    "config_hash": "8a96f75ebc49bf5d5216c64096e41011",
+    "tick_10": "7a2e687bf3b46b41da4645c8468925d0",
+    "tick_500": "8b41298e90ec4b7e166e1e00df2ef462",
+    "world_init": "5568c2087840fb72b5c4a3a791bfd184"
   }
 }

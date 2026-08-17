@@ -988,6 +988,46 @@ world property, a fixed cohort) or measure the decision directly rather than its
 
 ---
 
+<a id="d-057"></a>
+### D-057 · settled · Determinism is guaranteed within a platform, not across instruction sets
+
+Invariant I1 means: a run is a pure function of `(config, seed)` **on a given platform**. Golden
+hashes are recorded per platform (`darwin-arm64`, `linux-x86_64`), and `test_cross_machine` asserts
+each platform against its own.
+
+**Why:** CI failed on the first push, exactly where
+[11-engineering.md](11-engineering.md#ci-gate) predicted. Per-stage hashes then located it
+precisely: **`world_init` already differs, before a single tick runs.** The cause is `np.exp` in the
+resource-field generator — SIMD transcendental implementations differ in the last ulp between NEON
+and AVX, and numpy dispatches to whichever the machine has.
+
+Bit-identical float across instruction sets requires eliminating every transcendental from the
+core. That is achievable today, where only `exp` is used, but it would forbid `tanh`, `sigmoid`,
+and `exp` in the S1 neural policy — the cost lands on the whole future of the project, to buy a
+property nothing currently needs.
+
+**Nothing this project does crosses machines.** Forking, checkpointing, replay, and every
+comparison within a corpus happen on one machine. Cross-ISA identity would be reassuring; it is not
+load-bearing.
+
+**What the gate still does, and it is most of the value:** each platform is checked against its own
+recorded hashes at three stages, so the day a code change silently alters results *on the machine
+you actually use*, CI says so. The per-stage split also means the next divergence gets located
+rather than guessed at.
+
+**Corollary retained:** the matmul in the policy was removed anyway
+*(`obs @ masks.T` → fixed-order slice sums, 12% slower)*. BLAS chooses its summation order per
+platform, so it was a second, independent source of the same problem — one that would have
+surfaced later, on top of this one, and been much harder to isolate.
+
+**Open:** whether to buy cross-ISA determinism by replacing the Gaussian blob with a
+compact-support polynomial bump and the softmax with an exp-free sampler. Cheap now, constraining
+later. Revisit if the corpus ever needs to be produced on more than one machine.
+
+*(→ [11-engineering.md](11-engineering.md#determinism-rules))*
+
+---
+
 ## Open questions
 
 Tracked here so they are not mistaken for oversights. Each blocks a specific version.

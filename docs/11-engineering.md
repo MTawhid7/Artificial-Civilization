@@ -99,9 +99,16 @@ test_gate_enforcement: config violating a depth gate → assert load fails loudl
 test_log_tier_invariance: same seed at two log tiers → assert identical state
 ```
 
-The cross-machine test will fail first and teach you the most. `test_pending_fork` is the one
-that catches the most dangerous bug class: a checkpoint missing scheduled effects produces forks
-that silently diverge from their parents with no visible symptom.
+The cross-machine test will fail first and teach you the most. **It did**, on the first push, and
+what it taught was that cross-ISA bit-identity is not available at an acceptable price
+*(→ [D-057](DECISIONS.md#d-057))*. Per-stage hashes located the divergence at `world_init`, before
+any tick ran: `np.exp` in the resource generator differs in the last ulp between NEON and AVX.
+Goldens are therefore recorded **per platform**, and the test asserts each platform against its
+own — which is what actually catches a code change silently altering results on the machine you
+use.
+
+`test_pending_fork` is the one that catches the most dangerous bug class: a checkpoint missing
+scheduled effects produces forks that silently diverge from their parents with no visible symptom.
 
 `test_log_tier_invariance` was added during A0 and is not in the original list. It catches the
 inverse hazard: if the sampled tier ever drew from an RNG stream, *how much history you wrote down
