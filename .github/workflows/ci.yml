@@ -39,10 +39,12 @@ jobs:
         run: uv run pytest -q --tb=short
 
       - name: Confirm the core imports nothing from the analysis layer
-        # A dependency from core/ to duckdb or matplotlib would let a measurement
-        # influence the thing it measures. Cheap to check, expensive to discover.
+        # A dependency from core/ to duckdb, matplotlib, lens or digest would let
+        # a measurement influence the thing it measures. The arrow runs one way:
+        # core writes, everything else reads. Cheap to check, expensive to
+        # discover.
         run: |
-          if grep -rnE '^\s*(import|from)\s+(duckdb|matplotlib)' src/core/; then
+          if grep -rnE '^\s*(import|from)\s+(duckdb|matplotlib|lens|digest)' src/core/; then
             echo "::error::src/core/ must not import the analysis layer"
             exit 1
           fi

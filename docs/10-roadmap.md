@@ -106,6 +106,16 @@ month eight.
 **Build:** the digest builder, the fingerprint strip, and the wall
 *(→ [09-visualization.md](09-visualization.md))*. Static, no scrubber yet.
 
+**Ship criteria** — this stage originally listed none, which contradicts the gating rule at the top
+of this document. A visualization stage ships a detector too, or the rule has an exception in it.
+- [ ] the digest builds from a run directory, stays under 5 MB, and building it twice gives the
+      same hash — it is a published contract *(→ [schemas/digest.md](../schemas/digest.md))*
+- [ ] `collapse` ships with a null model and two unit tests, and its verdict is recorded **either
+      way**; a silent detector is a result
+- [ ] the wall renders ~100 worlds from identical config, reproducibly, from the digest alone
+- [ ] the page opens from `file://` with no network access and renders the same wall
+- [ ] unimplemented digest fields are **declared as reserved, never invented**
+
 **Time:** ~4 days. **Payoff:** high, for the effort. A hundred histories from identical starting
 conditions stacked as colored strips is the entire thesis of the project in one image, and it
 needs no explanation to anyone you show it to.

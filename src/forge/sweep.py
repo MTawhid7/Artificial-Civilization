@@ -132,14 +132,28 @@ def _summarize(results: list[dict], axis_names: list[str]) -> list[dict]:
             zs = [g["firings"][detector]["effect_size"] for g in group]
             mags = [g["firings"][detector]["magnitude"] for g in group]
             fired = sum(g["firings"][detector]["fired"] for g in group)
+            skipped = [g["firings"][detector]["detail"].get("skipped") for g in group]
             entry[detector] = {
                 "mean_effect_size": round(float(np.mean(zs)), 3),
                 "mean_magnitude": round(float(np.mean(mags)), 5),
                 "seeds_fired": fired,
                 # docs/07-detectors.md: an effect in fewer than three seeds is a
                 # candidate, never a result.
-                "verdict": "FIRING" if fired >= 3 else ("candidate" if fired else "silent"),
+                #
+                # "skipped" is kept distinct from "silent" on purpose. Silent
+                # means measured and did not fire; skipped means the run does not
+                # carry the data — a log tier without the events, too few worlds.
+                # Reporting the second as the first is how a detector comes to be
+                # believed tested when it was never run.
+                "verdict": (
+                    "skipped" if all(skipped)
+                    else "FIRING" if fired >= 3
+                    else "candidate" if fired
+                    else "silent"
+                ),
             }
+            if all(skipped):
+                entry[detector]["skipped"] = skipped[0]
         out.append(entry)
     return out
 

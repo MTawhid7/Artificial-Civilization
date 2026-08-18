@@ -261,23 +261,52 @@ PARAM_SET        { path, value }
 A separate, tiny output alongside the Chronicle — the contract between sim and Atlas
 *(→ [09-visualization.md](09-visualization.md))*. Target ≤ 5 MB for a 10,000-year run.
 
+**Wire format is `digest.json`, not `digest.msgpack`** *(→ [D-061](DECISIONS.md#d-061))*: scalar
+series quantized to one or two bytes, base64-encoded, each block carrying its own
+`{bits, min, max, shape}`. The viewer must work from `file://` with no network access, and a page
+that cannot fetch a digest cannot fetch a decoder either. Full wire spec:
+[schemas/digest.md](../schemas/digest.md), versioned separately from this document.
+
+### v0.1 — what is actually built
+
 ```
 frames: ~2000, evenly spaced in ticks
-per frame:
-  territory     uint8[h, w]   downsampled influence raster (cluster id per cell)
+series [n_worlds, n_frames]:
+  population    uint16   exact, range fixed to [0, capacity]
+  births, deaths, energy_mean, energy_gini, resource_total   uint8
+genes  [n_worlds, n_frames/8, n_genes]  uint8   trait means, subsampled in time
+rasters (first few worlds only, from checkpoints — the snapshot tier):
   resource      uint8[h, w]   physical stock, quantized
-  eff_scarcity  uint8[h, w]   derived — diverges from physical (P1ᴸ²)
-  belief_layer  uint8[h, w]   what the civilization thinks is true (mechanism A)
-  population, tech_level, gini, cooperation_rate, active_contagions
-  modulators    [(mod_id, target_primitive, magnitude)]     active this frame
-  accumulators  [(acc_id, value, threshold)]                distance to a tipping point
-  flows         [(from_cluster, to_cluster, volume)]
-markers: [(tick, detector_id, magnitude, entity_refs)]   ← from Lens, not hand-authored
+  density       uint8[h, w]   agents per cell
+markers:   [(world, tick, detector_id, magnitude)]   ← from Lens, not hand-authored
+detectors: {detector_id: {magnitude, null_mean, null_std, effect_size, fired}}
 ```
 
+### Reserved — specified, and deliberately absent
+
+```
+territory · eff_scarcity · belief_layer · tech_level · cooperation_rate
+active_contagions · modulators · accumulators · flows
+```
+
+None has an S0 meaning: there is no territory without claims, no belief layer without a belief
+store, no tech level without recipes. They are listed in the digest's own `reserved` field rather
+than filled with plausible zeros. **A subset that knows it is a subset can be extended; one that
+pretends to be complete cannot** — and an Atlas reading zeros has no way to tell "nothing happened"
+from "nothing was measured".
+
+Moving a field out of `reserved` and into the body bumps `digest_version`.
+
 `markers` come straight from the detector suite — the scientific instrumentation *is* the
-narrative UI. Build detectors once, get chapter markers free.
+narrative UI. Build detectors once, get chapter markers free. `detectors` travels beside them so
+the verdict cannot be separated from the marks: a marker records that something happened, and only
+the effect size says whether it happened more often than chance.
 
 `accumulators` is what makes tipping points watchable: a bar quietly filling for two thousand
 years before anything visible happens is better drama than the collapse itself — and it is
 honest, because the agents cannot see it either.
+
+**Quantization ranges are run-wide, never per-world.** The wall exists to compare worlds;
+normalizing each to its own extremes would rescale every strip independently and manufacture a
+similarity that is not in the data. The same rule applies again at render time, because decoding
+and re-normalizing would quietly undo it.

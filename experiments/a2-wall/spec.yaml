@@ -24,10 +24,19 @@ stage: A2
 #                     0.8 between-world SD collapses to 86 and the worlds start
 #                     to look alike.
 #
-#   capacity 1200   — A1 used 900 at this patchiness and still pinned two worlds.
-#                     Measured mean population here is ~344, so 1200 leaves the
-#                     world regulating the population rather than the array. A
-#                     flat-topped bar in the picture would mean nothing.
+#   capacity 2000   — set by measurement, twice. A1 used 900 at this patchiness
+#                     and pinned two worlds in eighty. The first attempt here used
+#                     1200, projecting from A1's mean of ~344 — and still pinned
+#                     4 of 102, because A1's populations were measured at 15k
+#                     ticks and were still climbing: over 30k ticks the mean
+#                     reaches 518 and the largest worlds run past 1,200.
+#
+#                     The pinning matters more in a picture than in a table. A
+#                     world against the ceiling renders as a flat full-height bar,
+#                     and several of them side by side read as "these worlds
+#                     converged" — a claim about the world produced entirely by
+#                     the array. 2000 leaves the top world roughly 40% of headroom
+#                     at the measured growth rate.
 #
 #   ticks 30000     — ~2,500 simulated years at 1 tick ~ 1 month.
 #   aggregate 15    — 30000/15 = exactly 2,000 frames, the digest's design point
@@ -60,7 +69,7 @@ base:
 
   population:
     initial: 150
-    capacity: 1200
+    capacity: 2000
     mutation_rate: 0.02
     mutation_scale: 0.05
     birth_cap: 48

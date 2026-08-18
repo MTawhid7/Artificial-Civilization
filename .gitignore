@@ -27,3 +27,6 @@ __pycache__/
 .vscode/
 .idea/
 *.swp
+
+# Generated Atlas pages — regenerable from digests, which are regenerable from runs.
+atlas/wall.html

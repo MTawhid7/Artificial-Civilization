@@ -61,6 +61,25 @@ An entire 10,000-year history compressed into one horizontal band: height for po
 color for technology level, red slashes for wars, dark bands for plagues, breaks for
 collapses. One world, one strip.
 
+#### Strip encoding v0.1 — built
+
+| Channel | S0 meaning |
+|---|---|
+| bar height | population, on one scale shared by every world in the image |
+| bar color | a chosen series, default `energy_gini`; also on a shared scale |
+| red column | a drawdown marker from the detector suite |
+| dark tail | extinction — population reached zero and stayed there |
+
+The encoding above is what the design asks for with the channels that exist at S0. There is no
+technology level to color by, no war to slash, no plague to band; those channels arrive with the
+primitives that produce them, and the renderer takes `--color` so the substitution is a documented
+choice rather than a hidden one.
+
+**A mark is not a finding.** The strip draws every drawdown it is given; whether there are more of
+them than a population of that volatility produces by chance is what the `collapse` detector's
+effect size answers, and it travels in the digest beside the markers precisely so a renderer
+cannot show one without the other.
+
 ### View 4 — The wall (the money shot)
 
 ```text
@@ -161,5 +180,15 @@ The scientific instrumentation *is* the narrative UI. Build detectors once, get 
 - **Digest loaded once, fully client-side.** No server round-trips while scrubbing.
 - **Deterministic playback.** Frame N always renders identically — a screenshot must be
   reproducible.
-- **Build order:** strip → wall → map → chronicle panel. The strip and wall carry the thesis
+- **Build order:** strip ✓ → wall ✓ → map → chronicle panel. The strip and wall carry the thesis
   and are by far the cheapest.
+
+**A2 built the first two with no toolchain** *(→ [D-062](DECISIONS.md#d-062))*: one HTML file,
+vanilla JS, a 2D canvas, and the digest inlined at build time by `tools/build_atlas.py`. Inlining
+is not a stylistic preference — the page has to render from `file://` and from a sandboxed host,
+and neither will fetch a sibling `digest.json`. TypeScript and a bundler wait for C3, where the
+scrubber over thousands of frames is the thing that actually needs them.
+
+There are two consumers of the digest for a reason. The Python renderer produces the committed PNG;
+the HTML page is what proved the contract, because a schema with only its own producer to answer to
+is untested. Their decoders were checked against each other on real data before either was trusted.

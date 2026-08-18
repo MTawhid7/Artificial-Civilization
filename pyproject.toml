@@ -35,4 +35,6 @@ packages = ["src/core", "src/chronicle", "src/lens", "src/forge", "src/digest"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+# "." so `tools/` is importable: the renderer is a consumer of the digest
+# contract and gets tested like one.
+pythonpath = ["src", "."]

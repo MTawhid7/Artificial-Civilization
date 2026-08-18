@@ -1,0 +1,667 @@
+<title>The Fingerprint Wall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  /* Light is the base palette; both dark paths redefine only tokens, so no
+     color has its sole definition inside a media or [data-theme] block. */
+  :root {
+    --ground:    #F5F7F6;
+    --panel:     #FFFFFF;
+    --rule:      #D6DEDC;
+    --rule-soft: #E7EDEB;
+    --ink:       #101718;
+    --ink-dim:   #5D6B6C;
+    --ink-faint: #869596;
+    --brass:     #8A6F14;
+    --alert:     #C0392B;
+    --strip-bg:  #E9EEEC;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:    #0E1214;
+      --panel:     #141A1C;
+      --rule:      #253034;
+      --rule-soft: #1B2326;
+      --ink:       #E4EAE9;
+      --ink-dim:   #8A9A9B;
+      --ink-faint: #5E6E70;
+      --brass:     #C9A227;
+      --alert:     #E8604A;
+      --strip-bg:  #171E21;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:    #0E1214;
+    --panel:     #141A1C;
+    --rule:      #253034;
+    --rule-soft: #1B2326;
+    --ink:       #E4EAE9;
+    --ink-dim:   #8A9A9B;
+    --ink-faint: #5E6E70;
+    --brass:     #C9A227;
+    --alert:     #E8604A;
+    --strip-bg:  #171E21;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sheet {
+    max-width: 1520px;
+    margin: 0 auto;
+    padding: 32px 28px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  /* --- masthead ---------------------------------------------------------- */
+
+  header { display: flex; flex-direction: column; gap: 14px; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .thesis {
+    margin: 0;
+    max-width: 62ch;
+    color: var(--ink-dim);
+  }
+  .thesis strong { color: var(--ink); font-weight: 500; }
+
+  .provenance {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 28px;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .provenance b { color: var(--ink-dim); font-weight: 500; }
+
+  /* --- control rail ------------------------------------------------------ */
+
+  .rail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 26px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .control { display: flex; flex-direction: column; gap: 5px; }
+
+  .control > span {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .segmented { display: flex; border: 1px solid var(--rule); }
+
+  .segmented button {
+    appearance: none;
+    border: 0;
+    border-right: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink-dim);
+    font: inherit;
+    font-size: 12.5px;
+    padding: 5px 11px;
+    cursor: pointer;
+    transition: color .12s, background .12s;
+  }
+  .segmented button:last-child { border-right: 0; }
+  .segmented button:hover { color: var(--ink); background: var(--rule-soft); }
+  .segmented button[aria-pressed="true"] {
+    color: var(--brass);
+    background: var(--rule-soft);
+    font-weight: 500;
+  }
+  .segmented button:focus-visible { outline: 2px solid var(--brass); outline-offset: -2px; }
+
+  /* --- the wall ---------------------------------------------------------- */
+
+  .plot { display: grid; grid-template-columns: 62px 1fr; gap: 0 10px; }
+
+  .ruler {
+    grid-column: 2;
+    display: flex;
+    justify-content: space-between;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--rule-soft);
+    margin-bottom: 6px;
+  }
+  .ruler-label { grid-column: 1; align-self: end; padding-bottom: 5px; }
+  .ruler-label span {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .gutter {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 9.5px;
+    color: var(--ink-faint);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .gutter div { display: flex; align-items: center; justify-content: flex-end; }
+  .gutter div.hot { color: var(--brass); }
+
+  .canvas-wrap { grid-column: 2; position: relative; min-width: 0; }
+
+  canvas {
+    display: block;
+    width: 100%;
+    background: var(--strip-bg);
+    image-rendering: pixelated;
+    cursor: crosshair;
+  }
+
+  .readout {
+    position: absolute;
+    pointer-events: none;
+    z-index: 2;
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    padding: 7px 10px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--ink);
+    white-space: pre;
+    font-variant-numeric: tabular-nums;
+    opacity: 0;
+    transition: opacity .1s;
+  }
+  .readout.on { opacity: 1; }
+  .readout b { color: var(--brass); font-weight: 600; }
+
+  /* --- legend and verdict ------------------------------------------------ */
+
+  .foot {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 26px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .foot h2 {
+    margin: 0 0 8px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 500;
+  }
+  .foot p { margin: 0 0 9px; color: var(--ink-dim); font-size: 13px; max-width: 46ch; }
+  .foot p:last-child { margin-bottom: 0; }
+  .foot strong { color: var(--ink); font-weight: 500; }
+
+  .key { display: flex; flex-direction: column; gap: 7px; }
+  .key div { display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: var(--ink-dim); }
+  .swatch { width: 22px; height: 11px; flex: none; border: 1px solid var(--rule); }
+
+  .scale-bar { display: flex; align-items: center; gap: 8px; }
+  .scale-bar canvas { width: 120px; height: 11px; border: 1px solid var(--rule); }
+  .scale-bar span {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .verdict {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--ink);
+    padding: 9px 11px;
+    border-left: 2px solid var(--brass);
+    background: var(--rule-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="sheet">
+  <header>
+    <div class="eyebrow">Artificial Civilization &middot; Atlas &middot; stage A2</div>
+    <h1>Same starting conditions. Every one of them.</h1>
+    <p class="thesis">
+      Each band is one world's entire history. They were run from an
+      <strong>identical configuration</strong> &mdash; same rules, same parameters, same
+      resource statistics &mdash; and differ only in which random draws they got. Nothing
+      here was designed to diverge.
+    </p>
+    <div class="provenance" id="provenance"></div>
+  </header>
+
+  <div class="rail">
+    <label class="control">
+      <span>Color channel</span>
+      <span class="segmented" id="channel"></span>
+    </label>
+    <label class="control">
+      <span>Bar height</span>
+      <span class="segmented" id="scale"></span>
+    </label>
+    <label class="control">
+      <span>Order</span>
+      <span class="segmented" id="sort"></span>
+    </label>
+  </div>
+
+  <div class="plot">
+    <div class="ruler-label"><span>world</span></div>
+    <div class="ruler" id="ruler"></div>
+    <div class="gutter" id="gutter"></div>
+    <div class="canvas-wrap">
+      <canvas id="wall"></canvas>
+      <div class="readout" id="readout"></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <section>
+      <h2>How to read a band</h2>
+      <div class="key">
+        <div><span class="swatch" id="key-bar"></span> bar height &mdash; population, on one scale shared by every world</div>
+        <div><span class="swatch" id="key-color"></span> color &mdash; <span id="key-color-name">energy_gini</span>, also on a shared scale</div>
+        <div><span class="swatch" id="key-mark"></span> red column &mdash; a drawdown of more than 35% below the running peak</div>
+      </div>
+      <div class="scale-bar" style="margin-top:12px">
+        <span id="scale-lo"></span><canvas id="ramp" width="120" height="11"></canvas><span id="scale-hi"></span>
+      </div>
+    </section>
+
+    <section>
+      <h2>What the marks do and do not claim</h2>
+      <div class="verdict" id="verdict"></div>
+      <p style="margin-top:10px">
+        The wall draws every drawdown it was given. Only the number above says whether there
+        are more of them than a population with this same volatility produces by chance.
+        A picture that showed the marks without the verdict would be claiming
+        significance the data has not earned.
+      </p>
+    </section>
+
+    <section>
+      <h2>Provenance</h2>
+      <p>
+        This page reads a <strong>digest</strong> &mdash; roughly 2,000 downsampled frames per
+        world &mdash; and never the simulation itself. Nothing rendered here can affect a run,
+        and every value shown is traceable to the run ids above.
+      </p>
+      <p id="hashes" style="font-family:'IBM Plex Mono',monospace;font-size:11px"></p>
+    </section>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+const DIGESTS = __DIGESTS__;
+
+/* --- digest decoding ------------------------------------------------------
+   schemas/digest.md: every quantized block carries {bits, min, max, shape}, and
+   decode is min + q*(max-min)/(2^bits-1). Base64 is the whole reason the page
+   needs no library: a viewer that cannot fetch a digest could not fetch a
+   decoder either. */
+
+function decode(field) {
+  const bin = atob(field.data);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const q = field.bits === 16
+    ? new Uint16Array(bytes.buffer, bytes.byteOffset, bytes.length / 2)
+    : bytes;
+  const span = field.max - field.min, levels = (1 << field.bits) - 1;
+  const out = new Float32Array(q.length);
+  for (let i = 0; i < q.length; i++) out[i] = field.min + (span > 0 ? q[i] * span / levels : 0);
+  return { data: out, rows: field.shape[0], cols: field.shape[1] };
+}
+
+const CHANNELS = ["energy_gini", "energy_mean", "resource_total", "births", "deaths"];
+const STRIP_H = 16, GUTTER_H = 2, ROW_H = STRIP_H + GUTTER_H;
+
+/* Viridis, sampled at 16 stops. Matches the Python renderer closely enough that
+   the two pictures read as the same picture. */
+const VIRIDIS = [
+  [68,1,84],[71,24,106],[72,45,117],[69,64,124],[64,82,127],[58,98,127],[52,113,126],
+  [46,127,124],[41,141,120],[42,155,113],[57,168,102],[82,180,86],[113,190,66],
+  [149,198,43],[187,203,29],[226,206,39]
+];
+function viridis(t) {
+  const x = Math.max(0, Math.min(1, t)) * (VIRIDIS.length - 1);
+  const i = Math.floor(x), f = x - i;
+  const a = VIRIDIS[i], b = VIRIDIS[Math.min(i + 1, VIRIDIS.length - 1)];
+  return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+}
+
+/* --- pool every digest into one wall --------------------------------------
+   Values are decoded to real units before pooling, so runs with different
+   internal quantization ranges still land on one shared scale. Per-world
+   normalization would manufacture a similarity that is not in the data. */
+
+const state = { channel: "energy_gini", scale: "max", sort: "world" };
+const wall = build();
+
+function build() {
+  const pops = [], chans = {}, labels = [], markers = [];
+  CHANNELS.forEach(c => chans[c] = []);
+  let frames = Infinity, row = 0;
+
+  for (const d of DIGESTS) {
+    const pop = decode(d.series.population);
+    frames = Math.min(frames, pop.cols);
+    pops.push(pop);
+    CHANNELS.forEach(c => chans[c].push(decode(d.series[c])));
+    const index = {};
+    d.world_ids.forEach((w, i) => { index[w] = i; });
+    d.world_ids.forEach(w => labels.push(d.run_id.slice(0, 4) + "-" + String(w).padStart(2, "0")));
+    for (const m of d.markers) {
+      const f = Math.round((m.tick - d.frames.tick_start) / Math.max(d.frames.tick_step, 1));
+      if (f >= 0 && f < pop.cols) markers.push([row + index[m.world], f]);
+    }
+    row += pop.rows;
+  }
+
+  const worlds = row;
+  const flat = name => {
+    const out = new Float32Array(worlds * frames);
+    let r = 0;
+    for (const block of (name === "population" ? pops : chans[name])) {
+      for (let w = 0; w < block.rows; w++)
+        for (let f = 0; f < frames; f++) out[(r + w) * frames + f] = block.data[w * block.cols + f];
+      r += block.rows;
+    }
+    return out;
+  };
+
+  const series = { population: flat("population") };
+  CHANNELS.forEach(c => series[c] = flat(c));
+  return {
+    worlds, frames, series, labels, markers,
+    capacity: DIGESTS[0].capacity,
+    ticks: DIGESTS[0].ticks_completed,
+    step: DIGESTS[0].frames.tick_step,
+    start: DIGESTS[0].frames.tick_start,
+  };
+}
+
+function order() {
+  const idx = Array.from({ length: wall.worlds }, (_, i) => i);
+  if (state.sort === "world") return idx;
+  const pop = wall.series.population, F = wall.frames;
+  if (state.sort === "final_pop") return idx.sort((a, b) => pop[b * F + F - 1] - pop[a * F + F - 1]);
+  const alive = i => { let n = 0; for (let f = 0; f < F; f++) if (pop[i * F + f] > 0) n++; return n; };
+  return idx.sort((a, b) => alive(b) - alive(a));
+}
+
+let rows = order();
+let rank = [];
+
+function draw() {
+  rows = order();
+  rank = new Array(wall.worlds);
+  rows.forEach((w, i) => { rank[w] = i; });
+
+  const F = wall.frames, W = wall.worlds;
+  const pop = wall.series.population, col = wall.series[state.channel];
+
+  let ceiling = 0;
+  for (let i = 0; i < pop.length; i++) if (pop[i] > ceiling) ceiling = pop[i];
+  if (state.scale === "capacity") ceiling = wall.capacity;
+
+  let lo = Infinity, hi = -Infinity;
+  for (let i = 0; i < col.length; i++) { if (col[i] < lo) lo = col[i]; if (col[i] > hi) hi = col[i]; }
+
+  const canvas = document.getElementById("wall");
+  canvas.width = F;
+  canvas.height = W * ROW_H;
+  const ctx = canvas.getContext("2d");
+  const img = ctx.createImageData(F, W * ROW_H);
+  const px = img.data;
+
+  const bg = readVar("--strip-bg"), out = readVar("--ink-faint");
+  paint(px, 0, px.length / 4, bg);
+
+  for (let i = 0; i < W; i++) {
+    const w = rows[i], top = i * ROW_H;
+    let ended = -1;
+    for (let f = F - 1; f >= 0; f--) { if (pop[w * F + f] > 0) break; ended = f; }
+    for (let f = 0; f < F; f++) {
+      const filled = Math.round(Math.min(1, pop[w * F + f] / Math.max(ceiling, 1e-9)) * STRIP_H);
+      const rgb = hi > lo ? viridis((col[w * F + f] - lo) / (hi - lo)) : viridis(0);
+      const dead = ended >= 0 && f >= ended;
+      for (let y = 0; y < STRIP_H; y++) {
+        const above = STRIP_H - y;               // distance from the band floor
+        const o = ((top + y) * F + f) * 4;
+        if (dead) { px[o] = 41; px[o + 1] = 13; px[o + 2] = 15; px[o + 3] = 255; }
+        else if (above <= filled) { px[o] = rgb[0]; px[o + 1] = rgb[1]; px[o + 2] = rgb[2]; px[o + 3] = 255; }
+      }
+    }
+  }
+  for (const [w, f] of wall.markers) {
+    const top = rank[w] * ROW_H;
+    for (let y = 0; y < STRIP_H; y++) {
+      const o = ((top + y) * F + f) * 4;
+      px[o] = 232; px[o + 1] = 96; px[o + 2] = 74; px[o + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+
+  canvas.style.height = (W * ROW_H * 1.25) + "px";
+  paintGutter();
+  paintRamp(lo, hi);
+  document.getElementById("key-color-name").textContent = state.channel;
+  document.getElementById("scale-lo").textContent = fmt(lo);
+  document.getElementById("scale-hi").textContent = fmt(hi);
+  void out;
+}
+
+function paint(px, from, count, rgb) {
+  for (let i = from; i < from + count; i++) {
+    const o = i * 4;
+    px[o] = rgb[0]; px[o + 1] = rgb[1]; px[o + 2] = rgb[2]; px[o + 3] = 255;
+  }
+}
+
+function readVar(name) {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const m = v.match(/^#?([0-9a-f]{6})$/i);
+  if (!m) return [23, 30, 33];
+  const n = parseInt(m[1], 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function paintGutter() {
+  const g = document.getElementById("gutter");
+  const h = (wall.worlds * ROW_H * 1.25) / wall.worlds;
+  g.innerHTML = "";
+  rows.forEach((w, i) => {
+    const el = document.createElement("div");
+    el.style.height = h + "px";
+    el.dataset.row = i;
+    el.textContent = (i % Math.max(Math.floor(wall.worlds / 14), 1) === 0) ? wall.labels[w] : "";
+    g.appendChild(el);
+  });
+}
+
+function paintRamp(lo, hi) {
+  const c = document.getElementById("ramp"), ctx = c.getContext("2d");
+  const img = ctx.createImageData(120, 11);
+  for (let x = 0; x < 120; x++) {
+    const rgb = viridis(x / 119);
+    for (let y = 0; y < 11; y++) {
+      const o = (y * 120 + x) * 4;
+      img.data[o] = rgb[0]; img.data[o + 1] = rgb[1]; img.data[o + 2] = rgb[2]; img.data[o + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  void lo; void hi;
+}
+
+function fmt(v) {
+  const a = Math.abs(v);
+  if (a >= 1000) return v.toFixed(0);
+  if (a >= 10) return v.toFixed(1);
+  return v.toFixed(3);
+}
+
+/* --- controls -------------------------------------------------------------- */
+
+function segmented(id, options, key, labelFor) {
+  const host = document.getElementById(id);
+  options.forEach(value => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = labelFor ? labelFor(value) : value;
+    b.setAttribute("aria-pressed", String(state[key] === value));
+    b.addEventListener("click", () => {
+      state[key] = value;
+      host.querySelectorAll("button").forEach(x =>
+        x.setAttribute("aria-pressed", String(x.textContent === b.textContent)));
+      draw();
+    });
+    host.appendChild(b);
+  });
+}
+
+segmented("channel", CHANNELS, "channel");
+segmented("scale", ["max", "capacity"], "scale",
+  v => v === "max" ? "tallest world" : "array capacity");
+/* World order is the default on purpose (D-063): sorting a hundred strips by
+   outcome produces a smooth gradient, and a gradient reads as a finding even
+   when the outcomes are noise. */
+segmented("sort", ["world", "final_pop", "survival"], "sort",
+  v => ({ world: "world", final_pop: "final population", survival: "survival" })[v]);
+
+/* --- hover readout --------------------------------------------------------- */
+
+const canvas = document.getElementById("wall");
+const readout = document.getElementById("readout");
+
+canvas.addEventListener("pointermove", e => {
+  const r = canvas.getBoundingClientRect();
+  const f = Math.floor((e.clientX - r.left) / r.width * wall.frames);
+  const i = Math.floor((e.clientY - r.top) / r.height * wall.worlds);
+  if (f < 0 || f >= wall.frames || i < 0 || i >= wall.worlds) return;
+
+  const w = rows[i], F = wall.frames;
+  const tick = wall.start + f * wall.step;
+  const marks = wall.markers.filter(m => m[0] === w).length;
+  readout.innerHTML =
+    "<b>" + wall.labels[w] + "</b>\n" +
+    "year " + (tick / 12).toFixed(0).padStart(6) + "\n" +
+    "pop  " + wall.series.population[w * F + f].toFixed(0).padStart(6) + "\n" +
+    state.channel.slice(0, 5).padEnd(5) + fmt(wall.series[state.channel][w * F + f]).padStart(7) + "\n" +
+    "marks" + String(marks).padStart(6);
+  readout.classList.add("on");
+  const x = e.clientX - r.left, y = e.clientY - r.top;
+  readout.style.left = Math.min(x + 14, r.width - 130) + "px";
+  readout.style.top = Math.max(y - 70, 0) + "px";
+
+  document.querySelectorAll("#gutter div").forEach(el =>
+    el.classList.toggle("hot", Number(el.dataset.row) === i));
+});
+
+canvas.addEventListener("pointerleave", () => {
+  readout.classList.remove("on");
+  document.querySelectorAll("#gutter div").forEach(el => el.classList.remove("hot"));
+});
+
+/* --- static furniture ------------------------------------------------------ */
+
+(function furnish() {
+  const d = DIGESTS[0];
+  const years = d.ticks_completed / 12;
+
+  document.getElementById("provenance").innerHTML = [
+    ["worlds", wall.worlds],
+    ["frames", wall.frames.toLocaleString()],
+    ["simulated years", Math.round(years).toLocaleString()],
+    ["patchiness", d.patchiness],
+    ["capacity", d.capacity],
+    ["seeds", DIGESTS.map(x => x.seed).join(", ")],
+    ["digest", d.digest_version],
+    ["code", d.code_version],
+  ].map(([k, v]) => "<span><b>" + k + "</b> " + v + "</span>").join("");
+
+  const ruler = document.getElementById("ruler");
+  for (let i = 0; i < 6; i++) {
+    const s = document.createElement("span");
+    s.textContent = Math.round(years * i / 5).toLocaleString();
+    ruler.appendChild(s);
+  }
+  const yr = document.createElement("span");
+  yr.textContent = "years →";
+  yr.style.color = "var(--ink-faint)";
+  ruler.appendChild(yr);
+
+  const c = d.detectors && d.detectors.collapse;
+  document.getElementById("verdict").textContent = c
+    ? "collapse   " + c.magnitude.toFixed(3) + " episodes / 1,000 frames\n" +
+      "null       " + c.null_mean.toFixed(3) + " ± " + c.null_std.toFixed(3) + "\n" +
+      "z          " + (c.effect_size >= 0 ? "+" : "") + c.effect_size.toFixed(2) +
+      "   → " + (c.fired ? "FIRED" : "silent at threshold " + c.threshold)
+    : "no detector output in this digest";
+
+  document.getElementById("hashes").innerHTML =
+    DIGESTS.map(x => x.run_id + " &middot; " + x.digest_hash.slice(0, 12)).join("<br>");
+
+  const swatch = (id, rgb) =>
+    document.getElementById(id).style.background = "rgb(" + rgb.join(",") + ")";
+  swatch("key-bar", viridis(0.55).map(Math.round));
+  swatch("key-color", viridis(0.85).map(Math.round));
+  swatch("key-mark", [232, 96, 74]);
+})();
+
+draw();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
