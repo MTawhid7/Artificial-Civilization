@@ -1,0 +1,81 @@
+name: a2-wall
+stage: A2
+
+# The corpus behind the fingerprint wall.
+#
+# Not a sweep. There is no axis and no hypothesis about a parameter: this run
+# exists to produce a hundred histories from *identical* starting conditions, so
+# that stacking them shows what the project's whole thesis rests on — that the
+# same config does not give the same history.
+#
+# 3 seeds x 34 worlds = 102 strips. It could have been one seed x 102 worlds for
+# the same runtime, and is not, because `collapse` ships with this stage and the
+# firing rule needs at least three seeds (docs/07-detectors.md#firing-rules). An
+# effect present in one seed is a candidate, never a result — and that applies to
+# a detector introduced for its markers exactly as much as to one introduced for
+# a claim.
+#
+# Every number below is set against something measured in A1, not chosen:
+#
+#   patchiness 0.6  — across the 480 world-instances of a1-gradient-ascent this
+#                     is the best divergence per unit of array pinning:
+#                     between-world SD 171 against within-world SD 43, and only
+#                     2 of 80 worlds pinned at the ceiling. At 0.4 six pin; at
+#                     0.8 between-world SD collapses to 86 and the worlds start
+#                     to look alike.
+#
+#   capacity 1200   — A1 used 900 at this patchiness and still pinned two worlds.
+#                     Measured mean population here is ~344, so 1200 leaves the
+#                     world regulating the population rather than the array. A
+#                     flat-topped bar in the picture would mean nothing.
+#
+#   ticks 30000     — ~2,500 simulated years at 1 tick ~ 1 month.
+#   aggregate 15    — 30000/15 = exactly 2,000 frames, the digest's design point
+#                     (docs/09-visualization.md).
+#
+#   log_tier        — `aggregated`: the digest reads the aggregate tier plus
+#                     checkpoints and nothing else, so the per-agent log is not
+#                     written at all. ~40 MB instead of ~900 MB. This is D-047's
+#                     claim used rather than restated.
+
+seeds: [0, 1, 2]
+
+base:
+  world:
+    grid: 64
+    patchiness: 0.6
+    regrowth: 0.05
+    seed_rain: 0.004
+    resource_capacity: 1.0
+
+  primitives:
+    p1: { level: 0 }
+    p10: { level: 0, rate: 0.0 }
+
+  intelligence:
+    stage: S0
+    genome_size: 8
+    view_radius: 2
+    sated_gradient_factor: 0.25
+
+  population:
+    initial: 150
+    capacity: 1200
+    mutation_rate: 0.02
+    mutation_scale: 0.05
+    birth_cap: 48
+
+  agent:
+    metabolism: 0.5
+    max_age: 400
+    birth_energy: 20.0
+    gather_efficiency: 4.0
+    start_energy: 50.0
+
+  run:
+    worlds: 34
+    ticks: 30000
+    checkpoint_every: 1500
+    aggregate_every: 15
+    log_tier: aggregated
+    shard_ticks: 5000

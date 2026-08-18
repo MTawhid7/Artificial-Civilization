@@ -21,7 +21,7 @@ import pytest
 import yaml
 
 from chronicle import schema as S
-from lens import directed_foraging, gradient_ascent, pop_stability
+from lens import collapse, directed_foraging, gradient_ascent, pop_stability
 from lens.base import ChronicleReader
 
 GRID = 64
@@ -341,3 +341,90 @@ def test_detectors_read_only_permitted_tiers(tmp_path):
     assert not list((run / "chronicle").glob("*.parquet"))
     with ChronicleReader(run) as reader:
         assert pop_stability.compute(reader, rng=np.random.default_rng(0)).fired
+
+
+# --- collapse -----------------------------------------------------------------
+
+
+def _crash_series(kind: str, n_worlds: int = 8, n: int = 400, seed: int = 0) -> dict:
+    rng = np.random.default_rng(seed)
+    ticks, worlds, pops = [], [], []
+    for w in range(n_worlds):
+        if kind == "sawtooth":
+            # Slow growth, then a hard crash, over and over. The steps are mostly
+            # small positives and a few large negatives; what makes it a collapse
+            # dynamic rather than a volatile one is that the large negatives are
+            # *arranged* — each is followed by a recovery to a new peak.
+            period = 50
+            series, p = [], 300.0
+            for t in range(n):
+                if t % period == period - 1:
+                    p *= 0.45
+                else:
+                    p *= 1.02
+                series.append(max(p + rng.normal(0, 3), 1.0))
+        else:  # "walk" — the null made flesh
+            # iid steps, so the real series is exchangeable with its own
+            # surrogates by construction and the detector must read ~0.
+            steps = rng.normal(0, 8, n - 1)
+            series = list(np.maximum(600.0 + np.concatenate([[0.0], np.cumsum(steps)]), 1.0))
+        ticks.extend(range(n)); worlds.extend([w] * n); pops.extend(series)
+    return {
+        "tick": np.array(ticks), "world_id": np.array(worlds),
+        "population": np.array(pops),
+    }
+
+
+def test_collapse_fires_on_repeated_crashes(tmp_path):
+    run = _write_run(tmp_path, aggregate=_crash_series("sawtooth", seed=11))
+    with ChronicleReader(run) as reader:
+        f = collapse.compute(reader, rng=np.random.default_rng(0))
+    assert f.fired, f
+    assert f.magnitude > f.null_mean
+    assert f.detail["n_episodes"] > 0
+    assert all(0.0 < e["depth"] <= 1.0 for e in f.detail["events"])
+
+
+def test_collapse_silent_on_matched_volatility(tmp_path):
+    """A random walk crashes too. That is the whole reason for the null.
+
+    The steps are iid, so the observed series is exchangeable with the surrogates
+    built from it. Any effect here would be the detector reading its own
+    arithmetic rather than the world.
+    """
+    run = _write_run(tmp_path, aggregate=_crash_series("walk", seed=12))
+    with ChronicleReader(run) as reader:
+        f = collapse.compute(reader, rng=np.random.default_rng(0))
+    assert not f.fired, f
+    assert abs(f.effect_size) < collapse.THRESHOLD
+
+
+def test_collapse_counts_episodes_not_frames(tmp_path):
+    """One long crash is one collapse, not four hundred.
+
+    Counting frames below the threshold would make the statistic a measure of how
+    slowly a world recovers, which is a different question with a different null.
+    """
+    pop = np.concatenate([np.full(100, 500.0), np.full(300, 200.0)])
+    assert len(collapse._episodes(pop)) == 1
+
+
+def test_collapse_ignores_burn_in(tmp_path):
+    """The founding overshoot is a startup artifact, not a finding.
+
+    Every world's initial cohort grows past what the world supports and falls
+    back. A running peak anchored at tick 0 would score that in ~100% of worlds.
+    """
+    n = 400
+    early = np.concatenate([np.linspace(100, 900, 40), np.linspace(900, 250, 40),
+                            np.full(n // 2 - 80, 250.0)])
+    series = np.concatenate([early, np.full(n // 2, 250.0) + np.arange(n // 2) * 0.01])
+    agg = {
+        "tick": np.tile(np.arange(n), 8),
+        "world_id": np.repeat(np.arange(8), n),
+        "population": np.tile(series, 8),
+    }
+    run = _write_run(tmp_path, aggregate=agg)
+    with ChronicleReader(run) as reader:
+        f = collapse.compute(reader, rng=np.random.default_rng(0))
+    assert f.detail["n_episodes"] == 0, "the burn-in crash must not be counted"
