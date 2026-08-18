@@ -12,6 +12,9 @@ bump and prove nothing about the picture.
 from __future__ import annotations
 
 import json
+import shutil
+import subprocess
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -145,3 +148,30 @@ def test_atlas_page_is_self_contained(digests):
 def _urls(html: str) -> list[str]:
     import re
     return re.findall(r"https?://[^\s\"')]+", html)
+
+
+def test_viewer_actually_draws(digests, tmp_path):
+    """Run the page's own script and look at the pixels it wrote.
+
+    Everything up to the digest is checked in Python. From there the page is a
+    deliverable no Python test can see, and the gap between a typo and a blank
+    wall is exactly one untested language. This executes the script against a
+    stub DOM and asserts on the resulting ImageData — the symptom a viewer would
+    notice, not the implementation that produces it.
+
+    Skipped rather than failed without node: the page is verified by its Python
+    twin's tests either way, and a hard dependency on a second toolchain for a
+    no-build page would defeat the point of D-062.
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node not installed; the viewer probe needs it")
+
+    page = tmp_path / "probe.html"
+    page.write_text(build_atlas.build(digests))
+    probe = Path(__file__).parent / "js" / "render_probe.js"
+
+    result = subprocess.run([node, str(probe), str(page)],
+                            capture_output=True, text=True, timeout=120)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "OK" in result.stdout, result.stdout
