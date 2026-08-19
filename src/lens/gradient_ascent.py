@@ -86,7 +86,15 @@ def compute(reader: ChronicleReader, rng: np.random.Generator | None = None) -> 
     ).fetchnumpy()
 
     if rows["chosen"].size == 0:
-        return _empty("no PERCEIVE events; the run predates the gradient_ascent schema")
+        # Two ways to get here, and naming only one of them sends the reader
+        # looking in the wrong place. The common case is a deliberate choice —
+        # PERCEIVE is a sampled-tier event, so a run written at `log_tier:
+        # aggregated` carries none by design and this detector is simply not
+        # measurable on it. That is not the same as the detector being silent.
+        return _empty(
+            "no PERCEIVE events: the run was logged below the sampled tier, "
+            "or predates the gradient_ascent schema"
+        )
 
     tick = rows["tick"].astype(np.int64)
     world = rows["world_id"].astype(np.int64)

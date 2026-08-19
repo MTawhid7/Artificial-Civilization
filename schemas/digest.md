@@ -10,7 +10,7 @@ Ten gigabytes of events cannot reach a browser; ~2,000 downsampled frames can.
 Producer is [`src/digest/build.py`](../src/digest/build.py), written to
 `corpus/runs/<run_id>/digest.json`.
 
-**Target: ≤ 5 MB per run.** Measured at 34 worlds × 2,000 frames: ~1.1 MB.
+**Target: ≤ 5 MB per run.** Measured at 34 worlds × 2,000 frames: **0.91 MB**.
 
 ## Format
 
@@ -67,7 +67,7 @@ is not in the data. There is exactly one `min`/`max` per series, which is the
 structural guarantee that it cannot happen.
 
 **`population` is stored exactly.** It is the strip's bar height, and a capacity of
-1,200 spread over 255 levels would visibly step. Everything else is `u1` and lossy
+2,000 spread over 255 levels would visibly step. Everything else is `u1` and lossy
 by design, to within one part in 255 of the run-wide range.
 
 **`reserved` is part of the contract.** `territory`, `eff_scarcity`,

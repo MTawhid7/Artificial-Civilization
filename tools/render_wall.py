@@ -50,6 +50,7 @@ GUTTER = 2
 BACKGROUND = (0.09, 0.10, 0.12)
 MARKER = (0.96, 0.28, 0.24)
 MARKER_WIDTH = 3
+DPI = 150
 EXTINCT = (0.16, 0.05, 0.06)
 COLOR_CHANNELS = ("energy_gini", "energy_mean", "resource_total", "births", "deaths")
 
@@ -192,7 +193,7 @@ def main() -> None:
         from matplotlib import image
         image.imsave(out, wall)
     else:
-        _annotated(wall, data, args).savefig(out, dpi=150, facecolor=BACKGROUND)
+        _annotated(wall, data, args).savefig(out, dpi=DPI, facecolor=BACKGROUND)
 
     n_worlds = data["population"].shape[0]
     print(
@@ -224,8 +225,7 @@ def _annotated(wall: np.ndarray, data: dict, args) -> "object":
     # Sized so one canvas row lands on one output row. Downsampling a wall is
     # not a cosmetic loss: bar height is the population channel, and a resampler
     # averaging two bands together invents heights neither world had.
-    dpi = 150
-    band_inches = n_worlds * (args.height + GUTTER) / dpi
+    band_inches = n_worlds * (args.height + GUTTER) / DPI
     fig, ax = plt.subplots(figsize=(13, band_inches + 1.9))
     fig.patch.set_facecolor(BACKGROUND)
     ax.set_facecolor(BACKGROUND)
@@ -244,16 +244,25 @@ def _annotated(wall: np.ndarray, data: dict, args) -> "object":
         spine.set_visible(False)
     ax.tick_params(length=0)
 
-    detector = meta.get("detectors", {}).get("collapse", {})
+    # Across every digest in the image, not just the first. The wall pools runs;
+    # a caption quoting one of them would describe a different picture than the
+    # one it sits above.
+    zs = [d.get("detectors", {}).get("collapse", {}).get("effect_size")
+          for d in data["meta"]]
+    zs = [z for z in zs if z is not None]
+    fired = any(d.get("detectors", {}).get("collapse", {}).get("fired") for d in data["meta"])
+    span = f" (z={np.mean(zs):+.1f}" + (f", range {min(zs):+.1f}…{max(zs):+.1f}" if len(zs) > 1 else "") + ")"
     verdict = (
-        f"red marks: drawdowns >35% — {'above' if detector.get('fired') else 'not above'} "
-        f"the volatility-matched null (z={detector.get('effect_size', 0):+.1f})"
+        f"red marks: drawdowns >35% — {'above' if fired else 'not above'} "
+        f"the volatility-matched null{span if zs else ''}"
     )
+    ceiling = (data["population"].max() if args.scale == "max" else meta["capacity"])
     ax.set_title(
         f"{n_worlds} worlds · identical configuration · "
         f"patchiness {meta['patchiness']} · {years:,.0f} simulated years\n"
-        f"bar height: population (shared scale)   ·   color: {args.color}   ·   {verdict}",
-        fontsize=9, color="#e8eaed", pad=12, linespacing=1.6,
+        f"bar height: population, 0–{ceiling:,.0f} on one scale shared by every world"
+        f"   ·   color: {args.color}\n{verdict}",
+        fontsize=9, color="#e8eaed", pad=12, linespacing=1.7,
     )
 
     col = data["color"]

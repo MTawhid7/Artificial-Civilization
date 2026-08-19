@@ -61,7 +61,7 @@ def build(run_dir: str | Path, *, raster_worlds: int = D.RASTER_WORLDS) -> dict:
         grid = np.zeros((worlds.size, ticks.size), dtype=np.float64)
         grid[wi, ti] = np.asarray(agg[name], dtype=np.float64)
         # population is stored exactly rather than quantized: it is the strip's
-        # bar height, and a capacity of 1,200 spread over 255 levels would visibly
+        # bar height, and a capacity of 2,000 spread over 255 levels would visibly
         # step.
         lo, hi = (0.0, float(cfg["population"]["capacity"])) if name == "population" else (None, None)
         series[name] = D.encode(grid, bits, lo=lo, hi=hi)

@@ -108,17 +108,33 @@ month eight.
 
 **Ship criteria** — this stage originally listed none, which contradicts the gating rule at the top
 of this document. A visualization stage ships a detector too, or the rule has an exception in it.
-- [ ] the digest builds from a run directory, stays under 5 MB, and building it twice gives the
-      same hash — it is a published contract *(→ [schemas/digest.md](../schemas/digest.md))*
-- [ ] `collapse` ships with a null model and two unit tests, and its verdict is recorded **either
-      way**; a silent detector is a result
-- [ ] the wall renders ~100 worlds from identical config, reproducibly, from the digest alone
-- [ ] the page opens from `file://` with no network access and renders the same wall
-- [ ] unimplemented digest fields are **declared as reserved, never invented**
+**Met** — see [experiments/a2-wall/result.md](../experiments/a2-wall/result.md).
+- [x] the digest builds from a run directory, stays under 5 MB, and building it twice gives the
+      same hash — **0.91 MB** for 34 worlds × 2,000 frames *(→ [schemas/digest.md](../schemas/digest.md))*
+- [x] `collapse` ships with a null model and two unit tests, and its verdict is recorded **either
+      way** — it is **silent**, at z = −1.16, and the negative sign is the result
+- [x] the wall renders 102 worlds from identical config, reproducibly, from the digest alone
+- [x] the page opens from `file://` with no network access and renders the same wall
+- [x] unimplemented digest fields are **declared as reserved, never invented**
 
 **Time:** ~4 days. **Payoff:** high, for the effort. A hundred histories from identical starting
 conditions stacked as colored strips is the entire thesis of the project in one image, and it
 needs no explanation to anyone you show it to.
+
+**What it actually produced.** The premise held, and this is the first time it was measured rather
+than assumed: between-world spread reaches **9.4×** within-world variation by year 2,500, and final
+populations span **tenfold** from one configuration. Every effect size A1 reported clusters on
+worlds; this is the evidence that worlds are worth clustering on.
+
+`collapse` came out **silent with a negative z** — drawdowns are *rarer* than a volatility-matched
+random walk produces, which is the signature of regulation and corroborates `pop_stability` firing
+at +17.5 on the same runs. The direction was predicted in the detector before the run, which is the
+only reason it counts.
+
+> The wall had to be built twice. At capacity 1,200 four worlds pinned against the array, and a
+> pinned world renders as a flat full-height bar — several of them side by side read as
+> *convergence* that the array alone produced. A ceiling that is merely a nuisance in a table is a
+> false claim in a picture.
 
 ## A3 — First story
 

@@ -651,12 +651,20 @@ canvas.addEventListener("pointerleave", () => {
   yr.style.color = "var(--ink-faint)";
   ruler.appendChild(yr);
 
-  const c = d.detectors && d.detectors.collapse;
-  document.getElementById("verdict").textContent = c
-    ? "collapse   " + c.magnitude.toFixed(3) + " episodes / 1,000 frames\n" +
-      "null       " + c.null_mean.toFixed(3) + " ± " + c.null_std.toFixed(3) + "\n" +
-      "z          " + (c.effect_size >= 0 ? "+" : "") + c.effect_size.toFixed(2) +
-      "   → " + (c.fired ? "FIRED" : "silent at threshold " + c.threshold)
+  /* Averaged over every digest on the page. The wall pools runs, so quoting one
+     run's verdict would describe a different picture than the one above it. */
+  const cs = DIGESTS.map(x => x.detectors && x.detectors.collapse).filter(Boolean);
+  const avg = f => cs.reduce((t, c) => t + c[f], 0) / cs.length;
+  const sign = v => (v >= 0 ? "+" : "") + v.toFixed(2);
+  document.getElementById("verdict").textContent = cs.length
+    ? "collapse   " + avg("magnitude").toFixed(3) + " episodes / 1,000 frames\n" +
+      "null       " + avg("null_mean").toFixed(3) + " ± " + avg("null_std").toFixed(3) + "\n" +
+      "z          " + sign(avg("effect_size")) +
+      (cs.length > 1
+        ? "   over " + cs.length + " seeds (" +
+          cs.map(c => sign(c.effect_size)).join(", ") + ")"
+        : "") + "\n" +
+      "verdict    " + (cs.some(c => c.fired) ? "FIRED" : "silent at threshold " + cs[0].threshold)
     : "no detector output in this digest";
 
   document.getElementById("hashes").innerHTML =
@@ -670,5 +678,12 @@ canvas.addEventListener("pointerleave", () => {
 })();
 
 draw();
+
+/* The canvas paints its own background from a theme token, so it has to be
+   repainted when the theme changes. Two routes, because there are two ways a
+   theme changes: the OS preference (a media query event) and an explicit host
+   toggle (a data-theme attribute on the root, which fires no media event). */
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+new MutationObserver(draw).observe(document.documentElement,
+  { attributes: true, attributeFilter: ["data-theme"] });
 </script>

@@ -48,6 +48,7 @@ global.document = {
 global.getComputedStyle = () => ({ getPropertyValue: () => "#171E21" });
 global.atob = s => Buffer.from(s, "base64").toString("binary");
 global.matchMedia = () => ({ addEventListener(){} });
+global.MutationObserver = class { observe(){} };
 
 // `const DIGESTS` inside the eval'd scope is not visible out here; hand it out.
 eval(js + "\n;globalThis.__digests = DIGESTS;");

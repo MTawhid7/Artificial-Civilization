@@ -1,7 +1,8 @@
 # Artificial Civilization — Documentation
 
-**Status:** **A0 and A1 shipped.** The deterministic core runs, the determinism gate holds, and
-agents demonstrably evolve. Next up is [10-roadmap.md § A2](10-roadmap.md#a2--first-picture).
+**Status:** **A0, A1 and A2 shipped.** The deterministic core runs, the determinism gate holds,
+agents demonstrably evolve, and there is now a picture of it. Next up is
+[10-roadmap.md § A3](10-roadmap.md#a3--first-story).
 
 | Stage | Result |
 |---|---|
@@ -9,6 +10,7 @@ agents demonstrably evolve. Next up is [10-roadmap.md § A2](10-roadmap.md#a2--f
 | A1 — first evolution | [`experiments/a1-gradient-ascent/`](../experiments/a1-gradient-ascent/result.md) — patchier worlds select for **more random movement** |
 | A1 — control | [`experiments/a1-heredity-control/`](../experiments/a1-heredity-control/result.md) — 95% of the gain is selection, not drift |
 | A1 — negative | [`a1-patchiness`](../experiments/a1-patchiness/result.md), [`a1-hunger-coupling`](../experiments/a1-hunger-coupling/result.md) — a detector that beat its null in 39 runs and was still wrong |
+| A2 — first picture | [`experiments/a2-wall/`](../experiments/a2-wall/result.md) — 102 worlds, one config, **9.4× more spread between worlds than within them** |
 
 **Ten decisions were added *by* implementation rather than before it** — [D-051](DECISIONS.md#d-051)
 through [D-060](DECISIONS.md#d-060) — every one because a measurement contradicted something these

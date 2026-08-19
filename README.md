@@ -36,7 +36,22 @@ local gradient is mostly noise. They evolved to calibrate how much to trust loca
 how much that information was worth. See
 [experiments/a1-gradient-ascent/result.md](experiments/a1-gradient-ascent/result.md).
 
-**Next:** A2 — the fingerprint wall.
+**Stage A2 — First picture: shipped.** A hundred and two worlds from one configuration, stacked.
+
+![the fingerprint wall](experiments/a2-wall/wall.png)
+
+Each band is one world's entire history — bar height is population, color is energy inequality, red
+marks are drawdowns. They were run from an **identical configuration** and differ only in which
+random draws they got. By year 2,500 they differ from each other **9.4× more than each one
+fluctuates over time**, and final populations span tenfold. Nothing in the design makes them
+diverge; nothing stops them either.
+
+That premise had been asserted in every document and never measured. It is what the corpus rests
+on: if a hundred worlds under one config converged, the replication unit would not replicate. See
+[experiments/a2-wall/result.md](experiments/a2-wall/result.md), and
+[atlas/wall.template.html](atlas/wall.template.html) for the interactive version.
+
+**Next:** A3 — the Historian.
 
 Design is frozen and lives in [`docs/`](docs/). Start with
 [docs/README.md](docs/README.md) for the reading order — or
@@ -61,6 +76,11 @@ uv run python -m forge.run configs/frozen/a0_smoke.yaml --seed 0 --ticks 5000
 
 # a sweep: every parameter point, every seed, scored by the detector suite
 uv run python -m forge.sweep experiments/a1-patchiness/spec.yaml
+
+# a picture: digest a run, then stack every world in the experiment
+uv run python -m digest.build corpus/runs/<run_id>
+uv run python tools/render_wall.py corpus/runs/*/digest.json -o wall.png
+uv run python tools/build_atlas.py corpus/runs/*/digest.json   # -> atlas/wall.html
 ```
 
 Runs land in `corpus/`, which is git-ignored — a run is regenerable from `(config, seed)` by
@@ -77,6 +97,9 @@ src/
   chronicle/   event log, sharding, checkpoints
   lens/        detectors and their null models — one file per detector
   forge/       runs, sweeps, forks
+  digest/      Chronicle -> the versioned viz digest the Atlas reads
+atlas/         the viewer — one self-contained HTML file, no build step
+tools/         rendering and doc checks; never imported by the simulation
 configs/       frozen defaults and experiment configs
 experiments/   spec.yaml + result.md per experiment, including negative results
 schemas/       versioned event and digest schemas
@@ -98,5 +121,8 @@ And two conventions worth knowing before reading `src/`:
 - **No phenomenon names in `src/core/`.** Words like *war*, *trade*, and *revolution* live only in
   `src/lens/`, where they name measurements rather than mechanisms.
 - **No detector without a null model.** A measurement without one is a plot, not a result.
+- **The Atlas reads a digest, never live state.** Nothing rendered can affect a run, and the
+  detector's verdict travels with its markers so a picture cannot imply significance the data has
+  not earned.
 
 See [docs/DECISIONS.md](docs/DECISIONS.md) for every design decision and what was rejected.
