@@ -36,6 +36,21 @@ decade gaps exist so a group can grow without disturbing its neighbours.
 sampled tier alone; a detector needing a join back to per-tick state would not
 survive tiering.
 
+### Reserved for B2 — the signal channel
+
+`SIGNAL` (40) is defined in the enum and not yet emitted. When it is, it must carry the **choice
+set**, not just the choice *(→ [D-066](../docs/DECISIONS.md#d-066))*: which signals were available
+to the emitter and which referents were present, alongside the signal actually sent.
+
+This is the single most consequential schema decision still outstanding. Compositionality metrics
+are easy to compute on something downstream of the intended target — exactly the defect that
+withdrew `directed_foraging` *(→ [D-056](../docs/DECISIONS.md#d-056))* — and a permutation null
+does not catch it. Logging the choice set is what lets the B2 null be derived instead of shuffled,
+the way `PERCEIVE` did for `gradient_ascent`.
+
+Enum values are permanent and the corpus outlives the code, so this costs one decision now and a
+re-run of everything later.
+
 `PERCEIVE` records **the decision context, not the decision's consequences** — what
 the agent saw in each direction at the moment it chose. Those particular three
 numbers are what make `gradient_ascent`'s null exact rather than simulated: an

@@ -142,6 +142,18 @@ the two produces a biased estimate that looks fine.
 pattern of `COERCE` events that a detector finds
 *(→ [07-detectors.md](07-detectors.md))*.
 
+**Rule:** an event that records a decision records **what was on offer**, not only what was taken
+*(→ [D-066](DECISIONS.md#d-066))*. `PERCEIVE` carries the score of the chosen direction, the mean
+of the four available, and the best of the four — and that choice of payload is what makes
+`gradient_ascent`'s null *exact* rather than simulated. An agent ignoring its options picks
+uniformly, so its expected chosen score **is** the mean; `chosen − mean` therefore has expectation
+exactly zero for any landscape whatsoever, with no surrogate to generate.
+
+The cost of getting this wrong is not a missing feature, it is an expensive null — and a null that
+is expensive to run is a null that quietly stops being run. Scoring dropped from ten minutes to 0.6
+seconds when the choice set was logged. Enum values are permanent, so this is decided per event
+type at the moment it is added, and never afterwards.
+
 ### On-disk layout
 
 ```
@@ -151,7 +163,7 @@ corpus/
     meta.json              seed, code_version, schema_version, parent/fork info
     chronicle/*.parquet    sharded by tick range
     checkpoints/*.npz      full state, every C ticks (for forking)
-    digest.msgpack         viz digest (see below)
+    digest.json            viz digest, versioned separately (see below; D-061)
     metrics/*.parquet      Lens output
   index.parquet            one row per run — the corpus index Forge and Analyst query
 ```

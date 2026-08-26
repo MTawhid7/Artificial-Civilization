@@ -152,7 +152,7 @@ runs — including before the simulator exists, using synthetic digests.
                     │                            │
                     └──── digest builder ←───────┘
                                  ↓
-                        digest.msgpack (~5 MB)
+                        digest.json (0.91 MB measured)
                                  ↓
                               ATLAS
 ```

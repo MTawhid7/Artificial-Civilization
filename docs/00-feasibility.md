@@ -111,6 +111,36 @@ it. A run that benchmarks at 9 minutes takes 17.
 it is not, so 100k-tick sweeps are overnight work. That is the number that decides whether this
 stays fun: if a sweep fits in a coffee break, you iterate. If it takes a day, you stop.
 
+### The constraint moved
+
+<a id="the-constraint-moved"></a>
+
+[D-047](DECISIONS.md#d-047) declared the Chronicle the binding resource: a naive log is ~2 GB per
+world against a 50 MB target. **Tiering worked, and worked well enough to invalidate its own
+premise.** Measured at A2, on a 3-seed × 34-world × 30,000-tick experiment:
+
+| | Measured | What it means |
+|---|---|---|
+| Chronicle per run | **25.8 MB** | a rounding error against the disk available |
+| Wall-clock per run | **14.5 min** | the real cost of an experiment |
+| Cost per agent-tick | **0.425 µs** | scales as `worlds × capacity × ticks` |
+| Capacity vs mean population | **2,000 / 525** | **3.8× of the compute went to headroom** |
+
+Two consequences worth planning around.
+
+**Capacity is a compute tax, not a memory one.** The observation gather runs over every slot
+whether an agent occupies it or not, so cost is set by `population.capacity` and not by how many
+agents are alive. Headroom cannot simply be trimmed either: it is demanded by the single largest
+world in the batch while the average world needs a quarter of it. Setting it too low is worse —
+a population regulated by the array is not regulated by the world
+*(→ [D-065](DECISIONS.md#d-065))*.
+
+**Plan in agent-ticks.** `worlds × capacity × ticks × 0.425 µs` predicted A2 within a few percent
+and is the right back-of-envelope for any S0 experiment. It will not survive S1: `decide` is 9% of
+an S0 tick and a neural forward pass is the first thing that can make it dominant, which is why
+the budget is re-measured *before* B0 rather than during it
+*(→ [10-roadmap.md § B0](10-roadmap.md#b0--neural-policy))*.
+
 ### Time scale
 
 Pick tick duration so a lifetime is 200–400 ticks — long enough for a life to have structure,

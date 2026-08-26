@@ -12,11 +12,17 @@ agents demonstrably evolve, and there is now a picture of it. Next up is
 | A1 — negative | [`a1-patchiness`](../experiments/a1-patchiness/result.md), [`a1-hunger-coupling`](../experiments/a1-hunger-coupling/result.md) — a detector that beat its null in 39 runs and was still wrong |
 | A2 — first picture | [`experiments/a2-wall/`](../experiments/a2-wall/result.md) — 102 worlds, one config, **9.4× more spread between worlds than within them** |
 
-**Ten decisions were added *by* implementation rather than before it** — [D-051](DECISIONS.md#d-051)
-through [D-060](DECISIONS.md#d-060) — every one because a measurement contradicted something these
-documents assumed. Three of them ([D-054](DECISIONS.md#d-054), [D-056](DECISIONS.md#d-056),
-[D-060](DECISIONS.md#d-060)) are corrections to how we measure, not to what we built, and each was
-caught by a null model or a control rather than by inspection.
+**Sixteen decisions were added *by* implementation rather than before it** —
+[D-051](DECISIONS.md#d-051) through [D-066](DECISIONS.md#d-066) — every one because a measurement
+contradicted something these documents assumed.
+
+**Seven of them are corrections to how we measure, not to what we built**, and all three withdrawn
+claims were inference failures rather than mechanism failures. The simulation core has needed
+exactly one correction in three stages. [12-risks.md](12-risks.md#scored-against-three-stages)
+now carries the scorecard: the register spent 27 rows on the simulation misbehaving and six lines
+on the statistics misbehaving, and the actual score is close to the inverse. Its stated defense
+against emergence theater — "null models from A1" — was **falsified**: `directed_foraging` had a
+null, beat it in 39 runs, and was still wrong.
 
 Expect more of that. These documents are canonical, not infallible, and the gap between them and
 the code is where the findings have come from so far.

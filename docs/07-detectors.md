@@ -37,9 +37,27 @@ Every detector ships with:
 | **definition** | the exact computation, in terms of event types |
 | **null model** | what "this happening by chance" looks like |
 | **threshold** | the effect size above null that counts as a firing |
+| **replication unit** | what one independent observation is — and it is almost never one agent |
 | **unit test** | a synthetic log where it must fire, and one where it must not |
 
 A detector without a null model is not a detector. It is a plot.
+
+**A detector with only a null model is not enough either** *(→ [D-064](DECISIONS.md#d-064))*.
+`directed_foraging` had a null. It beat that null in 39 runs, across six parameter levels and five
+seeds, and was measuring the wrong thing. The null answers *is this chance?*; it does not answer
+*am I measuring what I think I am measuring?*, and every claim this project has withdrawn failed on
+the second question while passing the first.
+
+The two additional obligations, both cheap and both learned the expensive way:
+
+**Name the replication unit before computing anything.** A thousand agents in one world is N=1.
+Stating the cluster in the detector's docstring forces the question early; discovering it late cost
+`gradient_ascent` a z of 90.8 that was really 4.93 *(→ [D-058](DECISIONS.md#d-058))*.
+
+**Any causal claim ships a control, not just a null.** A null asks what chance produces. A control
+asks what the *world without the mechanism* produces, and only the second can distinguish selection
+from drift *(→ [D-059](DECISIONS.md#d-059))*. Two arms are then compared on raw effect, never on z
+*(→ [D-060](DECISIONS.md#d-060))*.
 
 ### Never condition on a variable the behavior influences
 
@@ -57,6 +75,28 @@ that carries it. Every permutation-based null shares that blind spot.
 
 Condition on something upstream instead — a genome value, a world property, a fixed cohort — or
 measure the decision directly rather than its consequences.
+
+### The four routes to a confident wrong number
+
+All four were found in Phase A. Three of them survive a correct null model, which is why the
+contract above asks for more than one.
+
+| Route | Mechanism | What it did here |
+|---|---|---|
+| **Sample-size leak** | the statistic scales with n, and n correlates with the swept parameter | a dose-response curve at r = 0.97 that meant nothing *(→ [D-054](DECISIONS.md#d-054))* |
+| **Endogenous conditioning** | the detector conditions on a variable the measured behavior *causes* | 39 runs, conclusion inverted *(→ [D-056](DECISIONS.md#d-056))* |
+| **Pseudo-replication** | correlated within-cluster observations counted as independent | z 90.8 → 4.93 on clustering *(→ [D-058](DECISIONS.md#d-058))* |
+| **Variance homogenization** | the intervention under test shrinks between-replicate spread, inflating its own z | control arm: 2.7× smaller effect, 10× larger z *(→ [D-060](DECISIONS.md#d-060))* |
+
+The fourth generalizes furthest and is the least intuitive: **the more thoroughly a control removes
+the mechanism, the more significant it can look.** Any manipulation that homogenizes replicates
+inflates its own z, because z divides by the between-replicate spread that the manipulation just
+collapsed.
+
+A fifth route lives outside the lens entirely, in the Atlas: a sort order or a marker can
+manufacture the appearance of structure with no statistic attached to catch it
+*(→ [D-063](DECISIONS.md#d-063))*. The discipline is the same and the defenses are not automatic
+there, because nothing computes a z for a rendering choice.
 
 ---
 

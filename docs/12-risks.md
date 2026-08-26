@@ -5,6 +5,35 @@ destroys the project's value while everything continues to run and the demos kee
 
 ---
 
+## Scored against three stages
+
+This document was written before any code existed. Phase A has now run, and a risk register that
+misses the real failure mode is worse than none — it produces confidence in the wrong direction, so
+it gets graded rather than quietly amended.
+
+**The register spent 27 rows on the simulation misbehaving and six lines on the inference
+misbehaving. The actual score is close to the inverse.** The simulation core has needed exactly one
+correction in three stages *(→ [D-051](DECISIONS.md#d-051))*. Of the thirteen decisions that
+implementation forced, seven were corrections to how we measure, and **all three withdrawn claims
+were inference failures, not mechanism failures**.
+
+| Predicted | Verdict | What happened |
+|---|---|---|
+| Degenerate worlds | **hit** | zero was an absorbing state; every world died *(→ [D-051](DECISIONS.md#d-051))* |
+| Determinism rot | **half** | happened, but the prescribed defense was wrong — the fix was to *narrow the guarantee* to per-platform, not to chase cross-ISA identity *(→ [D-057](DECISIONS.md#d-057))* |
+| Seeds as fake N | **half** | the doc states it plainly and we wrote the code anyway: 3.2M correlated moves as independent observations *(→ [D-058](DECISIONS.md#d-058))* |
+| Emergence theater — *defense: "null models from A1"* | **falsified** | `directed_foraging` had a null, beat it in 39 runs, and was wrong. A null model is necessary and demonstrably **not sufficient** *(→ [D-056](DECISIONS.md#d-056))* |
+| — absent — | **missed** | z tracking sample size, producing a spurious r = 0.97 dose-response *(→ [D-054](DECISIONS.md#d-054))* |
+| — absent — | **missed** | variance homogenization: the control's z inflated *because* the intervention worked *(→ [D-060](DECISIONS.md#d-060))* |
+| — absent — | **missed** | a sampling scheme that made trajectories unreconstructable *(→ [D-052](DECISIONS.md#d-052))* |
+| — absent — | **missed** | presentation as inference: sort order manufacturing a gradient *(→ [D-063](DECISIONS.md#d-063))* |
+
+The rows below have been extended accordingly. **Where this conclusion is weakest:** three stages,
+one simple core — S0 is a reactive policy over eight floats. B0 and B1 add neural policies and
+evolved learning rules and may swing the balance back toward mechanism bugs. Re-score at B1.
+
+---
+
 ## The failure table
 
 | Failure | Looks like | Early warning sign | Defense |
@@ -30,6 +59,16 @@ destroys the project's value while everything continues to run and the demos kee
 | **Hand-added curiosity** | a novelty bonus or `creativity` term added because exploration died | "just to bootstrap discovery" | curiosity is attention under prediction error; exploration rate is evolved *(→ [D-033](DECISIONS.md#d-033), [D-034](DECISIONS.md#d-034))* |
 | **Detector anthropocentrism** | alien cognition invisible to the whole suite | every intelligence we find looks reassuringly familiar | weight the suite toward general measures — compression, prediction, novelty rate *(→ [D-036](DECISIONS.md#d-036))* |
 | **Open-endedness overclaim** | reporting sustained growth that is really a long transient | a complexity curve that has not been run to its asymptote | plateau is the measured variable; run past the apparent knee before claiming anything |
+| **Sample-size leak** ⚠ | a clean dose-response curve that is really a population curve | z rises with the swept parameter and so does n | plot raw effect beside z, annotate n *(→ [D-054](DECISIONS.md#d-054))* |
+| **Endogenous conditioning** ⚠ | a detector beats its null for months and is backwards | the split variable is downstream of the measured action | condition on genome, world, or cohort — never on outcome *(→ [D-056](DECISIONS.md#d-056))* |
+| **Pseudo-replication** ⚠ | implausibly large z on a plausible effect | n is agent-ticks rather than worlds | the replication unit is declared in the detector *(→ [D-058](DECISIONS.md#d-058))* |
+| **Variance homogenization** ⚠ | the control arm looks *more* significant than the treatment | the better the control, the larger its z | compare arms on raw effect, never on z *(→ [D-060](DECISIONS.md#d-060))* |
+| **Presentation as inference** ⚠ | a picture implies a result nobody measured | a sort order, a marker, or a per-panel scale is doing the arguing | shared scales; verdicts travel with markers; never sort by outcome *(→ [D-063](DECISIONS.md#d-063))* |
+| **Ceiling as regulator** ⚠ | a population "stabilizes" against the array, not the world | mean population approaches `population.capacity` | headroom precheck refuses the sweep *(→ [D-065](DECISIONS.md#d-065))* |
+| **Length-limited negative** ⚠ | an effect declared absent that had not finished appearing | the effect is still growing at the end of the run | run past the knee before reporting a null result |
+
+⚠ = **observed in Phase A**, not hypothetical. The five inference rows were absent from the
+original register; each cost at least one run to find, and one cost thirty-nine.
 
 ---
 

@@ -1174,6 +1174,95 @@ because nobody computes a z for a sort order.
 
 ---
 
+<a id="d-064"></a>
+### D-064 · settled · A detector ships a replication unit and, for causal claims, a control
+
+The detector contract gains two required fields beyond definition, null, threshold and tests: the
+**replication unit** the statistic clusters on, and — for any claim that something *caused*
+something — a **control arm**, not merely a null.
+
+**Why:** the founding rule was "no new mechanism without a detector", and the assumed defense
+against a false result was the null model. Phase A falsified that. `directed_foraging` shipped a
+null, beat it in 39 runs across six parameter levels and five seeds, and was measuring a
+consequence of the behavior it claimed to measure.
+
+A null answers *is this chance?* A control answers *what does the world without this mechanism
+look like?* Only the second separates selection from drift, and the no-heredity control is what
+turned A1's headline from a plausible story into a number: 95% of the gain attributable to
+selection rather than to the landscape moving underneath.
+
+Naming the replication unit is the cheap half. It costs one line in a docstring and it forces the
+question that, asked late, turned a z of 90.8 into 4.93.
+
+**Rejected:** requiring a control for every detector. Descriptive detectors — "how much of this is
+happening" — do not need one, and mandating it everywhere would make the requirement ceremonial and
+therefore ignored. The trigger is a *causal* claim.
+
+*(→ [07-detectors.md](07-detectors.md#detector-contract), [D-056](DECISIONS.md#d-056),
+[D-058](DECISIONS.md#d-058), [D-059](DECISIONS.md#d-059), [D-060](DECISIONS.md#d-060))*
+
+---
+
+<a id="d-065"></a>
+### D-065 · settled · The viability precheck tests both walls, not just extinction
+
+Before a sweep runs, a short pilot projects terminal population and **fails loudly** if any world
+approaches `population.capacity` — the same way the config loader already hard-fails on depth-gate
+violations rather than running degraded.
+
+**Why:** array capacity has been mis-set in every experiment that has run. `a1-patchiness` at 500
+put its low-patchiness arm at 86–88% of the ceiling, making those points incomparable with the
+rest; `a1-gradient-ascent` at 900 pinned 2 worlds in 80; `a2-wall` at 1,200 pinned 4 in 102, having
+been projected from A1's measured mean of 344 — a number that was still climbing at 15k ticks.
+
+Three experiments, three wrong settings, three manual catches after a full run had completed. The
+register already prescribed "an automated viability sweep before every experiment", and one exists
+— it tests for *extinction*. Nothing tested the opposite wall.
+
+**A population regulated by the array is not regulated by the world**, and the damage is worse in a
+picture than in a table: pinned worlds render as identical full-height bars, which reads as
+convergence that the array alone produced.
+
+**Rejected:** raising capacity by default. It is a linear compute tax on the dominant phase — the
+observation gather runs over every slot whether an agent occupies it or not — and the headroom is
+demanded by the largest world while the average world needs a quarter of it
+*(→ [00-feasibility.md](00-feasibility.md#the-constraint-moved))*.
+
+*(→ [12-risks.md](12-risks.md), `experiments/a2-wall/result.md`)*
+
+---
+
+<a id="d-066"></a>
+### D-066 · settled · The Chronicle logs the choice set, not only the choice
+
+When an agent selects among options, the event records **what was on offer**, not just what was
+taken. Generalized from `PERCEIVE` *(→ [D-058](DECISIONS.md#d-058))* into a standing rule for every
+future event type that carries a decision.
+
+**Why:** this is the single most valuable structural decision Phase A produced, and its payoff was
+not the one intended. Logging the score of the chosen direction, the mean of the four available,
+and the best of the four made `gradient_ascent`'s null **exact rather than simulated**: a
+direction-blind agent picks uniformly, so its expected chosen score *is* the mean, and
+`chosen − mean` has expectation exactly zero for any landscape whatsoever.
+
+No surrogates, no permutation, no randomness in the analysis at all. Scoring went from ten minutes
+to 0.6 seconds — and **a null that is expensive to run is a null that quietly stops being run**,
+which makes speed a correctness property here rather than a convenience.
+
+The rule binds hardest at **B2**. Compositionality metrics are notoriously easy to compute on
+something downstream of the intended target — precisely the [D-056](DECISIONS.md#d-056) defect — so
+the signal channel must log which signals were available and which referents were present, not only
+which signal was emitted. Event enums are permanent and append-only, so this costs one schema
+decision now and a corpus later.
+
+**Rejected:** logging only the action and reconstructing the choice set at analysis time. It is not
+reconstructible in general — the options depend on world state at the moment of decision, which the
+sampled tier does not preserve.
+
+*(→ [06-data-model.md](06-data-model.md#chronicle-the-event-log), [schemas/events.md](../schemas/events.md))*
+
+---
+
 ## Open questions
 
 Tracked here so they are not mistaken for oversights. Each blocks a specific version.

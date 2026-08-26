@@ -9,8 +9,18 @@ roughly 5–10 hours a week.
 not in tension here, but they *are* in tension with ordering. A roadmap that puts all the payoff
 at the end is a death march for a project nobody is paid to finish.
 
-**2. The gating rule still holds.** A stage ships **a detector and a null model**, not a feature.
+**2. The gating rule still holds, and Phase A made it stricter.** A stage ships **a detector, a
+null model, a declared replication unit, and — for any causal claim — a control**, not a feature.
 "Communication works" is never the criterion; "compositionality above its null across seeds" is.
+
+The addition is not bureaucracy. `directed_foraging` shipped a null, beat it in 39 runs, and was
+measuring a consequence of the behavior it claimed to measure. A null answers *is this chance?*; it
+does not answer *am I measuring the right thing?* *(→ [D-064](DECISIONS.md#d-064),
+[07-detectors.md](07-detectors.md#detector-contract))*
+
+**Every stage below now carries criteria.** Eight did not until A2 was built and the omission became
+visible — including all four C stages, where "it looks like cooperation" is exactly the substitution
+this rule exists to prevent.
 
 ---
 
@@ -140,6 +150,13 @@ only reason it counts.
 
 **Build:** the Historian — an LLM reading the Chronicle and writing narrative history per era.
 
+**Ship criteria** — the one stage with no detector, because its output is *never evidence*
+*(→ [12-risks.md](12-risks.md))*. The criteria are therefore about containment, not measurement.
+- [ ] every claim in generated prose is traceable to an event range or an aggregate row
+- [ ] output is stored under `narrative/`, never under `metrics/`, and is visibly labelled generated
+- [ ] the Historian reads the digest and aggregate tier only — never live state, never a checkpoint
+- [ ] a run with the Historian attached produces a byte-identical Chronicle to one without
+
 **Time:** ~3 days. **Payoff:** disproportionate. Even a world containing only food and movement
 produces *"the eastern settlements grew until the drought of year 340, after which most moved
 west"* — and it is genuinely delightful to read history from a world you built.
@@ -164,8 +181,20 @@ going; skip it if not.
 **Build:** S1. One shared network per lineage, per-agent genome embedding, evolved weights. P2
 fog at L0 — local view, binary known map.
 
+**Build first, before any of it:** re-measure the budget. `decide` is 9% of an S0 tick and the
+observation gather is 40%; an S1 forward pass is the first thing that can invert that, and the
+answer sets hidden width, view radius and agents-per-world rather than being discovered after they
+are chosen. `bench_tick` already answers this with a synthetic matmul at the real shapes — an
+afternoon against the risk of rebuilding the stage
+*(→ [00-feasibility.md](00-feasibility.md#the-constraint-moved))*.
+
 **Ship:** evolved policies beat the reactive genome on survival; `exploration_rate` above null.
 **Time:** ~2 weeks. This is where the ms/tick budget gets tested for real.
+
+> S1 puts `tanh`/`exp` on every agent every tick, and those are exactly the functions whose last
+> ulp differs across instruction sets. [D-057](DECISIONS.md#d-057) already settled this — the
+> guarantee is per-platform and the goldens are per-platform. Do not re-litigate it when the
+> cross-machine test goes red; add the platform's golden and move on.
 
 ## B1 — Plasticity
 
@@ -179,6 +208,14 @@ over a multi-generation window *(→ [D-035](DECISIONS.md#d-035))* — cheap now
 
 **Build:** a signal channel. Sweep **both** channel capacity and transmission bottleneck
 *(→ [D-039](DECISIONS.md#d-039))*.
+
+**Decide the `SIGNAL` payload before B0, not at B2.** The event must carry the **choice set** —
+which signals were available and which referents were present — not only which signal was emitted
+*(→ [D-066](DECISIONS.md#d-066))*. Compositionality metrics are unusually easy to compute on
+something downstream of the intended target, which is precisely the defect that withdrew
+`directed_foraging`, and a permutation null does not catch it. Logging the choice set is what lets
+this stage's null be *derived* rather than shuffled. Enum values are permanent: one decision now,
+or a re-run of the whole corpus later.
 
 **Ship criteria**
 - [ ] `compositionality` above chance against the mute null
@@ -198,22 +235,49 @@ If you only get this far, the project was worth doing.
 *Months 4–6. Goal: agents that remember each other.*
 
 ## C0 — Memory and reputation
-S3 recurrent state and episodic buffer; P3ᴸ¹ identity. Ship: `reputation_effect` beats the
-memoryless null. ~2 weeks.
+S3 recurrent state and episodic buffer; P3ᴸ¹ identity. ~2 weeks.
+
+**Ship criteria**
+- [ ] `reputation_effect` beats the memoryless null across ≥3 seeds, clustered on world
+- [ ] the memory-ablated **control** shows the effect collapse — a null alone cannot separate
+      "agents remember" from "agents met more often" *(→ [D-064](DECISIONS.md#d-064))*
+- [ ] the detector conditions on identity, never on accumulated wealth or energy
+      *(→ [D-056](DECISIONS.md#d-056))*
 
 ## C1 — Cooperation
-Ship: `cooperation_rate` and `reciprocity` beat memoryless. ~2 weeks.
+~2 weeks.
+
+**Ship criteria**
+- [ ] `cooperation_rate` and `reciprocity` beat the memoryless null across ≥3 seeds
+- [ ] a **no-memory control arm**, compared on raw effect and never on z
+      *(→ [D-060](DECISIONS.md#d-060))*
+- [ ] cooperation is not an artifact of co-location: the null preserves encounter rates and
+      destroys only who-with-whom
 **Payoff:** cooperation appearing without any reward for cooperating — the cleanest demonstration
 that D-007 works.
 
 ## C2 — Economy
-S4 forward model; P5ᴸ¹ claims with two rights. Ship: `specialization` beats random-role,
-`trade_network` beats shuffled. ~4 weeks.
+S4 forward model; P5ᴸ¹ claims with two rights. ~4 weeks.
+
+**Ship criteria**
+- [ ] `specialization` beats a random-role null across ≥3 seeds
+- [ ] `trade_network` beats a shuffled-partner null that preserves each agent's trade *volume*
+- [ ] both cluster on world, not on agent or transaction *(→ [D-058](DECISIONS.md#d-058))*
+- [ ] transfers are logged with the choice set — what else the agent could have traded, and to
+      whom *(→ [D-066](DECISIONS.md#d-066))*
 **Payoff:** watching a trade network form in the Atlas.
 
 ## C3 — Atlas map view
 The scrubber, territory rendering, flows. ~1 week. Now you can watch eight thousand years in a
 minute.
+
+**Ship criteria** — a visualization stage still ships criteria; A2 shipped a detector too.
+- [ ] `territory` and `flows` move out of the digest's `reserved` list with a `digest_version` bump
+- [ ] scales are shared across panels and across worlds; no per-panel normalization
+      *(→ [D-063](DECISIONS.md#d-063))*
+- [ ] every rendered marker carries its detector's verdict, so the map cannot imply significance
+      nobody measured
+- [ ] this is where TypeScript and a bundler earn their cost *(→ [D-062](DECISIONS.md#d-062))*
 
 ---
 
@@ -223,12 +287,23 @@ minute.
 
 ## D0 — Contagion
 P9ᴸ¹⁻ᴸ², S6 social learning with evolved transmission bias
-*(→ [D-045](DECISIONS.md#d-045))*. Ship: trait transmission traceable across generations;
-genes/culture/ecology decomposable. ~3 weeks.
+*(→ [D-045](DECISIONS.md#d-045))*. ~3 weeks.
+
+**Ship criteria**
+- [ ] trait transmission traceable across generations
+- [ ] genes / culture / ecology decomposable, each with its own ablation arm
+- [ ] the decomposition is reported as raw variance explained, never as three z-scores — the
+      ablation that works best will *look* least significant *(→ [D-060](DECISIONS.md#d-060))*
 
 ## D1 — Values
-P12ᴸ¹ — the value vector as evolved proxy reward. Ship: `value_conflict` computable;
-`bias_composition` under selection. ~3 weeks.
+P12ᴸ¹ — the value vector as evolved proxy reward. ~3 weeks.
+
+**Ship criteria**
+- [ ] `value_conflict` computable from the log alone, with a null
+- [ ] `bias_composition` under selection, against a **no-heredity control**
+      *(→ [D-059](DECISIONS.md#d-059))*
+- [ ] value dimensions are generated, never named — the detector reports cluster structure, not
+      labels *(→ [D-029](DECISIONS.md#d-029))*
 **Payoff:** the drama scalar. You can now automatically find the most conflicted moments in a
 history and have the Historian narrate them.
 
