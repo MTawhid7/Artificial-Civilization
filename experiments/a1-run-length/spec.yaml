@@ -1,3 +1,19 @@
+# a1-run-length — is A1's negative dose-response an artifact of observation length?
+#
+# A2 measured between-world divergence still climbing at year 2,500, while every
+# A1 result was scored at 15,000 ticks. That makes "was the negative result simply
+# length-limited?" a live question about a conclusion already committed.
+#
+# The design is a PAIRED comparison inside one run, not two runs of different
+# lengths: `gradient_ascent` takes `max_tick`, so each run is scored twice — once
+# truncated at 15k and once at the full 30k. Same worlds, same seeds, same
+# landscapes; only the observation window differs.
+#
+# capacity 2400 was set by the headroom precheck, not by guessing (D-065). A1's
+# own capacity of 900 pins at 100% when run to 30k ticks, and 1800 still pins at
+# 97% — the unconstrained equilibrium probe measured world means of 1137 / 976 /
+# 310 at patchiness 0.0 / 0.4 / 1.0, peaking at 1783. Everything else is A1's
+# a1-gradient-ascent config unchanged.
 name: a1-run-length
 stage: A2
 seeds:
@@ -28,7 +44,7 @@ base:
     sated_gradient_factor: 0.25
   population:
     initial: 120
-    capacity: 1800
+    capacity: 2400
     mutation_rate: 0.02
     mutation_scale: 0.05
     birth_cap: 32

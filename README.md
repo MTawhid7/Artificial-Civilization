@@ -53,10 +53,11 @@ on: if a hundred worlds under one config converged, the replication unit would n
 
 **Next:** A3 — the Historian.
 
-Design is frozen and lives in [`docs/`](docs/). Start with
-[docs/README.md](docs/README.md) for the reading order — or
-[docs/00-feasibility.md](docs/00-feasibility.md) if you want to know what this can and cannot do
-on the hardware it targets (an 8 GB M1 Air).
+**Picking this up?** [docs/14-handoff.md](docs/14-handoff.md) is the entry point — where the
+project actually is, what to build next, and the traps that waste a day. Design is frozen and lives
+in [`docs/`](docs/); [docs/README.md](docs/README.md) has the reading order, and
+[docs/00-feasibility.md](docs/00-feasibility.md) says what this can and cannot do on the hardware it
+targets (an 8 GB M1 Air).
 
 ---
 
@@ -125,4 +126,12 @@ And two conventions worth knowing before reading `src/`:
   detector's verdict travels with its markers so a picture cannot imply significance the data has
   not earned.
 
-See [docs/DECISIONS.md](docs/DECISIONS.md) for every design decision and what was rejected.
+See [docs/DECISIONS.md](docs/DECISIONS.md) for every design decision and what was rejected — 66 of
+them, sixteen added *by* implementation because a measurement contradicted what the design assumed.
+
+The most useful thing three stages taught us is in
+[docs/12-risks.md](docs/12-risks.md#scored-against-three-stages): the risk register was written
+before any code existed, and it guessed wrong about where the bugs would be. The simulation has
+needed one correction; the measurement layer has produced seven and every withdrawn claim. A null
+model turns out to be necessary and **not sufficient** — one detector beat its null in 39 runs and
+was still measuring the wrong thing.
