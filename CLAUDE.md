@@ -65,6 +65,7 @@ uv run python -m forge.sweep experiments/<name>/spec.yaml   # runs the headroom 
 uv run python -m digest.build corpus/runs/<run_id>
 uv run python tools/render_wall.py corpus/runs/*/digest.json -o wall.png
 uv run python tools/build_atlas.py corpus/runs/*/digest.json    # -> atlas/wall.html
+uv run python tools/scope.py corpus/runs/<run_id> --world 0     # A4 tier 1: one world, keyframes
 ```
 
 ## Conventions

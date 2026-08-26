@@ -70,7 +70,9 @@ claim about a world that measured no such thing. Generated prose is never eviden
 enforced rather than promised. See
 [experiments/a3-historian/result.md](experiments/a3-historian/result.md).
 
-**Next:** B0 — the neural policy.
+**Next:** B0 — the neural policy, preceded by a two-hour viewer built as a debugging
+instrument for it. A policy that circles in a corner and a policy that is merely unlucky look
+identical in the aggregate log, because the aggregate is what threw the positions away.
 
 **Picking this up?** [docs/14-handoff.md](docs/14-handoff.md) is the entry point — where the
 project actually is, what to build next, and the traps that waste a day. Design is frozen and lives

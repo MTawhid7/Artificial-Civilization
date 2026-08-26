@@ -2,7 +2,9 @@
 
 **Status:** **Phase A is complete — A0, A1, A2 and A3 all shipped.** The deterministic core runs,
 the determinism gate holds, agents demonstrably evolve, there is a picture of it, and the worlds now
-have written histories. Next up is [10-roadmap.md § B0](10-roadmap.md#b0--neural-policy).
+have written histories. Next up is [10-roadmap.md § B0](10-roadmap.md#b0--neural-policy),
+preceded by the two-hour tier 1 of [§ A4](10-roadmap.md#a4--the-viewer-optional-tiered) — a
+viewer built as a B0 debugging instrument rather than as a treat *(→ [D-070](DECISIONS.md#d-070))*.
 
 | Stage | Result |
 |---|---|

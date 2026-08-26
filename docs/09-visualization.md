@@ -43,6 +43,19 @@ stain spreading along the contact network.
 
 **Never render individual dots. Render what individuals add up to.**
 
+#### The viewer is not the map
+
+[A4](10-roadmap.md#a4--the-viewer-optional-tiered) *does* render individual dots, and that is not a
+contradiction — it is a different instrument for a different reader. The rule above is about the
+Atlas: a hundred worlds, a non-technical viewer, sixty seconds. A hundred worlds of dots is noise,
+and *"never render dots"* is what keeps the Atlas from becoming the demo
+[D-001](DECISIONS.md#d-001) rejected.
+
+The viewer is one world, one reader, and a question aggregates cannot answer by construction —
+*why is this population pinned in a corner?* — because the aggregate is precisely what threw the
+positions away. It ships as its own artifact rather than inside the Atlas, and under
+[D-070](DECISIONS.md#d-070) it replays finished runs rather than watching live ones.
+
 ### View 2 — The Chronicle panel
 
 The Historian's text, scrolling in sync with the scrubber. This is what makes the project
@@ -203,6 +216,10 @@ The scientific instrumentation *is* the narrative UI. Build detectors once, get 
   reproducible.
 - **Build order:** strip ✓ → wall ✓ → chronicle panel ✓ → map. The strip and wall carry the thesis
   and are by far the cheapest; the panel came free with A3 because the prose was already written.
+  The map arrives in pieces rather than at once: A4's Era Theatre is its first form — one world, one
+  era, motion beside the prose it was narrated into — and the aggregate-influence version above waits
+  on the primitives that make influence a thing to render
+  *(→ [10-roadmap.md § A4](10-roadmap.md#a4--the-viewer-optional-tiered))*.
 
 **A2 built the first two with no toolchain** *(→ [D-062](DECISIONS.md#d-062))*: one HTML file,
 vanilla JS, a 2D canvas, and the digest inlined at build time by `tools/build_atlas.py`. Inlining

@@ -177,11 +177,112 @@ west"* — and it is genuinely delightful to read history from a world you built
 This is scheduled at month one rather than month seven **specifically because it is fun**, it is
 cheap, and it costs API money rather than compute. Historian output remains never-evidence.
 
-## A4 — Live viewer *(optional)*
+## A4 — The viewer *(optional, tiered)*
 
-A throwaway pygame or matplotlib window showing dots moving, under
-[D-048](DECISIONS.md#d-048). Not in the measurement path. Build it if watching would keep you
-going; skip it if not.
+**Build:** a viewer that is never attached. [D-048](DECISIONS.md#d-048) permits reading sampled live
+state on runs flagged non-scientific; this stage declines the permission and `meta.json` keeps
+`live_viewer: false` *(→ [D-070](DECISIONS.md#d-070))*. Determinism makes streaming unnecessary — a
+checkpoint is a keyframe, [`nearest_before`](../src/chronicle/checkpoint.py) is a seek, and an
+intervention is a fork rather than a mutation.
+
+**It is not only a treat.** *"The agents are circling in a corner"* is invisible in
+`aggregate.parquet` and obvious in four seconds of motion. B0 is the first stage where a policy can
+be **wrong** rather than merely unlucky, and the aggregate tier cannot separate those — population
+falls either way. That is the argument for building tier 1 *before* B0 rather than after it.
+
+**What it must never become** is [D-001](DECISIONS.md#d-001)'s rejected alternative: *one
+high-fidelity world with rich per-agent detail and a live inspection UI — the default shape of this
+genre, and the reason the genre produces demos instead of findings.* Hence tiers that each ship on
+their own, and a hard rule that no tier draws a claim the Lens has not earned.
+
+| Tier | What | Cost | Build when |
+|---|---|---|---|
+| **1 — the scope** | matplotlib over the 21 checkpoints of one world: dots, the harvest field, a population trace | ~2 h | now, as a B0 instrument |
+| **2 — the Era Theatre** | one self-contained HTML page — an era in motion beside the Historian's paragraph for it, every sentence clickable back into the frames it cites | ~3 d | after B0, or when the wall stops being enough |
+| **3 — the Divergence Chamber** | two forks of one checkpoint played side by side; interventions declared in config, never painted into a running world | ~1 wk | not before Phase C needs the manipulation arm |
+
+### Tier 1 — the scope
+
+Everything it draws is already on disk. A checkpoint carries `x`, `y`, `energy`, `heading`,
+`genome[8]`, `parent`, and **both** the `resource` and `capacity` fields — so `resource / capacity`
+is a harvest-pressure map that no picture in this project has yet shown. At `checkpoint_every: 1500`
+that is 21 frames, one per 125 simulated years: a slideshow rather than a film, and enough to see a
+population pinned in a corner or a founding cohort failing to spread.
+
+**Ship — done.** [`tools/scope.py`](../tools/scope.py): a window with a slider over the keyframes
+(`space` plays, `←/→` steps), or `-o sheet.png` for the whole history on one page. 21 checkpoints
+read in 1.7 s; the run directory hashes identical before and after. No test — this tier is allowed
+to be throwaway, and saying so is what stops it growing.
+
+Two things it showed on its first run, which is the argument for having built it. Movement is
+four-directional, so **depletion is axis-aligned** — the harvest field is streaked with horizontal
+and vertical bands that no scalar series can carry. And world 0 holds near **0.16 of capacity** for
+thousands of years with a flat population, while world 3 keeps visible resource blobs and grows to
+652. Neither is a finding — one world is N=1 *(→ [D-058](DECISIONS.md#d-058))* — but both are
+questions a detector could be aimed at, which is the whole job of a scope.
+
+### Tier 2 — the Era Theatre
+
+The unit is the **era**, because [D-069](DECISIONS.md#d-069) already fixed one: 3,000 ticks, 250
+years, the same window the Historian narrated and the wall rendered. Play those frames with that
+era's prose beside them and every citation live — click *"Population fell from 812 to 389"* and the
+scrubber bounds the exact ticks the fact was computed from.
+
+This is the loop nothing else closes. The wall argues **that** worlds diverge; the Historian says
+**what happened**; the theatre lets you **watch it**, with the citation chain intact through all
+three. It also does something for A3 that A3 could not do for itself — grounding checkable only in a
+JSON file is grounding nobody checks, and a citation you can click and watch is falsifiable by eye.
+
+Frames come from a short **cinema run**: one world, `checkpoint_every` in the tens rather than the
+thousands. A corpus run's 1500-tick cadence is far too coarse for motion, and re-running one world
+for 250 years costs seconds at `0.425 µs` per agent-tick. Nothing about it is compromised —
+`live_viewer` stays false and it is a pure function of `(config, seed)` like any other — but it is
+**one world, which is N=1** *(→ [D-058](DECISIONS.md#d-058))*, so it stays out of the corpus index
+for the same reason no single world is ever an argument. One era at a few hundred agents inlines in
+a few hundred KB: the wall's budget and the wall's method
+*(→ [D-062](DECISIONS.md#d-062), [09-visualization.md](09-visualization.md))*.
+
+**Ship:**
+- [ ] renders from `file://` with the network off — one HTML file, no build step, theme-aware
+- [ ] the run directory is byte-identical before and after; the theatre reads, like the Historian
+- [ ] every sentence shown carries its citation, and the generated-content label is permanent
+- [ ] the cinema run stays out of the corpus index — one world is not a replication unit
+
+### Tier 3 — the Divergence Chamber
+
+Load one checkpoint, run two copies, perturb one agent by one cell, play them side by side. You
+watch two identical maps stay identical, and then you watch the frame where they stop. That is the
+wall's thesis in motion, and [`checkpoint.py`](../src/chronicle/checkpoint.py) already carries it:
+*rewind to tick T, change one thing, re-run* is invariant I3, and `test_noop_fork` already guards it.
+
+The interactive version — paint food, trigger a drought — is the one idea in this stage that can
+cost an invariant, and it is worth being exact about why. Mutating live state from a UI ends
+determinism, ends *(config, seed)*, and produces a history that can never be reproduced or explained
+afterwards. The version that costs nothing is that **a click writes an intervention into a config and
+forks from the nearest checkpoint**. The drought becomes reproducible by construction — and it stops
+being a toy, because a config-declared intervention over a fork is exactly the manipulation arm
+[D-064](DECISIONS.md#d-064) demands of a causal claim.
+
+That is also why it is scheduled last. Designing a control arm before knowing what claim it controls
+for is how you end up with an API that fits no experiment.
+
+### What no tier may draw
+
+A picture asserts as loudly as a sentence, and A3's verifier already deleted prose for one of the
+words below. The viewer inherits the discipline rather than being trusted with it.
+
+- **No phenomenon names** *(→ [D-002](DECISIONS.md#d-002))*. Colour by founder lineage if you like —
+  `parent` is in every checkpoint — but it is a *lineage*, not a tribe, and where one clusters is not
+  a territory. `territory` is the exact word the Historian's gate rejected.
+- **No label the world does not contain.** There are no predators, so the population trace is
+  carrying-capacity overshoot and not a predator–prey wave. Naming it the second thing is
+  [12-risks.md](12-risks.md)'s beautiful nonsense drawn as a chart instead of written as a sentence.
+- **No borrowed rungs.** There is no brain to inspect at S0 and no known-map to fog; those are B0 and
+  P2ᴸ⁰. The genome is eight named reactive traits, and the viewer should name them the way
+  [`facts.py`](../src/historian/facts.py) does — *"moves less"*, not *"gene 6"*.
+- **A mark is not a finding**, in motion as on the strip *(→ [D-063](DECISIONS.md#d-063))*.
+  `collapse` came out silent on this corpus: a drawdown may be drawn and may not be captioned
+  significant.
 
 ---
 

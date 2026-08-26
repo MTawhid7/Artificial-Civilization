@@ -1367,6 +1367,45 @@ would be structuring history around drawdowns that are not distinguishable from 
 
 ---
 
+<a id="d-070"></a>
+### D-070 · settled · The viewer never attaches — it replays
+
+A4 reads finished runs and re-derives from checkpoints. It does not stream live state, and
+`meta.json` keeps `live_viewer: false`. Interaction is a **fork carrying a config-declared
+intervention**, never a mutation of a running world.
+
+**Why:** [D-048](DECISIONS.md#d-048) permits a viewer to sample live state on runs flagged
+non-scientific — a narrowing granted so a hobby project could keep something enjoyable. Determinism
+makes the permission unnecessary. A checkpoint captures everything (invariant I3), `nearest_before`
+seeks to any tick, and a fork replays exactly, so every frame a live feed could show can be
+re-derived from `(config, seed)` at no risk to a run. Declining a permission you do not need beats
+exercising it carefully.
+
+The consequence that matters is for interaction, which is where this stage was going to go wrong.
+A UI that paints food into a running world ends determinism, ends `(config, seed)`, and produces a
+history nobody can reproduce or explain afterwards — the most enjoyable five minutes in the project
+followed by a world with no config. Routed through a config and a fork, the same click is
+reproducible by construction, and it is then the manipulation arm
+[D-064](DECISIONS.md#d-064) requires of a causal claim rather than a toy that has to be kept away
+from the corpus.
+
+**Rejected:** a server — FastAPI plus a WebSocket feed, the obvious shape. It buys nothing when
+playback is over a finished history, because there is no evolving state to push, and it costs
+[D-062](DECISIONS.md#d-062)'s one-file, no-build-step, `file://`-openable property, which is what
+makes the wall something you can send someone.
+
+**Rejected:** pygame + ModernGL. A GPU dependency and a desktop window, on the machine
+[00-feasibility.md](00-feasibility.md) budgets, for output that is supposed to be shareable. Tier 1
+uses matplotlib, which is already in the analysis extra; tiers 2 and 3 use the wall's method.
+
+**Not rejected, deferred:** D-048's flag stays wired and stays false. If a stage ever does need live
+sampling, the permission and the guard are both still there.
+
+*(→ [10-roadmap.md § A4](10-roadmap.md#a4--the-viewer-optional-tiered),
+[09-visualization.md](09-visualization.md), [D-001](DECISIONS.md#d-001))*
+
+---
+
 ## Open questions
 
 Tracked here so they are not mistaken for oversights. Each blocks a specific version.

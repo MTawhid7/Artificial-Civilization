@@ -3,7 +3,7 @@
 **Read this first in a new session.** It is the only document that goes stale on purpose; everything
 else here is design, and this is state. Update it when a stage ships.
 
-*Last updated: after A3 shipped. Phase A is complete.*
+*Last updated: after A3 shipped and A4 tier 1 was built. Phase A is complete; B0 is next.*
 
 ---
 
@@ -15,10 +15,11 @@ else here is design, and this is state. Update it when a stage ships.
 | **A1 — first evolution** | shipped | [a1-gradient-ascent](../experiments/a1-gradient-ascent/result.md) + [heredity control](../experiments/a1-heredity-control/result.md) |
 | **A2 — first picture** | shipped | [a2-wall](../experiments/a2-wall/result.md) — 102 worlds, 9.4× between/within divergence |
 | **Phase B prerequisites** | done | headroom precheck (D-065), S1 budget, `SIGNAL` payload (D-066), [a1-run-length](../experiments/a1-run-length/result.md) |
-| **A3 — the Historian** | shipped | [a3-historian](../experiments/a3-historian/result.md) — 238 cited sentences; the gate rejects 19% of unguarded prose |
+| **A3 — the Historian** | shipped | [a3-historian](../experiments/a3-historian/result.md) — 230 cited sentences; the gate rejects 19% of unguarded prose |
+| **A4 — the viewer** | tier 1 shipped | [`tools/scope.py`](../tools/scope.py) — one world, keyframe by keyframe. Tiers 2–3 scoped, not built |
 | **B0 — neural policy** | **next** | budget measured, sizes chosen — [00-feasibility § S1](00-feasibility.md#s1-measured-before-b0) |
 
-**Gate:** 59 tests, green on macOS and Ubuntu. `uv run pytest` before anything else.
+**Gate:** 86 tests, green on macOS and Ubuntu. `uv run pytest` before anything else.
 
 ### What exists
 
@@ -30,7 +31,7 @@ src/digest/     Chronicle -> versioned viz digest
 src/historian/  facts -> LLM -> verified prose. Never evidence
 src/forge/      run, sweep, viability precheck
 atlas/          wall.template.html — the wall + the Chronicle panel, no build step
-tools/          render_wall, build_atlas, check_links
+tools/          render_wall, build_atlas, check_links, scope (A4 tier 1)
 bench/          bench_tick (S0), bench_policy (S1)
 ```
 
@@ -66,6 +67,11 @@ discovered: `hidden: 48`, `view_radius: 2`, one to a few lineages, which stays i
 
 Expect the determinism gate to go red on a new platform once `tanh` runs every tick. That is
 [D-057](DECISIONS.md#d-057), already settled: record the platform's golden, do not chase it.
+
+**Use the scope on the first S1 run.** A policy that circles, clumps, or never leaves its birth cell
+looks identical in `aggregate.parquet` to bad luck — population falls either way, because the
+aggregate tier is what discarded the positions. `uv run python tools/scope.py corpus/runs/<id>`
+answers in four seconds what the series cannot answer at all.
 
 ### 2. B2 — first word ★ *(the biggest payoff)*
 
