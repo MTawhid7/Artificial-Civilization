@@ -43,7 +43,8 @@ order. The first five are the non-negotiable context; the rest can be read on de
 
 | # | Doc | What it settles |
 |---|---|---|
-| 0 | [00-feasibility.md](00-feasibility.md) | **Read first.** The machine, the real budget, what is cut, what is still reachable |
+| — | [14-handoff.md](14-handoff.md) | **Read first in a new session.** Where the project actually is, what to build next, and the traps that waste a day |
+| 0 | [00-feasibility.md](00-feasibility.md) | The machine, the real budget, what is cut, what is still reachable |
 | 1 | [01-vision.md](01-vision.md) | What this project is, what it refuses to be, what success means |
 | 2 | [02-primitives.md](02-primitives.md) | The 12 primitives — eleven world, one interior — and how 30 phenomena derive from them |
 | 3 | [03-mechanisms.md](03-mechanisms.md) | The twelve signature design choices, including the project's distinctive bets |
@@ -60,10 +61,15 @@ order. The first five are the non-negotiable context; the rest can be read on de
 | — | [DECISIONS.md](DECISIONS.md) | Every design decision, its rationale, and what was rejected |
 | — | [GLOSSARY.md](GLOSSARY.md) | Terms, and the distinctions that cause confusion later |
 
-**Shortest useful path for a new session:** this file → [00-feasibility.md](00-feasibility.md) →
-[10-roadmap.md](10-roadmap.md). That is enough to know where we are and what happens next.
+**Shortest useful path for a new session:** [14-handoff.md](14-handoff.md) →
+[00-feasibility.md](00-feasibility.md) → [10-roadmap.md](10-roadmap.md). The handoff is state and
+goes stale on purpose; everything else here is design. `CLAUDE.md` at the repo root carries the
+same essentials in the form a coding session needs them.
+
 Add [13-related-work.md](13-related-work.md) if the question is *why* a decision looks the way it
-does — it holds the four standing objections to our design.
+does — it holds the four standing objections to our design. Add
+[12-risks.md](12-risks.md#scored-against-three-stages) if the question is what actually goes wrong
+here, which is not what this project originally guessed.
 
 ---
 
@@ -145,6 +151,9 @@ word, which is a complete and genuinely interesting project on its own.
   the version; never silently redefine a field's meaning.
 - **Docs and code disagree?** The docs are wrong until proven otherwise — but fix them
   immediately. Stale design docs are worse than none.
+- **Stage shipped?** Update [14-handoff.md](14-handoff.md) — status table, the numbers block, and
+  what is next. It is the one file that is allowed to be about *now*, and the one a cold session
+  reads first.
 
 ## Conventions in these documents
 

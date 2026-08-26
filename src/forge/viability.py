@@ -101,7 +101,16 @@ def headroom(cfg, seed: int = 0, *, worlds: int = PILOT_WORLDS,
         "peak_frac": round(peak_frac, 3),
         "pilot_worlds": int(worlds),
         "ticks": int(meta["ticks_completed"]),
-        "suggested_capacity": int(np.ceil(worst_mean / 0.5 / 50.0) * 50),
+        # When the pilot is itself pinned, its mean is *censored* by the ceiling:
+        # the world wanted more and the array refused, so doubling what was
+        # observed still undershoots. Measured the hard way — a suggestion of
+        # 1,800 derived from a pilot pinned at 900 was rejected again at 1,800.
+        # Censored pilots get a wider multiplier and the caller is told the
+        # number is a lower bound, not an estimate.
+        "suggested_capacity": int(
+            np.ceil(worst_mean * (4.0 if peak_frac >= 0.999 else 2.0) / 100.0) * 100
+        ),
+        "suggestion_is_lower_bound": bool(peak_frac >= 0.999),
         "run_id": meta["run_id"],
     }
 
@@ -115,10 +124,15 @@ def enforce(report: dict, label: str = "") -> None:
         f"peak {report['peak_population']:.0f} ({report['peak_frac']:.0%})"
     )
     if report["verdict"] == "fail":
+        hedge = (
+            " (a lower bound — this pilot was itself pinned, so its mean is censored)"
+            if report.get("suggestion_is_lower_bound") else ""
+        )
         raise HeadroomError(
             f"{line}\n"
             f"    The array is regulating this world, not the world regulating itself.\n"
-            f"    Raise population.capacity to about {report['suggested_capacity']} and re-run,\n"
+            f"    Raise population.capacity to at least {report['suggested_capacity']}"
+            f"{hedge} and re-run,\n"
             f"    or pass --skip-precheck if a pinned ceiling is genuinely what you are studying."
         )
     print(line + ("   WARN: peaks clip the ceiling" if report["verdict"] == "warn" else "   ok"),
