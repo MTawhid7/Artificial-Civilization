@@ -65,7 +65,7 @@ evolved learning rules and may swing the balance back toward mechanism bugs. Re-
 | **Variance homogenization** ⚠ | the control arm looks *more* significant than the treatment | the better the control, the larger its z | compare arms on raw effect, never on z *(→ [D-060](DECISIONS.md#d-060))* |
 | **Presentation as inference** ⚠ | a picture implies a result nobody measured | a sort order, a marker, or a per-panel scale is doing the arguing | shared scales; verdicts travel with markers; never sort by outcome *(→ [D-063](DECISIONS.md#d-063))* |
 | **Ceiling as regulator** ⚠ | a population "stabilizes" against the array, not the world | mean population approaches `population.capacity` | headroom precheck refuses the sweep *(→ [D-065](DECISIONS.md#d-065))* |
-| **Length-limited negative** ⚠ | an effect declared absent that had not finished appearing | the effect is still growing at the end of the run | run past the knee before reporting a null result |
+| **Length-limited negative** ⚠ | an effect declared absent that had not finished appearing | the effect is still growing at the end of the run | score one long run at several windows, paired, before re-running anything (`experiments/a1-run-length/`) |
 
 ⚠ = **observed in Phase A**, not hypothetical. The five inference rows were absent from the
 original register; each cost at least one run to find, and one cost thirty-nine.

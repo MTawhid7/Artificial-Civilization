@@ -1,19 +1,36 @@
-# a1-run-length — is A1's negative dose-response an artifact of observation length?
+# a1-run-length — the design that was NOT run, and why it is kept
 #
-# A2 measured between-world divergence still climbing at year 2,500, while every
-# A1 result was scored at 15,000 ticks. That makes "was the negative result simply
-# length-limited?" a live question about a conclusion already committed.
+# ABANDONED ON COST. The question — is A1's negative dose-response an artifact of
+# observation length? — was answered instead by re-scoring A1's committed runs at
+# four observation windows, paired within run. See analyse.py and result.md.
 #
-# The design is a PAIRED comparison inside one run, not two runs of different
-# lengths: `gradient_ascent` takes `max_tick`, so each run is scored twice — once
-# truncated at 15k and once at the full 30k. Same worlds, same seeds, same
-# landscapes; only the observation window differs.
+# This file is kept because the reason it was abandoned is itself the finding.
 #
-# capacity 2400 was set by the headroom precheck, not by guessing (D-065). A1's
-# own capacity of 900 pins at 100% when run to 30k ticks, and 1800 still pins at
-# 97% — the unconstrained equilibrium probe measured world means of 1137 / 976 /
-# 310 at patchiness 0.0 / 0.4 / 1.0, peaking at 1783. Everything else is A1's
-# a1-gradient-ascent config unchanged.
+# The plan was to re-run a1-gradient-ascent's config at 30,000 ticks. Setting the
+# population ceiling took four attempts, each one a headroom precheck (D-065)
+# refusing to start:
+#
+#     capacity  900  ->  worst world mean  900 (100%)   A1's own setting
+#     capacity 1800  ->  worst world mean 1743  (97%)   the first suggestion
+#     capacity 2400  ->  worst world mean 2226  (93%)   after an equilibrium probe
+#     capacity 9000  ->  ~5 hours of compute, so: no
+#
+# Two things that cost is made of, both worth knowing:
+#
+# 1. At patchiness 0.0 — uniform resources, no patches — the world's carrying
+#    capacity over 30,000 ticks is far larger than anything A1 measured at 15,000.
+#    A1's own configuration cannot be run to twice its length without the array
+#    becoming the regulator.
+#
+# 2. A 4-world pilot is a weak estimate of a distribution whose worlds span ten to
+#    one. An "unconstrained" probe at capacity 5000 reported world means of
+#    1137 / 976 / 310 at patchiness 0.0 / 0.4 / 1.0 — and then capacity 2400 pinned
+#    at 2226, because changing capacity changes the founding draws and therefore
+#    re-rolls which four worlds the pilot sees. The precheck's own docstring says
+#    it underestimates the maximum; that caveat is load-bearing, not decorative.
+#
+# Cost scales as worlds x capacity x ticks, so a ceiling set by the most explosive
+# point in a sweep is paid for at every point in it.
 name: a1-run-length
 stage: A2
 seeds:

@@ -1,0 +1,1252 @@
+{
+  "source": "/Users/tawhid/Documents/Artificial Civilization/experiments/a1-gradient-ascent/results.json",
+  "patchiness": [
+    0.0,
+    0.2,
+    0.4,
+    0.6,
+    0.8,
+    1.0
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "windows": [
+    3750,
+    7500,
+    11250,
+    15000
+  ],
+  "summary": [
+    {
+      "window": 3750,
+      "advantage_by_patchiness": [
+        0.17,
+        0.1952,
+        0.1682,
+        0.1504,
+        0.1349,
+        0.1273
+      ],
+      "gain_by_patchiness": [
+        0.1003,
+        0.1265,
+        0.0889,
+        0.086,
+        0.0634,
+        0.09
+      ],
+      "corr_pooled": -0.876,
+      "corr_per_seed": [
+        -0.7068,
+        -0.7047,
+        -0.6424,
+        -0.1388,
+        -0.7047
+      ],
+      "all_seeds_negative": true,
+      "rank_order": [
+        1,
+        0,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "window": 7500,
+      "advantage_by_patchiness": [
+        0.2137,
+        0.2507,
+        0.2222,
+        0.1903,
+        0.1613,
+        0.1474
+      ],
+      "gain_by_patchiness": [
+        0.1522,
+        0.1786,
+        0.162,
+        0.1287,
+        0.1021,
+        0.1007
+      ],
+      "corr_pooled": -0.8676,
+      "corr_per_seed": [
+        -0.5789,
+        -0.6787,
+        -0.5934,
+        -0.3934,
+        -0.8301
+      ],
+      "all_seeds_negative": true,
+      "rank_order": [
+        2,
+        0,
+        1,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "window": 11250,
+      "advantage_by_patchiness": [
+        0.2674,
+        0.2919,
+        0.262,
+        0.2289,
+        0.1879,
+        0.165
+      ],
+      "gain_by_patchiness": [
+        0.2144,
+        0.2116,
+        0.1984,
+        0.1679,
+        0.1237,
+        0.1221
+      ],
+      "corr_pooled": -0.9288,
+      "corr_per_seed": [
+        -0.5108,
+        -0.6651,
+        -0.6901,
+        -0.7067,
+        -0.7978
+      ],
+      "all_seeds_negative": true,
+      "rank_order": [
+        1,
+        0,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "window": 15000,
+      "advantage_by_patchiness": [
+        0.3044,
+        0.3332,
+        0.2959,
+        0.2668,
+        0.2175,
+        0.1886
+      ],
+      "gain_by_patchiness": [
+        0.2413,
+        0.266,
+        0.2343,
+        0.2138,
+        0.1759,
+        0.1544
+      ],
+      "corr_pooled": -0.9258,
+      "corr_per_seed": [
+        -0.4605,
+        -0.6739,
+        -0.7199,
+        -0.8035,
+        -0.7377
+      ],
+      "all_seeds_negative": true,
+      "rank_order": [
+        1,
+        0,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "patchiness": 0.0,
+      "seed": 0,
+      "window": 3750,
+      "advantage": 0.18029537821675282,
+      "z": 4.425932100943634,
+      "selection_gain": 0.09514355069934763,
+      "n_moves": 667242
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 0,
+      "window": 7500,
+      "advantage": 0.19511479398027282,
+      "z": 4.3056605426005365,
+      "selection_gain": 0.095568095354556,
+      "n_moves": 1380839
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 0,
+      "window": 11250,
+      "advantage": 0.21570148393815447,
+      "z": 4.601242107138779,
+      "selection_gain": 0.10878202110520398,
+      "n_moves": 2253479
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 0,
+      "window": 15000,
+      "advantage": 0.23713519619188048,
+      "z": 4.930497807600457,
+      "selection_gain": 0.13321366522885947,
+      "n_moves": 3199513
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 1,
+      "window": 3750,
+      "advantage": 0.20370932391879643,
+      "z": 4.123781204685151,
+      "selection_gain": 0.13452921056212908,
+      "n_moves": 690770
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 1,
+      "window": 7500,
+      "advantage": 0.2767511199408974,
+      "z": 5.062138986634825,
+      "selection_gain": 0.245498331125084,
+      "n_moves": 1519380
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 1,
+      "window": 11250,
+      "advantage": 0.3418541165345912,
+      "z": 5.71094269268508,
+      "selection_gain": 0.2732993096890658,
+      "n_moves": 2651416
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 1,
+      "window": 15000,
+      "advantage": 0.3750470108262934,
+      "z": 6.0398059632266134,
+      "selection_gain": 0.2825197572363098,
+      "n_moves": 3886448
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 2,
+      "window": 3750,
+      "advantage": 0.18673115832584697,
+      "z": 4.137412385189588,
+      "selection_gain": 0.11964965655576193,
+      "n_moves": 697473
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 2,
+      "window": 7500,
+      "advantage": 0.2105886776753688,
+      "z": 4.323823730915868,
+      "selection_gain": 0.1317154684529972,
+      "n_moves": 1417561
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 2,
+      "window": 11250,
+      "advantage": 0.26766701092268425,
+      "z": 5.0830743583633735,
+      "selection_gain": 0.2252495748454288,
+      "n_moves": 2397597
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 2,
+      "window": 15000,
+      "advantage": 0.31765414936895076,
+      "z": 5.565939766307295,
+      "selection_gain": 0.26982183688329886,
+      "n_moves": 3589651
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 3,
+      "window": 3750,
+      "advantage": 0.12499573605057274,
+      "z": 6.385556878874327,
+      "selection_gain": 0.054280569277928244,
+      "n_moves": 613911
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 3,
+      "window": 7500,
+      "advantage": 0.17433731651437664,
+      "z": 4.8155893873569235,
+      "selection_gain": 0.1419434699804008,
+      "n_moves": 1277655
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 3,
+      "window": 11250,
+      "advantage": 0.2607279639114602,
+      "z": 5.6576957202113185,
+      "selection_gain": 0.28227170841600857,
+      "n_moves": 2244461
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 3,
+      "window": 15000,
+      "advantage": 0.3127956327567642,
+      "z": 5.990297842357233,
+      "selection_gain": 0.3025087943974659,
+      "n_moves": 3388453
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 4,
+      "window": 3750,
+      "advantage": 0.15449935270513965,
+      "z": 5.143522230985591,
+      "selection_gain": 0.09772915683935623,
+      "n_moves": 632081
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 4,
+      "window": 7500,
+      "advantage": 0.2119495055464467,
+      "z": 4.295684923505941,
+      "selection_gain": 0.14617529959230025,
+      "n_moves": 1417902
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 4,
+      "window": 11250,
+      "advantage": 0.2510678684086412,
+      "z": 4.462449103980603,
+      "selection_gain": 0.18246333098169137,
+      "n_moves": 2422536
+    },
+    {
+      "patchiness": 0.0,
+      "seed": 4,
+      "window": 15000,
+      "advantage": 0.2795799736683122,
+      "z": 4.687556354221627,
+      "selection_gain": 0.21867720171764282,
+      "n_moves": 3531202
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 0,
+      "window": 3750,
+      "advantage": 0.21025650339644378,
+      "z": 5.692643720474823,
+      "selection_gain": 0.17486322355546213,
+      "n_moves": 617876
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 0,
+      "window": 7500,
+      "advantage": 0.27225099363569183,
+      "z": 4.979224771702679,
+      "selection_gain": 0.21929250226761166,
+      "n_moves": 1332486
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 0,
+      "window": 11250,
+      "advantage": 0.3110546522540313,
+      "z": 5.292458198991792,
+      "selection_gain": 0.24993163147534259,
+      "n_moves": 2246365
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 0,
+      "window": 15000,
+      "advantage": 0.34655611842786566,
+      "z": 5.8796191531872815,
+      "selection_gain": 0.29708183975405067,
+      "n_moves": 3248963
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 1,
+      "window": 3750,
+      "advantage": 0.13643517094354604,
+      "z": 4.367452703613547,
+      "selection_gain": 0.04967149181864174,
+      "n_moves": 574584
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 1,
+      "window": 7500,
+      "advantage": 0.18501423875336853,
+      "z": 3.956607719814484,
+      "selection_gain": 0.12090377222415766,
+      "n_moves": 1218834
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 1,
+      "window": 11250,
+      "advantage": 0.21990925270890233,
+      "z": 4.0957919165973165,
+      "selection_gain": 0.14342106970367413,
+      "n_moves": 2064205
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 1,
+      "window": 15000,
+      "advantage": 0.2543616154099612,
+      "z": 4.472281788124995,
+      "selection_gain": 0.2077986714958841,
+      "n_moves": 3050110
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 2,
+      "window": 3750,
+      "advantage": 0.21902808299081106,
+      "z": 5.09830333990168,
+      "selection_gain": 0.17405309831278243,
+      "n_moves": 647813
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 2,
+      "window": 7500,
+      "advantage": 0.2855516325615892,
+      "z": 5.265118359333329,
+      "selection_gain": 0.21593175575890955,
+      "n_moves": 1413671
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 2,
+      "window": 11250,
+      "advantage": 0.3317740383459561,
+      "z": 5.813084564753431,
+      "selection_gain": 0.2768753276403268,
+      "n_moves": 2384630
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 2,
+      "window": 15000,
+      "advantage": 0.3954910876281603,
+      "z": 7.064893760904809,
+      "selection_gain": 0.35485406368747197,
+      "n_moves": 3615076
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 3,
+      "window": 3750,
+      "advantage": 0.20063600984069324,
+      "z": 4.4481706755668995,
+      "selection_gain": 0.10041850085167589,
+      "n_moves": 598253
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 3,
+      "window": 7500,
+      "advantage": 0.24913249091961412,
+      "z": 4.615101217202279,
+      "selection_gain": 0.14395101635496677,
+      "n_moves": 1313040
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 3,
+      "window": 11250,
+      "advantage": 0.28881273218328896,
+      "z": 5.0906453121143675,
+      "selection_gain": 0.17883536121978383,
+      "n_moves": 2236450
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 3,
+      "window": 15000,
+      "advantage": 0.3186016300280871,
+      "z": 5.463170586425184,
+      "selection_gain": 0.2029757857563882,
+      "n_moves": 3283178
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 4,
+      "window": 3750,
+      "advantage": 0.20966776093620326,
+      "z": 4.067989658831758,
+      "selection_gain": 0.133371373458504,
+      "n_moves": 667640
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 4,
+      "window": 7500,
+      "advantage": 0.26137621698946156,
+      "z": 4.216364452151084,
+      "selection_gain": 0.19291870407808007,
+      "n_moves": 1519340
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 4,
+      "window": 11250,
+      "advantage": 0.3078170420207075,
+      "z": 4.676828822477003,
+      "selection_gain": 0.20908482664680553,
+      "n_moves": 2543872
+    },
+    {
+      "patchiness": 0.2,
+      "seed": 4,
+      "window": 15000,
+      "advantage": 0.3509155297279929,
+      "z": 5.428252956952464,
+      "selection_gain": 0.26750857970620134,
+      "n_moves": 3773991
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 0,
+      "window": 3750,
+      "advantage": 0.22754408636953066,
+      "z": 5.242542658623009,
+      "selection_gain": 0.1738118858254644,
+      "n_moves": 548345
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 0,
+      "window": 7500,
+      "advantage": 0.30971861213242363,
+      "z": 5.165982419104192,
+      "selection_gain": 0.2590174255707709,
+      "n_moves": 1266008
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 0,
+      "window": 11250,
+      "advantage": 0.36472889918449736,
+      "z": 5.831334723162835,
+      "selection_gain": 0.3016539472599693,
+      "n_moves": 2161757
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 0,
+      "window": 15000,
+      "advantage": 0.4060334317734915,
+      "z": 6.333035510652809,
+      "selection_gain": 0.3442431918720812,
+      "n_moves": 3220857
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 1,
+      "window": 3750,
+      "advantage": 0.12591123294627082,
+      "z": 6.656694423356455,
+      "selection_gain": 0.05334103575777989,
+      "n_moves": 510760
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 1,
+      "window": 7500,
+      "advantage": 0.17882372728449963,
+      "z": 5.751329584525055,
+      "selection_gain": 0.16690280221568482,
+      "n_moves": 1072324
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 1,
+      "window": 11250,
+      "advantage": 0.2379478279171625,
+      "z": 5.6955249374247545,
+      "selection_gain": 0.2412076812049827,
+      "n_moves": 1823278
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 1,
+      "window": 15000,
+      "advantage": 0.2945647302537565,
+      "z": 6.31520425537287,
+      "selection_gain": 0.31263417270286653,
+      "n_moves": 2740933
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 2,
+      "window": 3750,
+      "advantage": 0.10773114155580527,
+      "z": 5.979593255904952,
+      "selection_gain": 0.008675018574003174,
+      "n_moves": 514797
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 2,
+      "window": 7500,
+      "advantage": 0.13763971882459547,
+      "z": 4.054786394223221,
+      "selection_gain": 0.07500586345090754,
+      "n_moves": 1047961
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 2,
+      "window": 11250,
+      "advantage": 0.16294304839443952,
+      "z": 4.1162832413974195,
+      "selection_gain": 0.11317709915506426,
+      "n_moves": 1697255
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 2,
+      "window": 15000,
+      "advantage": 0.18872450747538533,
+      "z": 4.467190874209935,
+      "selection_gain": 0.14215085831550944,
+      "n_moves": 2450893
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 3,
+      "window": 3750,
+      "advantage": 0.21448751769760524,
+      "z": 4.2531984205511355,
+      "selection_gain": 0.12166177295112678,
+      "n_moves": 529531
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 3,
+      "window": 7500,
+      "advantage": 0.2923774339253633,
+      "z": 4.606319619122893,
+      "selection_gain": 0.20002813286819332,
+      "n_moves": 1169256
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 3,
+      "window": 11250,
+      "advantage": 0.3231938024478115,
+      "z": 4.604073527922256,
+      "selection_gain": 0.18440238424507782,
+      "n_moves": 1974688
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 3,
+      "window": 15000,
+      "advantage": 0.33956981755773386,
+      "z": 4.59164172153515,
+      "selection_gain": 0.19904696309439424,
+      "n_moves": 2869503
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 4,
+      "window": 3750,
+      "advantage": 0.1654444901461531,
+      "z": 3.758154257465686,
+      "selection_gain": 0.08683363793753912,
+      "n_moves": 540651
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 4,
+      "window": 7500,
+      "advantage": 0.19265425162306324,
+      "z": 3.454733338300827,
+      "selection_gain": 0.10882088297888645,
+      "n_moves": 1133269
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 4,
+      "window": 11250,
+      "advantage": 0.22134263030394705,
+      "z": 3.7493904776094955,
+      "selection_gain": 0.1514797887343226,
+      "n_moves": 1795477
+    },
+    {
+      "patchiness": 0.4,
+      "seed": 4,
+      "window": 15000,
+      "advantage": 0.2508207979000624,
+      "z": 3.9465635489558117,
+      "selection_gain": 0.17350171477916415,
+      "n_moves": 2596654
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 0,
+      "window": 3750,
+      "advantage": 0.12680822451212945,
+      "z": 3.878261094499726,
+      "selection_gain": 0.053117929133789446,
+      "n_moves": 444787
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 0,
+      "window": 7500,
+      "advantage": 0.1385299887064263,
+      "z": 3.3438543139325647,
+      "selection_gain": 0.040698584019044706,
+      "n_moves": 903257
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 0,
+      "window": 11250,
+      "advantage": 0.16183331268174844,
+      "z": 3.6305212130138047,
+      "selection_gain": 0.09025152556639633,
+      "n_moves": 1434740
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 0,
+      "window": 15000,
+      "advantage": 0.19972502994516406,
+      "z": 4.05593782346526,
+      "selection_gain": 0.16459946464171965,
+      "n_moves": 2081384
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 1,
+      "window": 3750,
+      "advantage": 0.12404366391127519,
+      "z": 7.27607469165757,
+      "selection_gain": 0.06056175078522604,
+      "n_moves": 408494
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 1,
+      "window": 7500,
+      "advantage": 0.15880043400311392,
+      "z": 4.868708102390174,
+      "selection_gain": 0.08913069429187342,
+      "n_moves": 819755
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 1,
+      "window": 11250,
+      "advantage": 0.18251649151658716,
+      "z": 4.591045558138748,
+      "selection_gain": 0.12769764512167547,
+      "n_moves": 1300285
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 1,
+      "window": 15000,
+      "advantage": 0.21210992646931714,
+      "z": 4.622694613896071,
+      "selection_gain": 0.15201099813433802,
+      "n_moves": 1880198
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 2,
+      "window": 3750,
+      "advantage": 0.17807824655873544,
+      "z": 4.742617117517921,
+      "selection_gain": 0.09142315855545072,
+      "n_moves": 446172
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 2,
+      "window": 7500,
+      "advantage": 0.21233607760790268,
+      "z": 4.779266813196468,
+      "selection_gain": 0.13544781350493396,
+      "n_moves": 888188
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 2,
+      "window": 11250,
+      "advantage": 0.24806332631430072,
+      "z": 4.853050241494436,
+      "selection_gain": 0.1629838254958496,
+      "n_moves": 1448569
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 2,
+      "window": 15000,
+      "advantage": 0.2869857621301788,
+      "z": 5.223260133943373,
+      "selection_gain": 0.2186477099496288,
+      "n_moves": 2149864
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 3,
+      "window": 3750,
+      "advantage": 0.17337412029141913,
+      "z": 4.71704676577161,
+      "selection_gain": 0.13589112822584787,
+      "n_moves": 438697
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 3,
+      "window": 7500,
+      "advantage": 0.23744184223276757,
+      "z": 4.762591600077573,
+      "selection_gain": 0.21565756266650293,
+      "n_moves": 913899
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 3,
+      "window": 11250,
+      "advantage": 0.28963937098470655,
+      "z": 4.501374661191977,
+      "selection_gain": 0.22751690797018623,
+      "n_moves": 1562373
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 3,
+      "window": 15000,
+      "advantage": 0.31759594669241964,
+      "z": 4.500536751002609,
+      "selection_gain": 0.23744636938987174,
+      "n_moves": 2294531
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 4,
+      "window": 3750,
+      "advantage": 0.14994407318679034,
+      "z": 4.923625262629857,
+      "selection_gain": 0.08884719342485439,
+      "n_moves": 401258
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 4,
+      "window": 7500,
+      "advantage": 0.20452183247568997,
+      "z": 4.58811572023715,
+      "selection_gain": 0.1623786314038159,
+      "n_moves": 822284
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 4,
+      "window": 11250,
+      "advantage": 0.26242836349378057,
+      "z": 4.716152755411629,
+      "selection_gain": 0.23128169818495822,
+      "n_moves": 1391814
+    },
+    {
+      "patchiness": 0.6,
+      "seed": 4,
+      "window": 15000,
+      "advantage": 0.31775350058159235,
+      "z": 5.286833240933409,
+      "selection_gain": 0.2965435656693913,
+      "n_moves": 2131474
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 0,
+      "window": 3750,
+      "advantage": 0.1264070256195552,
+      "z": 7.217138574097193,
+      "selection_gain": 0.0630120165970591,
+      "n_moves": 290897
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 0,
+      "window": 7500,
+      "advantage": 0.15358392559540626,
+      "z": 5.364878056319623,
+      "selection_gain": 0.10123471324246966,
+      "n_moves": 566204
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 0,
+      "window": 11250,
+      "advantage": 0.19426310917978726,
+      "z": 4.254975187142378,
+      "selection_gain": 0.15985618264999443,
+      "n_moves": 897438
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 0,
+      "window": 15000,
+      "advantage": 0.2296917338636791,
+      "z": 4.411310361618815,
+      "selection_gain": 0.21813998752630862,
+      "n_moves": 1302475
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 1,
+      "window": 3750,
+      "advantage": 0.13704485481168172,
+      "z": 7.1841102843214495,
+      "selection_gain": 0.06962272266404688,
+      "n_moves": 296246
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 1,
+      "window": 7500,
+      "advantage": 0.2053454536084156,
+      "z": 5.802891695921253,
+      "selection_gain": 0.21960453121692303,
+      "n_moves": 607014
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 1,
+      "window": 11250,
+      "advantage": 0.25494359477755996,
+      "z": 5.324209516388543,
+      "selection_gain": 0.2258490855618257,
+      "n_moves": 942146
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 1,
+      "window": 15000,
+      "advantage": 0.2952534889241208,
+      "z": 5.290444732478011,
+      "selection_gain": 0.2797899076529292,
+      "n_moves": 1346898
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 2,
+      "window": 3750,
+      "advantage": 0.10996661161910296,
+      "z": 11.057557863902705,
+      "selection_gain": 0.03635372058596217,
+      "n_moves": 286495
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 2,
+      "window": 7500,
+      "advantage": 0.11591340942994814,
+      "z": 8.347183958070504,
+      "selection_gain": 0.034543999262993806,
+      "n_moves": 565788
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 2,
+      "window": 11250,
+      "advantage": 0.12932803996503703,
+      "z": 6.040692916973584,
+      "selection_gain": 0.052013711474169555,
+      "n_moves": 820857
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 2,
+      "window": 15000,
+      "advantage": 0.14376490876099293,
+      "z": 5.163960178829356,
+      "selection_gain": 0.08004213622876676,
+      "n_moves": 1117624
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 3,
+      "window": 3750,
+      "advantage": 0.17140953759103708,
+      "z": 5.269256592670053,
+      "selection_gain": 0.09818497619119047,
+      "n_moves": 332601
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 3,
+      "window": 7500,
+      "advantage": 0.18024022174407436,
+      "z": 5.0183313601312545,
+      "selection_gain": 0.06995423410267823,
+      "n_moves": 668987
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 3,
+      "window": 11250,
+      "advantage": 0.19127114266275425,
+      "z": 5.0054166525572885,
+      "selection_gain": 0.09715571416980774,
+      "n_moves": 1003257
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 3,
+      "window": 15000,
+      "advantage": 0.2333382633313911,
+      "z": 5.587427034038609,
+      "selection_gain": 0.19578254135473347,
+      "n_moves": 1428868
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 4,
+      "window": 3750,
+      "advantage": 0.1297091545620311,
+      "z": 5.5365132988274075,
+      "selection_gain": 0.04987363571691273,
+      "n_moves": 289362
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 4,
+      "window": 7500,
+      "advantage": 0.15159545364788896,
+      "z": 4.65954458124224,
+      "selection_gain": 0.08505745306854737,
+      "n_moves": 572670
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 4,
+      "window": 11250,
+      "advantage": 0.1695202602565924,
+      "z": 4.3544289307763115,
+      "selection_gain": 0.0833912552871166,
+      "n_moves": 868405
+    },
+    {
+      "patchiness": 0.8,
+      "seed": 4,
+      "window": 15000,
+      "advantage": 0.1852959280749496,
+      "z": 4.233963807166653,
+      "selection_gain": 0.10583033640054733,
+      "n_moves": 1206971
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 0,
+      "window": 3750,
+      "advantage": 0.13079783557377847,
+      "z": 7.651713691663838,
+      "selection_gain": 0.06418017424789857,
+      "n_moves": 112412
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 0,
+      "window": 7500,
+      "advantage": 0.14304947490048514,
+      "z": 5.990402335711284,
+      "selection_gain": 0.08089832865781867,
+      "n_moves": 216935
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 0,
+      "window": 11250,
+      "advantage": 0.1674656205025809,
+      "z": 5.422195236938435,
+      "selection_gain": 0.13725692374780635,
+      "n_moves": 328530
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 0,
+      "window": 15000,
+      "advantage": 0.2006615051728448,
+      "z": 4.839008879700844,
+      "selection_gain": 0.18566198607261905,
+      "n_moves": 444344
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 1,
+      "window": 3750,
+      "advantage": 0.121477930028498,
+      "z": 7.133200607797982,
+      "selection_gain": 0.1256315941993413,
+      "n_moves": 107711
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 1,
+      "window": 7500,
+      "advantage": 0.15454457041178468,
+      "z": 5.717000800824049,
+      "selection_gain": 0.1427959825049435,
+      "n_moves": 216363
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 1,
+      "window": 11250,
+      "advantage": 0.1860789987999524,
+      "z": 5.331277697690632,
+      "selection_gain": 0.21213123902496656,
+      "n_moves": 329786
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 1,
+      "window": 15000,
+      "advantage": 0.20988592305157588,
+      "z": 4.959728666827811,
+      "selection_gain": 0.2161511504353674,
+      "n_moves": 448820
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 2,
+      "window": 3750,
+      "advantage": 0.1269822276024151,
+      "z": 8.170969949615431,
+      "selection_gain": 0.08050981245076592,
+      "n_moves": 88239
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 2,
+      "window": 7500,
+      "advantage": 0.1601150833492782,
+      "z": 6.8920817647387596,
+      "selection_gain": 0.13574454817560874,
+      "n_moves": 182692
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 2,
+      "window": 11250,
+      "advantage": 0.17542178511482104,
+      "z": 6.216148130539335,
+      "selection_gain": 0.1320727728401817,
+      "n_moves": 277987
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 2,
+      "window": 15000,
+      "advantage": 0.1925180970800669,
+      "z": 5.780901199287182,
+      "selection_gain": 0.1274963969369317,
+      "n_moves": 384831
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 3,
+      "window": 3750,
+      "advantage": 0.13219468036706547,
+      "z": 5.864164515447944,
+      "selection_gain": 0.1233651814145762,
+      "n_moves": 134216
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 3,
+      "window": 7500,
+      "advantage": 0.14496742225664422,
+      "z": 4.631079954204432,
+      "selection_gain": 0.08969428061160174,
+      "n_moves": 260046
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 3,
+      "window": 11250,
+      "advantage": 0.15289995414724053,
+      "z": 4.256961516800126,
+      "selection_gain": 0.06862105962009027,
+      "n_moves": 393770
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 3,
+      "window": 15000,
+      "advantage": 0.1783898497385369,
+      "z": 4.411905671254161,
+      "selection_gain": 0.13651958924106916,
+      "n_moves": 529337
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 4,
+      "window": 3750,
+      "advantage": 0.12517576199246833,
+      "z": 3.159264155958073,
+      "selection_gain": 0.05648455663577942,
+      "n_moves": 133978
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 4,
+      "window": 7500,
+      "advantage": 0.13421353410065823,
+      "z": 3.3756078470041273,
+      "selection_gain": 0.054327585727309516,
+      "n_moves": 256569
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 4,
+      "window": 11250,
+      "advantage": 0.14315408145664238,
+      "z": 3.4590405582740438,
+      "selection_gain": 0.060388503709321896,
+      "n_moves": 384560
+    },
+    {
+      "patchiness": 1.0,
+      "seed": 4,
+      "window": 15000,
+      "advantage": 0.161649150942862,
+      "z": 3.68442318252561,
+      "selection_gain": 0.10598813944610791,
+      "n_moves": 517690
+    }
+  ]
+}

@@ -76,6 +76,23 @@ that carries it. Every permutation-based null shares that blind spot.
 Condition on something upstream instead — a genome value, a world property, a fixed cohort — or
 measure the decision directly rather than its consequences.
 
+### Score one run at several windows before running a longer one
+
+A detector that accepts a tick window turns "is this result length-limited?" into a **paired**
+comparison — same worlds, same seeds, same landscapes, only the observation window differs — instead
+of a comparison between two sets of worlds that differ in everything. With between-world spread
+around ten to one here, the paired version is not merely cheaper, it is the only one with the power
+to answer.
+
+It settled the question it was built for at **zero simulation cost**: A1's advantage magnitude grows
+1.5–1.8× between a quarter-length window and the full run, while its correlation with patchiness
+stays between −0.87 and −0.93 with no trend. The *level* was length-dependent and the *slope* was
+not *(→ `experiments/a1-run-length/`)*.
+
+It also gives a free check on clustering. If z barely moves while the number of scored rows grows
+fivefold, the statistic is clustered on the right unit; if z tracks the row count, it is
+[D-054](DECISIONS.md#d-054) happening again.
+
 ### The four routes to a confident wrong number
 
 All four were found in Phase A. Three of them survive a correct null model, which is why the

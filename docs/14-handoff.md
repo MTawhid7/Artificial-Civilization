@@ -14,6 +14,7 @@ else here is design, and this is state. Update it when a stage ships.
 | **A0 — skeleton** | shipped | [a0-baseline](../experiments/a0-baseline/result.md) — 11 ms/tick, forking exact |
 | **A1 — first evolution** | shipped | [a1-gradient-ascent](../experiments/a1-gradient-ascent/result.md) + [heredity control](../experiments/a1-heredity-control/result.md) |
 | **A2 — first picture** | shipped | [a2-wall](../experiments/a2-wall/result.md) — 102 worlds, 9.4× between/within divergence |
+| **Phase B prerequisites** | done | headroom precheck (D-065), S1 budget, `SIGNAL` payload (D-066), [a1-run-length](../experiments/a1-run-length/result.md) |
 | **A3 — the Historian** | **next** | criteria written, nothing built |
 | **B0 — neural policy** | budget measured, nothing built | [00-feasibility § S1](00-feasibility.md#s1-measured-before-b0) |
 
@@ -98,12 +99,11 @@ gradient sensitivity holds steady. That is the S0 shadow of *belief calibrated t
 which is the machinery the Chronicle Gap (D2) runs on. Worth a dedicated experiment before Phase D
 assumes it.
 
-**Run length as a variable.** A2 showed between-world divergence still climbing at year 2,500 while
-every A1 result was scored at 15,000 ticks, which makes "was that negative result simply
-length-limited?" a live question about conclusions already committed.
-`gradient_ascent` takes `max_tick`, so one long run can be scored at several windows — paired on the
-same worlds, which beats comparing two runs of different lengths. See
-`experiments/a1-run-length/`.
+**Run length — closed.** A1's negative dose-response is *not* an artifact of stopping at 15,000
+ticks: the correlation holds between −0.87 and −0.93 across a fourfold window range, negative in
+20 of 20 seed–window combinations. The *magnitude* is length-dependent, so A1's +0.268 is a lower
+bound. See [a1-run-length](../experiments/a1-run-length/result.md) — answered by re-scoring
+committed runs at four windows, at zero simulation cost.
 
 **Formal open questions** are tracked at the bottom of [DECISIONS.md](DECISIONS.md).
 
