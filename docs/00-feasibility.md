@@ -141,6 +141,54 @@ an S0 tick and a neural forward pass is the first thing that can make it dominan
 the budget is re-measured *before* B0 rather than during it
 *(→ [10-roadmap.md § B0](10-roadmap.md#b0--neural-policy))*.
 
+### S1 measured before B0, not during it
+
+<a id="s1-measured-before-b0"></a>
+
+Synthetic forward pass at the real shapes — 32 worlds × 1,000 agents, D-004's one shared network
+per lineage, patch + genome embedding + scalars in, four actions out. Reproduce with
+`uv run python -m bench.bench_policy`; raw output in `bench/results/bench_policy_s1.json`.
+
+**B0 is affordable, and by a wider margin than the roadmap's warning implied.**
+
+| hidden | decide ms | tick ms | decide share | vs S0 tick |
+|---|---|---|---|---|
+| 16 | 1.14 | 11.3 | 10% | 1.03× |
+| 32 | 1.79 | 12.0 | 15% | 1.09× |
+| **48** *(the documented width)* | **2.60** | **12.8** | **20%** | **1.16×** |
+| 64 | 3.25 | 13.4 | 24% | 1.22× |
+| 128 | 6.31 | 16.5 | 38% | 1.50× |
+| 256 | 13.06 | 23.3 | 56% | 2.12× |
+
+At `hidden: 48` the policy costs **3.2× the S0 `decide` phase and 16% more per tick overall**.
+Three consequences, all of which set B0's shape rather than being discovered inside it:
+
+**The bottleneck does not flip.** `observe` is 3.6 ms and `decide` is 2.60 ms at the documented
+width, so the gather stays dominant. It flips somewhere between hidden 64 and 128 — which makes
+**hidden width the first thing to sweep** if B0 needs more capacity, and the first thing to cut if
+it needs more speed.
+
+**View radius is still the expensive knob, and it is expensive on the other side.** Going to
+`view_radius: 4` costs 11.66 ms of gather against 2.88 ms of policy: a wider view is roughly *four
+times* the price of a wider hidden layer, for the same tick budget. This was already true at S0 and
+S1 does not change it.
+
+**Lineages cost about what a second network costs, then flatten.**
+
+| lineages | 1 | 2 | 4 | 8 | 16 | 32 |
+|---|---|---|---|---|---|---|
+| decide ms | 2.54 | 3.97 | 4.47 | 5.33 | 5.51 | 6.06 |
+
+Most of the penalty is the 1 → 2 step: one lineage is a single fused matmul, and any number above
+one pays grouping plus smaller matmuls. Beyond that it grows slowly. So lineage count is a
+**swept variable and not a free one** — budget ~2× on `decide` the moment it exceeds one, and note
+that going from 8 lineages to 32 costs less than going from 1 to 2.
+
+> A caveat on all of the above: this is a forward pass, not a stage. It excludes the evolution
+> outer loop, the per-lineage weight updates at generation boundaries, and whatever B0's selection
+> bookkeeping turns out to cost. It bounds the part that runs every tick for every agent, which is
+> the part that was in doubt.
+
 ### Time scale
 
 Pick tick duration so a lifetime is 200–400 ticks — long enough for a life to have structure,

@@ -181,12 +181,20 @@ going; skip it if not.
 **Build:** S1. One shared network per lineage, per-agent genome embedding, evolved weights. P2
 fog at L0 — local view, binary known map.
 
-**Build first, before any of it:** re-measure the budget. `decide` is 9% of an S0 tick and the
-observation gather is 40%; an S1 forward pass is the first thing that can invert that, and the
-answer sets hidden width, view radius and agents-per-world rather than being discovered after they
-are chosen. `bench_tick` already answers this with a synthetic matmul at the real shapes — an
-afternoon against the risk of rebuilding the stage
-*(→ [00-feasibility.md](00-feasibility.md#the-constraint-moved))*.
+**The budget is already measured** *(→ [00-feasibility.md](00-feasibility.md#s1-measured-before-b0),
+`uv run python -m bench.bench_policy`)*. This stage was flagged as "where the ms/tick budget gets
+tested for real"; it was tested first instead, and the answer is reassuring:
+
+- at the documented `hidden: 48`, S1 costs **3.2× the S0 `decide` phase and 1.16× the tick**
+- **the gather still dominates** — 3.6 ms observe against 2.60 ms policy. The bottleneck flips
+  somewhere between hidden 64 and 128, so hidden width is the first knob to sweep for capacity and
+  the first to cut for speed
+- `view_radius` remains the expensive lever and gets worse, not better: r=4 costs 11.66 ms of
+  gather against 2.88 ms of policy
+- lineages cost ~1.6× on `decide` at two and ~2.2× at sixteen — a swept variable, not a free one
+
+Sizes are therefore chosen up front rather than discovered: **hidden 48, view_radius 2, one to a
+few lineages** stays inside a 13 ms tick, which is ~12 min per 30k-tick run with throttling.
 
 **Ship:** evolved policies beat the reactive genome on survival; `exploration_rate` above null.
 **Time:** ~2 weeks. This is where the ms/tick budget gets tested for real.

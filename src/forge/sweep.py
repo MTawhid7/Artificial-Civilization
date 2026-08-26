@@ -23,6 +23,7 @@ import numpy as np
 import yaml
 
 from core.config import Config, resolve
+from forge import viability
 from forge.run import run
 from lens import collapse, gradient_ascent, pop_stability
 from lens.base import ChronicleReader, Firing
@@ -66,7 +67,8 @@ def score(run_dir: Path, seed: int) -> list[Firing]:
     return firings
 
 
-def sweep(spec: dict, out_root: Path, experiment_dir: Path) -> dict:
+def sweep(spec: dict, out_root: Path, experiment_dir: Path,
+          *, precheck: bool = True) -> dict:
     base = spec["base"]
     axes = spec.get("sweep", {})
     seeds = spec.get("seeds", [0, 1, 2])
@@ -74,15 +76,33 @@ def sweep(spec: dict, out_root: Path, experiment_dir: Path) -> dict:
     names = list(axes)
     combos = list(itertools.product(*(axes[n] for n in names))) or [()]
 
+    def config_for(combo) -> Config:
+        raw = base
+        for name, value in zip(names, combo):
+            raw = _set_path(raw, name, value)
+        return resolve(raw, source=str(experiment_dir / "spec.yaml"))
+
+    # D-065: every parameter point gets its own ceiling check, because the point
+    # that pins is rarely the one you would have guessed. Costs ~8% of the sweep
+    # and stops it before an hour is spent producing a number about the array.
+    prechecks = []
+    if precheck:
+        print(f"  headroom precheck: {len(combos)} point(s), "
+              f"{viability.PILOT_WORLDS} worlds each", flush=True)
+        for combo in combos:
+            label = ", ".join(f"{n}={v}" for n, v in zip(names, combo)) or "base"
+            report = viability.headroom(config_for(combo), seeds[0], out_root=out_root / "pilots")
+            report["params"] = dict(zip(names, combo))
+            viability.enforce(report, label)
+            prechecks.append(report)
+        print(flush=True)
+
     results = []
     total = len(combos) * len(seeds)
     started = time.perf_counter()
 
     for i, (combo, seed) in enumerate(itertools.product(combos, seeds), start=1):
-        raw = base
-        for name, value in zip(names, combo):
-            raw = _set_path(raw, name, value)
-        cfg: Config = resolve(raw, source=str(experiment_dir / "spec.yaml"))
+        cfg: Config = config_for(combo)
 
         label = ", ".join(f"{n}={v}" for n, v in zip(names, combo)) or "base"
         print(f"  [{i}/{total}] {label}  seed={seed}", flush=True)
@@ -107,6 +127,10 @@ def sweep(spec: dict, out_root: Path, experiment_dir: Path) -> dict:
     payload = {
         "spec": spec,
         "wall_seconds": round(time.perf_counter() - started, 1),
+        # Kept in the record: an experiment's ceiling is part of how it should be
+        # read, and "no world approached capacity" is a claim that needs evidence
+        # like any other.
+        "headroom": prechecks,
         "results": results,
         "summary": _summarize(results, names),
     }
@@ -162,11 +186,15 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("spec", help="path to an experiment spec.yaml")
     p.add_argument("--out", default="corpus")
+    p.add_argument("--skip-precheck", action="store_true",
+                   help="skip the headroom pilot (D-065) — only when a pinned "
+                        "ceiling is genuinely what you are studying")
     args = p.parse_args()
 
     spec_path = Path(args.spec)
     spec = yaml.safe_load(spec_path.read_text())
-    payload = sweep(spec, Path(args.out), spec_path.parent)
+    payload = sweep(spec, Path(args.out), spec_path.parent,
+                    precheck=not args.skip_precheck)
 
     print(f"\n  {spec.get('name', spec_path.parent.name)} — {payload['wall_seconds']}s\n")
     axis_names = list(spec.get("sweep", {}))

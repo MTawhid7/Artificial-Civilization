@@ -74,14 +74,26 @@ MIN_WORLDS = 4   # fewer than this and the across-world spread is meaningless
 FLAT_EPS = 1e-6  # below this, all four directions look identical — no choice to make
 
 
-def compute(reader: ChronicleReader, rng: np.random.Generator | None = None) -> Firing:
+def compute(reader: ChronicleReader, rng: np.random.Generator | None = None,
+            max_tick: int | None = None) -> Firing:
+    """`max_tick` truncates the run before scoring.
+
+    Scoring one long run at several windows is a **paired** comparison — same
+    worlds, same seeds, same landscapes, only the observation window differs — and
+    it is strictly stronger than running two experiments of different lengths and
+    comparing them. It exists because A2 measured between-world divergence still
+    climbing at year 2,500 while every A1 result was scored at 15,000 ticks, which
+    made "is this negative result simply length-limited?" a live question about
+    conclusions already committed.
+    """
     rng = rng or np.random.default_rng(0)
 
+    where = f" and tick < {int(max_tick)}" if max_tick is not None else ""
     rows = reader.sql(
         f"""
         select tick, world_id, a as chosen, b as mean_score, c as best_score,
                object as direction
-        from {{events}} where event_type = {S.PERCEIVE}
+        from {{events}} where event_type = {S.PERCEIVE}{where}
         """
     ).fetchnumpy()
 

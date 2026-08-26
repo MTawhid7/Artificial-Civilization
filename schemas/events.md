@@ -38,18 +38,44 @@ survive tiering.
 
 ### Reserved for B2 — the signal channel
 
-`SIGNAL` (40) is defined in the enum and not yet emitted. When it is, it must carry the **choice
-set**, not just the choice *(→ [D-066](../docs/DECISIONS.md#d-066))*: which signals were available
-to the emitter and which referents were present, alongside the signal actually sent.
+Decided at A2, emitted at B2 *(→ [D-066](../docs/DECISIONS.md#d-066))*. Enum values are permanent
+and the corpus outlives the code, so the payload is settled while it is still free to settle.
 
-This is the single most consequential schema decision still outstanding. Compositionality metrics
-are easy to compute on something downstream of the intended target — exactly the defect that
-withdrew `directed_foraging` *(→ [D-056](../docs/DECISIONS.md#d-056))* — and a permutation null
-does not catch it. Logging the choice set is what lets the B2 null be derived instead of shuffled,
-the way `PERCEIVE` did for `gradient_ascent`.
+| Value | Event | Tier | `subject` | `object` | `a` | `b` | `c` |
+|---|---|---|---|---|---|---|---|
+| 40 | `SIGNAL` | sampled | emitter | symbol emitted | symbols available to this emitter | emitter's own action this tick | best option score available, on `PERCEIVE`'s scale |
+| 43 | `SIGNAL_HEARD` | sampled | hearer | emitter | symbol heard | hearer's action after hearing | distance from emitter |
 
-Enum values are permanent and the corpus outlives the code, so this costs one decision now and a
-re-run of everything later.
+**Why two events and not one.** Emission and reception have different choice sets. A hearer chooses
+among actions given a symbol; an emitter chooses among symbols given a world. One row cannot carry
+both, and a detector that cannot separate *what was said* from *who heard it* cannot run the remap
+test — which is the criterion that separates the first emergent word from a cute correlation
+*(→ [10-roadmap.md § B2](../docs/10-roadmap.md#b2--first-word-))*.
+
+**Why these three floats on `SIGNAL`.** Each closes a specific way the stage could produce a
+confident wrong number:
+
+- **symbols available** makes the chance baseline exact rather than estimated. Mutual information
+  between signal and world is biased upward in finite samples, and the analytic correction depends
+  on the alphabet size — which is only knowable if it is logged. Without it the null has to be a
+  permutation, which is slower and weaker.
+- **emitter's own action** separates *the signal describes the world* from *the signal describes
+  what I am about to do*. Both produce signal–world correlation; only the first is communication.
+  Without this column the two are indistinguishable and the stage would claim the wrong one.
+- **best option score** is the world state a useful signal would be about, recorded on the same
+  scale `PERCEIVE` already uses — so signal informativeness and gradient-following are measured
+  against a common denominator instead of two incomparable ones.
+
+**Why `SIGNAL_HEARD` carries the hearer's next action.** Referential validity is a claim about
+whether hearing changed behavior. Reconstructing that from `MOVE` fails: `MOVE` is sampled 1-in-K
+on the *agent*, so the hearer is usually not in the sampled cohort, and the join silently drops most
+receptions *(→ [D-052](../docs/DECISIONS.md#d-052))*.
+
+**Still open:** whether one context slot is enough for the remap test, or whether the referent needs
+its own event once P2 fog exists and "what the emitter could see" stops being reconstructible from
+position alone. Tracked at the bottom of [DECISIONS.md](../docs/DECISIONS.md).
+
+`PERCEIVE` records **the decision context, not the decision's consequences**
 
 `PERCEIVE` records **the decision context, not the decision's consequences** — what
 the agent saw in each direction at the moment it chose. Those particular three

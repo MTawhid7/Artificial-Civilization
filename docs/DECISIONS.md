@@ -1271,6 +1271,7 @@ Tracked here so they are not mistaken for oversights. Each blocks a specific ver
 |---|---|---|
 | [D-009](#d-009--open--is-the-s4-planner-learned-or-hand-written) | S4 planner: learned or hand-written? | C2 |
 | — | Lineage granularity: per species, per culture, or per region? | D0 |
+| — | Is one context slot on `SIGNAL` enough for the remap test, or does the referent need its own event once P2 fog makes "what the emitter could see" unreconstructible from position? *(→ [schemas/events.md](../schemas/events.md))* | B2 |
 | — | Which plasticity-rule family is expressive enough to be interesting but small enough to evolve? | B1 |
 | — | Can opponent modeling (S5) be amortized across a population rather than per-target? | Phase F |
 | — | `known_mask` at `bool[N,H,W]` will dominate memory. Chunk, share per-lineage, or store sparsely? | B0 |
