@@ -21,29 +21,54 @@ from pathlib import Path
 
 TEMPLATE = Path(__file__).resolve().parent.parent / "atlas" / "wall.template.html"
 PLACEHOLDER = "__DIGESTS__"
+NARRATIVE_PLACEHOLDER = "__NARRATIVES__"
+
+
+def _narratives(digest_path: Path) -> list[dict]:
+    """Any Historian output sitting beside the digest, or nothing.
+
+    Narrative is optional and the page renders without it: a digest built before
+    A3, or a run nobody narrated, produces a wall with no Chronicle panel rather
+    than a broken one. Only the viewer payloads are read — `world_NN.json` —
+    which already carry the sentences joined to the eras they describe and the
+    source string behind every citation.
+    """
+    out = []
+    for path in sorted((digest_path.parent / "narrative").glob("world_*.json")):
+        payload = json.loads(path.read_text())
+        if payload.get("eras"):
+            out.append(payload)
+    return out
 
 
 def build(digest_paths: list[Path], template: Path = TEMPLATE) -> str:
-    digests = []
+    digests, narratives = [], []
     for path in digest_paths:
         d = json.loads(path.read_text())
         # Rasters are for the C3 map view and are ~40% of the file. The wall does
         # not read them, and shipping them would triple the page for nothing.
         d.pop("rasters", None)
         digests.append(d)
+        narratives.extend(_narratives(path))
 
     if not digests:
         raise SystemExit("no digests given")
 
     html = template.read_text()
-    if PLACEHOLDER not in html:
-        raise SystemExit(f"{template} has no {PLACEHOLDER} placeholder")
+    for name in (PLACEHOLDER, NARRATIVE_PLACEHOLDER):
+        if name not in html:
+            raise SystemExit(f"{template} has no {name} placeholder")
 
-    payload = json.dumps(digests, separators=(",", ":"))
-    # `</script>` inside a string literal would close the block early. It cannot
-    # occur in this data, and escaping it costs nothing against the day it can.
-    payload = payload.replace("</", "<\\/")
-    return html.replace(PLACEHOLDER, payload)
+    return (html
+            .replace(PLACEHOLDER, _inline(digests))
+            .replace(NARRATIVE_PLACEHOLDER, _inline(narratives)))
+
+
+def _inline(payload: object) -> str:
+    # `</script>` inside a string literal would close the block early. Digest data
+    # cannot contain it; generated prose can, so escaping stopped being defensive
+    # the moment narrative started being inlined.
+    return json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
 
 
 def main() -> None:
@@ -60,7 +85,9 @@ def main() -> None:
     out.write_text(html)
 
     mb = len(html.encode()) / 2**20
-    print(f"  {len(paths)} digest(s) -> {out}  ({mb:.2f} MB, self-contained)")
+    narrated = sum(len(_narratives(p)) for p in paths)
+    print(f"  {len(paths)} digest(s), {narrated} narrated world(s) -> {out}  "
+          f"({mb:.2f} MB, self-contained)")
     if mb > 16:
         print("  WARNING: over 16 MB — too large to publish as a hosted page")
 

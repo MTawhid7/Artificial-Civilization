@@ -9,7 +9,7 @@
 | Analysis | **DuckDB** over Parquet | full-corpus SQL for free, zero infrastructure |
 | Config | **YAML**, resolved + hashed | reproducibility depends on a canonical resolved form |
 | Atlas | **TypeScript + Canvas/WebGL**, single page | must be a URL you can send someone |
-| LLM layer | Claude via the Anthropic SDK | Historian and Analyst only, strictly at the boundary |
+| LLM layer | **Gemini 3.7 Flash** via `google-genai` | Historian and Analyst only, strictly at the boundary *(→ [D-067](DECISIONS.md#d-067))* |
 
 **Structure-of-arrays is still non-negotiable** *(→ [D-005](DECISIONS.md#d-005))* — not for a
 future GPU backend, but because batching worlds along a leading axis is what makes a 32-seed sweep
@@ -207,3 +207,29 @@ Historian and Analyst only *(→ [05-architecture.md](05-architecture.md#compone
   produced it.
 - **Historian output is never an input to the Analyst.** Prose about a world is not evidence
   about a world.
+
+**A3 built this and one thing about it was not obvious.** The model choice is free precisely
+*because* the output is never evidence — this is the only component in the project where a worse
+model produces a worse artifact and moves nothing downstream, which is why it is the one running on
+a free tier *(→ [D-067](DECISIONS.md#d-067))*.
+
+The containment is structural rather than editorial. The model never sees the Chronicle, the digest
+or a grid: it sees a numbered table of facts computed in Python, and
+[`verify.py`](../src/historian/verify.py) deletes any sentence that is uncited, cites an id that
+does not exist, contains a number not derivable from its cited facts, names a phenomenon this world
+does not contain, or asserts a cause *(→ [D-068](DECISIONS.md#d-068))*.
+
+```bash
+uv sync --group historian                        # google-genai, NOT installed by --all-extras
+GEMINI_API_KEY=... in a git-ignored .env
+uv run python -m historian.build corpus/runs/<id>
+```
+
+`google-genai` is a dependency **group** rather than an extra on purpose: CI runs
+`uv sync --all-extras`, which installs extras and leaves groups alone, so the determinism gate never
+pulls a network SDK. Every test runs against `historian.client.ReplayClient`.
+
+**Nothing in the gate asserts anything about the text.** Prose is the one artifact here that is not
+a pure function of `(config, seed)` — which is also why generated narrative is committed under
+`experiments/` rather than left in the git-ignored corpus. It cannot be regenerated from a seed, so
+if it is not committed it is gone.

@@ -39,13 +39,23 @@ jobs:
         run: uv run pytest -q --tb=short
 
       - name: Confirm the core imports nothing from the analysis layer
-        # A dependency from core/ to duckdb, matplotlib, lens or digest would let
-        # a measurement influence the thing it measures. The arrow runs one way:
-        # core writes, everything else reads. Cheap to check, expensive to
-        # discover.
+        # A dependency from core/ to duckdb, matplotlib, lens, digest or historian
+        # would let a measurement — or, worse, a generated narrative — influence
+        # the thing it describes. The arrow runs one way: core writes, everything
+        # else reads. Cheap to check, expensive to discover.
         run: |
-          if grep -rnE '^\s*(import|from)\s+(duckdb|matplotlib|lens|digest)' src/core/; then
+          if grep -rnE '^\s*(import|from)\s+(duckdb|matplotlib|lens|digest|historian)' src/core/; then
             echo "::error::src/core/ must not import the analysis layer"
+            exit 1
+          fi
+
+      - name: Confirm the Historian reaches neither the core nor a checkpoint
+        # A3's containment: prose is never evidence, so nothing it touches may run
+        # in the other direction. src/historian/ reads the aggregate tier and the
+        # digest — never live state, never a checkpoint, never src/core/.
+        run: |
+          if grep -rnE '^\s*(import|from)\s+core|chronicle\.checkpoint' src/historian/; then
+            echo "::error::src/historian/ reads the aggregate tier and the digest only"
             exit 1
           fi
 

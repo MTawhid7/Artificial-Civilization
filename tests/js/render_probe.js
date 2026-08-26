@@ -44,6 +44,7 @@ global.document = {
   getElementById(id){ return byId[id] || (byId[id] = el("div")); },
   createElement: el,
   querySelectorAll(){ return []; },
+  querySelector(){ return el("div"); },
 };
 global.getComputedStyle = () => ({ getPropertyValue: () => "#171E21" });
 global.atob = s => Buffer.from(s, "base64").toString("binary");
@@ -51,7 +52,11 @@ global.matchMedia = () => ({ addEventListener(){} });
 global.MutationObserver = class { observe(){} };
 
 // `const DIGESTS` inside the eval'd scope is not visible out here; hand it out.
-eval(js + "\n;globalThis.__digests = DIGESTS;");
+// `openChronicle` comes with it: the Chronicle panel is only reachable through a
+// click, and a click is the one thing a stub DOM cannot deliver.
+eval(js + "\n;globalThis.__digests = DIGESTS;"
+        + "\n;globalThis.__narratives = NARRATIVES;"
+        + "\n;globalThis.__openChronicle = openChronicle;");
 
 const img = byId["wall"]._img;
 if (!img) throw new Error("draw() never painted the wall canvas");
@@ -70,4 +75,27 @@ if (painted < img.width * img.height * 0.2) throw new Error("wall is mostly empt
 const expected = globalThis.__digests.reduce((n, d) => n + d.markers.length, 0);
 if (expected > 0 && red === 0) throw new Error("digest has markers, none drawn");
 console.log(`markers: ${expected} in digest, ${red} px drawn`);
+
+// The Chronicle panel, when the page was built with narrative in it. Reaching it
+// means simulating the click, then reading what the panel actually holds.
+const chron = globalThis.__narratives;
+console.log(`narratives: ${chron.length} world(s)`);
+if (chron.length) {
+  const key = chron[0].run_id + "|" + chron[0].world;
+  const row = globalThis.__digests.reduce((acc, d, di) => {
+    d.world_ids.forEach((w, i) => {
+      if (d.run_id + "|" + w === key && acc < 0) acc = di * d.world_ids.length + i;
+    });
+    return acc;
+  }, -1);
+  if (row < 0) throw new Error("narrated world is not on the wall");
+  globalThis.__openChronicle(row, 0);
+  if (byId["chronicle"].hidden !== false) throw new Error("panel stayed hidden");
+  const body = byId["chron-body"].innerHTML;
+  const first = chron[0].eras.find(e => e.sentences.length);
+  if (first && !body.includes(first.sentences[0].text.replace(/&/g, "&amp;")))
+    throw new Error("panel did not render the first sentence");
+  if (!body.includes("cited")) throw new Error("sentences lost their citations");
+  console.log("chronicle:", body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 90));
+}
 console.log("OK");

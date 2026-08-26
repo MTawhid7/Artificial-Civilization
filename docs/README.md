@@ -1,8 +1,8 @@
 # Artificial Civilization — Documentation
 
-**Status:** **A0, A1 and A2 shipped.** The deterministic core runs, the determinism gate holds,
-agents demonstrably evolve, and there is now a picture of it. Next up is
-[10-roadmap.md § A3](10-roadmap.md#a3--first-story).
+**Status:** **Phase A is complete — A0, A1, A2 and A3 all shipped.** The deterministic core runs,
+the determinism gate holds, agents demonstrably evolve, there is a picture of it, and the worlds now
+have written histories. Next up is [10-roadmap.md § B0](10-roadmap.md#b0--neural-policy).
 
 | Stage | Result |
 |---|---|
@@ -12,9 +12,10 @@ agents demonstrably evolve, and there is now a picture of it. Next up is
 | A1 — negative | [`a1-patchiness`](../experiments/a1-patchiness/result.md), [`a1-hunger-coupling`](../experiments/a1-hunger-coupling/result.md) — a detector that beat its null in 39 runs and was still wrong |
 | A2 — first picture | [`experiments/a2-wall/`](../experiments/a2-wall/result.md) — 102 worlds, one config, **9.4× more spread between worlds than within them** |
 | A2 — re-analysis | [`a1-run-length`](../experiments/a1-run-length/result.md) — A1's dose-response is not length-limited; the level is, the slope is not |
+| A3 — first story | [`experiments/a3-historian/`](../experiments/a3-historian/result.md) — an LLM writes the history, and a verifier deletes what it could not source |
 
-**Sixteen decisions were added *by* implementation rather than before it** —
-[D-051](DECISIONS.md#d-051) through [D-066](DECISIONS.md#d-066) — every one because a measurement
+**Nineteen decisions were added *by* implementation rather than before it** —
+[D-051](DECISIONS.md#d-051) through [D-069](DECISIONS.md#d-069) — every one because a measurement
 contradicted something these documents assumed.
 
 **Seven of them are corrections to how we measure, not to what we built**, and all three withdrawn

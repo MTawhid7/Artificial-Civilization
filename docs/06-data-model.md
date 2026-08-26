@@ -165,8 +165,17 @@ corpus/
     checkpoints/*.npz      full state, every C ticks (for forking)
     digest.json            viz digest, versioned separately (see below; D-061)
     metrics/*.parquet      Lens output
+    narrative/             Historian prose — never evidence (A3; schemas/narrative.md)
   index.parquet            one row per run — the corpus index Forge and Analyst query
 ```
+
+`metrics/` and `narrative/` are separate directories on purpose. One holds measurements and the
+other holds prose about them, and the split is the first line of A3's containment: nothing generated
+may ever be filed where something measured belongs *(→ [D-068](DECISIONS.md#d-068))*.
+
+`narrative/` is also the one thing under `corpus/` that is **not** regenerable from `(config, seed)`
+— a language model wrote it — which is why prose that matters is committed under `experiments/`
+rather than left here.
 
 Queried with DuckDB directly over the Parquet files. No database server.
 

@@ -1263,6 +1263,110 @@ sampled tier does not preserve.
 
 ---
 
+<a id="d-067"></a>
+### D-067 · settled · The Historian runs on Gemini 3.7 Flash, not Claude
+
+[11-engineering.md](11-engineering.md) specified "Claude via the Anthropic SDK" for the LLM layer.
+A3 ships on `gemini-3.7-flash` through `google-genai`, keyed by `GEMINI_API_KEY` in a git-ignored
+`.env`.
+
+**Why:** it has a free tier, and — the part that decides it — **this is the only component in the
+project where the model choice cannot affect a result**. Everywhere else an LLM could appear, its
+output would be an input to something. Historian output is an input to nothing: it is never
+evidence, never read by the Lens, and never an input to the Analyst
+*(→ [11-engineering.md § LLM usage](11-engineering.md#llm-usage))*. A weaker model here produces
+worse prose and moves nothing downstream, which is a property no other stage has and the reason
+this is the one to run free.
+
+The second reason is that the work was moved off the model. The task is narration under a hard
+grounding gate: [`src/historian/verify.py`](../src/historian/verify.py) rejects any sentence that
+is uncited, cites an id that does not exist, contains a number not derivable from its cited facts,
+names a phenomenon this world does not contain, or asserts a cause. A stronger model would be
+trusted to do that; a checked model does not need to be trusted.
+
+**Rejected:** Claude, per the original stack — better prose for a component whose prose quality is
+not a criterion, at a cost that would scale with the corpus. Also rejected: making the model a
+config knob and sweeping it. There is no metric it could be swept against; a preference between two
+narrators is not a measurement, and pretending it is would be the exact substitution
+[D-064](DECISIONS.md#d-064) exists to prevent.
+
+**Consequence:** the SDK lives behind one method, `GeminiClient.complete`. This API has already
+moved once (`generate_content` → `interactions.create`), and the gate must never depend on it:
+`google-genai` is a dependency *group*, not an extra, so `uv sync --all-extras` in CI leaves it
+alone and every test runs against `ReplayClient`.
+
+*(→ [11-engineering.md](11-engineering.md#stack), [schemas/narrative.md](../schemas/narrative.md))*
+
+---
+
+<a id="d-068"></a>
+### D-068 · settled · Generated prose ships with its citations and its rejections
+
+Every Historian sentence carries the ids of the facts it rests on, a verifier rejects the ones that
+do not survive five checks, and **what was rejected is written into the output beside what was
+kept**.
+
+**Why:** A3's ship criterion is that *every claim in generated prose is traceable to an event range
+or an aggregate row*. As written that is a rule for the reader, and readers do not cross-check
+prose against Parquet. The five checks make it a property of the file instead — and the model
+never sees the Chronicle, the digest or a grid, only a numbered table of facts computed in Python,
+so it cannot describe what it was not given.
+
+The check that does the most work is not the obvious one. Rejecting invented *numbers* catches the
+common failure; rejecting invented *citations* catches the dangerous one, because a sentence citing
+`f31` where no `f31` exists is formatted as supported work and reads as more rigorous than an
+uncited sentence would.
+
+**Rejections ship for the same reason experiments commit negative results.** A narrative that
+quietly dropped its failures would report 100% grounding by construction, and the acceptance rate
+is the only number this stage produces about itself.
+
+Two lexicons are enforced. **Phenomena** — `war`, `city`, `king`, `tribe`, `trade`, `plague` — is
+[D-002](DECISIONS.md#d-002) pointed at the one component whose entire job is to sound like history:
+CI greps `src/core/` for those words, and the verifier greps the prose. **Causation** — `because`,
+`caused`, `led to`, `therefore` — because a causal claim about a world is something the Lens makes
+with a null and a control *(→ [D-064](DECISIONS.md#d-064))*, or nobody makes. The Historian orders
+events in time. *After* is allowed; *because* is not.
+
+A sentence citing a marker from a detector that came out **silent** may not call it significant,
+unusual or rare. The verdict travels with the marks in the digest already
+*(→ [D-063](DECISIONS.md#d-063))*; this is the same rule applied where the marks become sentences.
+
+**Rejected:** paragraph-level citation with a source table at the foot of each file — cheaper, and
+it leaves four of five sentences unaccounted for while looking rigorous. Also rejected: asking a
+second model to judge groundedness. That replaces a check that cannot be wrong about arithmetic
+with one that can, and it would make the containment depend on the thing being contained.
+
+*(→ [schemas/narrative.md](../schemas/narrative.md), [10-roadmap.md § A3](10-roadmap.md#a3--first-story))*
+
+---
+
+<a id="d-069"></a>
+### D-069 · settled · Eras are computed, never chosen by the model
+
+The Historian narrates fixed windows — ten equal spans of frames, computed in
+[`facts.py`](../src/historian/facts.py) — and the model is told where each era begins rather than
+asked.
+
+**Why:** letting an LLM choose the boundaries would make "era" an interpretation that then
+determines the structure the interpretation is read off. It would also make worlds
+**incomparable**, which is the one thing a corpus of identical configurations exists for: with
+fixed windows, two worlds' fourth eras cover the same ticks, so *"these two diverged"* stays a
+statement about the worlds rather than about where a narrator decided a chapter began.
+
+Equal windows are boring on purpose. A change-point segmentation would produce better chapters and
+a worse instrument, and the wall — which is the same 2,000 frames rendered as pixels — is already
+aligned the same way.
+
+**Rejected:** data-driven boundaries from the `collapse` detector's episodes. Tempting, because the
+markers are already there and it is the documented reuse — *the scientific instrumentation is the
+narrative UI*. But `collapse` came out **silent** on this corpus, so segmenting on its episodes
+would be structuring history around drawdowns that are not distinguishable from chance.
+
+*(→ [09-visualization.md](09-visualization.md), [D-063](DECISIONS.md#d-063))*
+
+---
+
 ## Open questions
 
 Tracked here so they are not mistaken for oversights. Each blocks a specific version.

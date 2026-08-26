@@ -1,0 +1,60 @@
+{
+  "accepted": 5,
+  "brief_hash": "4475e22aa3565c0d6f9835e552907b17",
+  "generated": 5,
+  "kind": "preface",
+  "model": "gemini-3.7-flash",
+  "narrative_version": "0.1.0",
+  "prompt_version": "0.1.0",
+  "rejected": [],
+  "run_id": "d712b54d58fde26db2e9d1aa",
+  "sentences": [
+    {
+      "cites": [
+        "f00"
+      ],
+      "text": "Thirty-four worlds began with identical capacity and shared the same initial seed across twenty-five hundred years."
+    },
+    {
+      "cites": [
+        "f01",
+        "f02"
+      ],
+      "text": "Over time, populations diverged widely across the separate worlds."
+    },
+    {
+      "cites": [
+        "f01"
+      ],
+      "text": "The least populated world fell to fewer than two hundred agents, while the most populous reached well over fourteen hundred."
+    },
+    {
+      "cites": [
+        "f02"
+      ],
+      "text": "The variation between different worlds exceeded the internal variation within any single world."
+    },
+    {
+      "cites": [
+        "f03",
+        "f04",
+        "f05",
+        "f06"
+      ],
+      "text": "Among the recorded worlds, some finished near their lowest counts while others ended at their peaks."
+    }
+  ],
+  "title": "Divergence Across Identical Worlds",
+  "usage": {
+    "input_tokens": 1115,
+    "output_tokens": 248,
+    "thought_tokens": 0,
+    "total_tokens": 1363
+  },
+  "worlds": [
+    0,
+    1,
+    2,
+    3
+  ]
+}

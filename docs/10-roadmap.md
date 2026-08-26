@@ -150,12 +150,25 @@ only reason it counts.
 
 **Build:** the Historian — an LLM reading the Chronicle and writing narrative history per era.
 
-**Ship criteria** — the one stage with no detector, because its output is *never evidence*
+**Ship criteria** — **done**, see [experiments/a3-historian/result.md](../experiments/a3-historian/result.md).
+The one stage with no detector, because its output is *never evidence*
 *(→ [12-risks.md](12-risks.md))*. The criteria are therefore about containment, not measurement.
-- [ ] every claim in generated prose is traceable to an event range or an aggregate row
-- [ ] output is stored under `narrative/`, never under `metrics/`, and is visibly labelled generated
-- [ ] the Historian reads the digest and aggregate tier only — never live state, never a checkpoint
-- [ ] a run with the Historian attached produces a byte-identical Chronicle to one without
+- [x] every claim in generated prose is traceable to an event range or an aggregate row — **enforced,
+      not intended**: the model is given a numbered fact table and nothing else, emits sentences with
+      fact ids, and [`verify.py`](../src/historian/verify.py) deletes any sentence that fails one of
+      five checks *(→ [D-068](DECISIONS.md#d-068))*
+- [x] output is stored under `narrative/`, never under `metrics/`, and is visibly labelled generated
+      — the banner is in the file, not only in the viewer
+- [x] the Historian reads the digest and aggregate tier only — never live state, never a checkpoint;
+      CI greps for it and a test runs the builder with `checkpoints/` moved away
+- [x] a run with the Historian attached produces a byte-identical Chronicle to one without — it is
+      never attached. A test hashes every file in the run directory before and after
+
+Three things the criteria did not ask for and the stage produced anyway: the **acceptance rate**,
+which is the only number this stage measures about itself; the **rejection log**, shipped beside the
+prose because a narrative that hid its failures would report perfect grounding by construction; and
+the **Chronicle panel** in the Atlas *(→ [09-visualization.md](09-visualization.md))*, which came
+almost free once the prose existed.
 
 **Time:** ~3 days. **Payoff:** disproportionate. Even a world containing only food and movement
 produces *"the eastern settlements grew until the drought of year 340, after which most moved

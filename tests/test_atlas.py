@@ -175,3 +175,58 @@ def test_viewer_actually_draws(digests, tmp_path):
                             capture_output=True, text=True, timeout=120)
     assert result.returncode == 0, result.stdout + result.stderr
     assert "OK" in result.stdout, result.stdout
+
+
+def test_page_carries_the_chronicle_when_a_run_was_narrated(digests, tmp_path):
+    """09-visualization.md view 2, and the containment carried into the viewer.
+
+    The panel is where generated prose meets a reader who is not going to open a
+    JSON sidecar, so three things are asserted together: the sentences arrive,
+    each one keeps the citation that justifies it, and the page says in its own
+    markup that this is generated narrative rather than a measurement.
+    """
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node not installed; the viewer probe needs it")
+
+    digest = json.loads(digests[0].read_text())
+    world = digest["world_ids"][0]
+    narrative = digests[0].parent / "narrative"
+    narrative.mkdir(exist_ok=True)
+    (narrative / f"world_{world:02d}.json").write_text(json.dumps({
+        "world": world, "run_id": digest["run_id"],
+        "model": "gemini-3.7-flash", "prompt_version": "0.1.0",
+        "eras": [{
+            "index": 0, "of": 1, "tick_range": [0, 199], "year_range": [0.0, 16.6],
+            "title": "The founding", "accepted": 1, "generated": 2,
+            "sentences": [{"text": "The population held near 40.", "cites": ["f01"]}],
+            "sources": {"f01": "aggregate.parquet world=0 tick 0..199"},
+            "rejected": [{"text": "The city fell.", "reason": "phenomenon",
+                          "stage": "first"}],
+        }],
+    }))
+
+    try:
+        html = build_atlas.build(digests)
+        assert build_atlas.NARRATIVE_PLACEHOLDER not in html
+        assert "generated narrative &middot; not evidence" in html
+        assert "The population held near 40." in html
+
+        page = tmp_path / "narrated.html"
+        page.write_text(html)
+        probe = Path(__file__).parent / "js" / "render_probe.js"
+        result = subprocess.run([node, str(probe), str(page)],
+                                capture_output=True, text=True, timeout=120)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "narratives: 1 world(s)" in result.stdout, result.stdout
+        assert "chronicle:" in result.stdout, result.stdout
+    finally:
+        shutil.rmtree(narrative)
+
+
+def test_page_without_narrative_still_renders(digests):
+    """Narrative is optional. A digest built before A3 must give a wall, not a
+    broken page — the Atlas has always read a digest and nothing else."""
+    html = build_atlas.build(digests)
+    assert build_atlas.NARRATIVE_PLACEHOLDER not in html
+    assert "const NARRATIVES = [];" in html

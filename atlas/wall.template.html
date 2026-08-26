@@ -263,6 +263,87 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* --- the Chronicle panel (09-visualization.md, view 2) ------------------ */
+
+  .chronicle {
+    margin-top: 22px;
+    border: 1px solid var(--rule);
+    background: var(--panel);
+  }
+  .chronicle[hidden] { display: none; }
+
+  .chron-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 11px 15px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .chron-head h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  /* The label is permanent and not a dismissible notice. 09-visualization.md
+     requires generated narrative to be visibly labelled wherever it is shown,
+     and "wherever" includes a screenshot of this panel. */
+  .chron-label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--brass);
+    border: 1px solid var(--brass);
+    padding: 2px 7px;
+    white-space: nowrap;
+  }
+  .chron-sub {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chron-body { max-height: 460px; overflow-y: auto; padding: 4px 15px 15px; }
+
+  .era { padding: 13px 0; border-bottom: 1px solid var(--rule-soft); }
+  .era:last-child { border-bottom: 0; }
+  .era.here { border-left: 2px solid var(--brass); padding-left: 12px; margin-left: -14px; }
+  .era h3 {
+    margin: 0 0 3px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .era .when {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .era p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.62; color: var(--ink-dim); }
+  /* Every sentence carries its citation into the interface. The containment is
+     not only a property of the file on disk: a reader looking at the page can
+     see which aggregate rows a sentence rests on. */
+  .era .cited { border-bottom: 1px dotted var(--rule); cursor: help; }
+  .era .cited:hover { color: var(--ink); border-bottom-color: var(--brass); }
+  .era .none { color: var(--ink-faint); font-style: italic; }
+  .era .cut {
+    margin-top: 7px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+  }
+
+  .chron-hint {
+    padding: 15px;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }
   }
@@ -306,6 +387,15 @@
     </div>
   </div>
 
+  <div class="chronicle" id="chronicle" hidden>
+    <div class="chron-head">
+      <h2 id="chron-title">The Chronicle</h2>
+      <span class="chron-label">generated narrative &middot; not evidence</span>
+      <span class="chron-sub" id="chron-sub"></span>
+    </div>
+    <div class="chron-body" id="chron-body"></div>
+  </div>
+
   <div class="foot">
     <section>
       <h2>How to read a band</h2>
@@ -346,6 +436,13 @@
 "use strict";
 
 const DIGESTS = __DIGESTS__;
+
+/* Historian output for whichever worlds were narrated — usually a handful out of
+   a hundred. Empty is the normal case for a digest built before A3 or a run
+   nobody narrated, and the page renders a wall with no Chronicle panel rather
+   than a broken one. Prose is never evidence and nothing here reads it back into
+   a number; it annotates the picture and stops there. */
+const NARRATIVES = __NARRATIVES__;
 
 /* --- digest decoding ------------------------------------------------------
    schemas/digest.md: every quantized block carries {bits, min, max, shape}, and
@@ -392,7 +489,7 @@ const state = { channel: "energy_gini", scale: "max", sort: "world" };
 const wall = build();
 
 function build() {
-  const pops = [], chans = {}, labels = [], markers = [];
+  const pops = [], chans = {}, labels = [], markers = [], origins = [];
   CHANNELS.forEach(c => chans[c] = []);
   let frames = Infinity, row = 0;
 
@@ -403,7 +500,14 @@ function build() {
     CHANNELS.forEach(c => chans[c].push(decode(d.series[c])));
     const index = {};
     d.world_ids.forEach((w, i) => { index[w] = i; });
-    d.world_ids.forEach(w => labels.push(d.run_id.slice(0, 4) + "-" + String(w).padStart(2, "0")));
+    d.world_ids.forEach(w => {
+      labels.push(d.run_id.slice(0, 4) + "-" + String(w).padStart(2, "0"));
+      /* Which run and which world each strip came from. The hover readout only
+         ever needed a label; the Chronicle panel needs the identity, because a
+         narrative belongs to one world of one run and two runs in this page can
+         both have a world 0. */
+      origins.push(d.run_id + "|" + w);
+    });
     for (const m of d.markers) {
       const f = Math.round((m.tick - d.frames.tick_start) / Math.max(d.frames.tick_step, 1));
       if (f >= 0 && f < pop.cols) markers.push([row + index[m.world], f]);
@@ -426,7 +530,7 @@ function build() {
   const series = { population: flat("population") };
   CHANNELS.forEach(c => series[c] = flat(c));
   return {
-    worlds, frames, series, labels, markers,
+    worlds, frames, series, labels, markers, origins,
     capacity: DIGESTS[0].capacity,
     ticks: DIGESTS[0].ticks_completed,
     step: DIGESTS[0].frames.tick_step,
@@ -535,7 +639,14 @@ function paintGutter() {
     const el = document.createElement("div");
     el.style.height = h + "px";
     el.dataset.row = i;
-    el.textContent = (i % Math.max(Math.floor(wall.worlds / 14), 1) === 0) ? wall.labels[w] : "";
+    const every = Math.max(Math.floor(wall.worlds / 14), 1);
+    /* A narrated world is always labelled, however dense the wall gets: the
+       marker is the only way a reader learns the band is clickable, and a
+       chronicle nobody can find is a chronicle that was not written. */
+    const narrated = hasChronicle(w);
+    el.textContent = (narrated ? "▸ " : "")
+      + ((narrated || i % every === 0) ? wall.labels[w] : "");
+    if (narrated) { el.style.color = "var(--brass)"; el.style.cursor = "pointer"; }
     g.appendChild(el);
   });
 }
@@ -623,6 +734,73 @@ canvas.addEventListener("pointerleave", () => {
   document.querySelectorAll("#gutter div").forEach(el => el.classList.remove("hot"));
 });
 
+/* --- the Chronicle panel --------------------------------------------------- */
+
+const CHRONICLES = {};
+for (const n of NARRATIVES) CHRONICLES[n.run_id + "|" + n.world] = n;
+
+function hasChronicle(w) { return !!CHRONICLES[wall.origins[w]]; }
+
+function escapeText(s) {
+  return String(s).replace(/[&<>"]/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+}
+
+/* Sentences arrive as data and are rendered as text, never as markup. They were
+   written by a language model: the page treats them the way it would treat any
+   other untrusted string. */
+function sentenceHtml(s, sources) {
+  const where = (s.cites || []).map(c => c + "  " + (sources[c] || "")).join("\n");
+  return '<span class="cited" title="' + escapeText(where) + '">'
+    + escapeText(s.text) + "</span>";
+}
+
+function openChronicle(w, frame) {
+  const chron = CHRONICLES[wall.origins[w]];
+  const panel = document.getElementById("chronicle");
+  if (!chron) { panel.hidden = true; return; }
+
+  const tick = wall.start + frame * wall.step;
+  const kept = chron.eras.reduce((t, e) => t + e.accepted, 0);
+  const made = chron.eras.reduce((t, e) => t + e.generated, 0);
+
+  document.getElementById("chron-title").textContent =
+    "The Chronicle of " + wall.labels[w];
+  document.getElementById("chron-sub").textContent =
+    chron.model + " · prompt v" + chron.prompt_version
+    + " · " + kept + "/" + made + " sentences kept";
+
+  document.getElementById("chron-body").innerHTML = chron.eras.map(era => {
+    const here = tick >= era.tick_range[0] && tick <= era.tick_range[1];
+    const prose = era.sentences.length
+      ? "<p>" + era.sentences.map(s => sentenceHtml(s, era.sources)).join(" ") + "</p>"
+      : '<p class="none">Every sentence written for this era failed the grounding '
+        + "checks and was removed.</p>";
+    /* The count of removed sentences is shown, not hidden. A panel that displayed
+       only what survived would be reporting perfect grounding by construction. */
+    const cut = era.rejected.length
+      ? '<div class="cut">' + era.rejected.length
+        + " sentence(s) removed by the grounding checks</div>"
+      : "";
+    return '<div class="era' + (here ? " here" : "") + '">'
+      + "<h3>" + (era.index + 1) + ". " + escapeText(era.title || "Untitled") + "</h3>"
+      + '<div class="when">years '
+      + Math.round(era.year_range[0]).toLocaleString() + "–"
+      + Math.round(era.year_range[1]).toLocaleString() + "</div>"
+      + prose + cut + "</div>";
+  }).join("");
+
+  panel.hidden = false;
+}
+
+canvas.addEventListener("click", e => {
+  const r = canvas.getBoundingClientRect();
+  const f = Math.floor((e.clientX - r.left) / r.width * wall.frames);
+  const i = Math.floor((e.clientY - r.top) / r.height * wall.worlds);
+  if (i < 0 || i >= wall.worlds) return;
+  openChronicle(rows[i], Math.min(Math.max(f, 0), wall.frames - 1));
+});
+
 /* --- static furniture ------------------------------------------------------ */
 
 (function furnish() {
@@ -675,6 +853,15 @@ canvas.addEventListener("pointerleave", () => {
   swatch("key-bar", viridis(0.55).map(Math.round));
   swatch("key-color", viridis(0.85).map(Math.round));
   swatch("key-mark", [232, 96, 74]);
+
+  if (NARRATIVES.length) {
+    const hint = document.createElement("div");
+    hint.innerHTML = '<span class="swatch" style="border:0;background:none;'
+      + 'color:var(--brass);text-align:center;line-height:11px">▸</span> '
+      + "click a marked band to read that world's written history "
+      + "&mdash; generated prose, never evidence";
+    document.querySelector(".key").appendChild(hint);
+  }
 })();
 
 draw();

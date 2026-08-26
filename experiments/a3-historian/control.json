@@ -1,0 +1,99 @@
+{
+  "arm": "unguarded",
+  "model": "gemini-3.5-flash-lite",
+  "prompt_version": "0.1.0",
+  "run_id": "d712b54d58fde26db2e9d1aa",
+  "briefs": 6,
+  "accepted": 26,
+  "generated": 32,
+  "acceptance_rate": 0.812,
+  "rejections_by_class": {
+    "causal claim": 3,
+    "phenomenon not in this world": 3
+  },
+  "detail": [
+    {
+      "world": 0,
+      "era": 0,
+      "title": "The Great Exhaustion",
+      "accepted": 4,
+      "generated": 5,
+      "rejected": [
+        {
+          "text": "This severe depletion forced a drastic biological adaptation, driving metabolic rates down while parental investment in offspring soared.",
+          "reason": "causal claim: forced",
+          "stage": "first"
+        }
+      ]
+    },
+    {
+      "world": 1,
+      "era": 0,
+      "title": "The Great Depletion",
+      "accepted": 3,
+      "generated": 5,
+      "rejected": [
+        {
+          "text": "This profound scarcity triggered a demographic contraction, dropping the total population significantly from its earlier abundance.",
+          "reason": "causal claim: triggered",
+          "stage": "first"
+        },
+        {
+          "text": "In response to these relentless environmental pressures, the surviving populace underwent fundamental genetic shifts, dramatically altering their reproductive thresholds and behavioral persistence.",
+          "reason": "causal claim: response",
+          "stage": "first"
+        }
+      ]
+    },
+    {
+      "world": 0,
+      "era": 4,
+      "title": "The Quiet Consolidation",
+      "accepted": 5,
+      "generated": 6,
+      "rejected": [
+        {
+          "text": "Concurrently, total available resources swelled by seventeen percent as geographic wealth slowly drifted toward the northeast.",
+          "reason": "phenomenon not in this world: wealth",
+          "stage": "first"
+        }
+      ]
+    },
+    {
+      "world": 1,
+      "era": 4,
+      "title": "The Great Constriction",
+      "accepted": 4,
+      "generated": 4,
+      "rejected": []
+    },
+    {
+      "world": 0,
+      "era": 9,
+      "title": "The Consolidation of the Hearth",
+      "accepted": 5,
+      "generated": 6,
+      "rejected": [
+        {
+          "text": "Spatially, settlement patterns tightened further, with the top decile share of population density climbing to occupy over three quarters of concentrated habitation.",
+          "reason": "phenomenon not in this world: settlement",
+          "stage": "first"
+        }
+      ]
+    },
+    {
+      "world": 1,
+      "era": 9,
+      "title": "The Zenith of the Convergence",
+      "accepted": 5,
+      "generated": 6,
+      "rejected": [
+        {
+          "text": "Spatially, the resource centroid drifted steadily toward the northeast, while the top decile of population density eased its concentration slightly across the territory.",
+          "reason": "phenomenon not in this world: territory",
+          "stage": "first"
+        }
+      ]
+    }
+  ]
+}

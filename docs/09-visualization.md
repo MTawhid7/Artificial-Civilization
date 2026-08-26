@@ -55,6 +55,27 @@ shareable.
 ⚠️ Historian output is *never* evidence. It is an interface, and must be visibly labelled as
 generated narrative *(→ [12-risks.md](12-risks.md))*.
 
+#### Built at A3, without the scrubber
+
+Click a band on the wall and that world's written history opens below it, era by era. There is no
+scrubber yet, so the panel highlights the era containing the frame that was clicked rather than
+following a playhead — the same reading experience with none of the machinery C3 will need.
+
+Three things about it are load-bearing rather than decorative:
+
+- **The generated label is permanent**, in the panel header and in the markdown file itself. A file
+  gets pasted into a chat or an issue where the viewer's label does not follow it, so the label has
+  to travel with the bytes.
+- **Every sentence keeps its citation.** Hovering one shows the fact ids it rests on and the
+  aggregate rows behind them. The containment cannot stop at the file if the file is not what most
+  people read *(→ [D-068](DECISIONS.md#d-068))*.
+- **Removed sentences are counted in view.** The panel shows how many failed the grounding checks.
+  A panel showing only what survived would report perfect grounding by construction.
+
+Only a handful of a hundred worlds are narrated, and those bands are marked in the gutter — a
+chronicle nobody can find is a chronicle that was not written. Narrative is optional throughout: a
+digest built before A3 renders a wall with no panel rather than a broken page.
+
 ### View 3 — The fingerprint strip
 
 An entire 10,000-year history compressed into one horizontal band: height for population,
@@ -180,8 +201,8 @@ The scientific instrumentation *is* the narrative UI. Build detectors once, get 
 - **Digest loaded once, fully client-side.** No server round-trips while scrubbing.
 - **Deterministic playback.** Frame N always renders identically — a screenshot must be
   reproducible.
-- **Build order:** strip ✓ → wall ✓ → map → chronicle panel. The strip and wall carry the thesis
-  and are by far the cheapest.
+- **Build order:** strip ✓ → wall ✓ → chronicle panel ✓ → map. The strip and wall carry the thesis
+  and are by far the cheapest; the panel came free with A3 because the prose was already written.
 
 **A2 built the first two with no toolchain** *(→ [D-062](DECISIONS.md#d-062))*: one HTML file,
 vanilla JS, a 2D canvas, and the digest inlined at build time by `tools/build_atlas.py`. Inlining

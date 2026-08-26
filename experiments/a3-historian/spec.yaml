@@ -1,0 +1,67 @@
+name: a3-historian
+stage: A3
+
+# Not a sweep, and not an experiment in the sense the rest of this directory
+# means it. There is no hypothesis, no null, no detector and no replication unit,
+# because the thing being produced is **never evidence** (docs/GLOSSARY.md). It
+# sits here anyway because the protocol is that a stage ends in a committed
+# result.md whether or not anything survived, and A3 has something to report:
+# how much of what a language model wrote about this world was actually true of
+# it.
+#
+# There is no config to freeze. The Historian is a reader — it runs over a run
+# that already exists, and the only inputs it has are the ones below.
+
+target:
+  # a2-wall, seed 0. 34 worlds, 30,000 ticks, capacity 2000, patchiness 0.6.
+  # Chosen because it is the corpus the wall was built from: the picture and the
+  # prose then describe the same worlds, and the Atlas panel can put one beside
+  # the other. Its digest was built at A2 and is not rebuilt here.
+  run_id: d712b54d58fde26db2e9d1aa
+  source: experiments/a2-wall/spec.yaml
+
+  # The FIRST four world ids, not the most interesting four.
+  #
+  # This is D-063 applied to prose. Narrating the highest and lowest final
+  # populations would produce a better read and a dishonest one: the reader would
+  # meet a world that boomed and a world that nearly died and conclude the run is
+  # full of drama, when the selection did that. World id is arbitrary with
+  # respect to outcome, and these four happen to rank 29th, 5th, 17th and 14th of
+  # 34 — which is what an unselected sample looks like.
+  #
+  # They are also exactly the four worlds the digest carries rasters for
+  # (digest.schema.RASTER_WORLDS), so they are the four that can have any
+  # geography in their prose at all.
+  worlds: [0, 1, 2, 3]
+
+  # Ten equal windows of 200 frames = 3,000 ticks = 250 simulated years each.
+  # Computed in facts.py, never chosen by the model (D-069): two worlds' fourth
+  # eras cover the same ticks, so "these two diverged" stays a statement about the
+  # worlds rather than about where a narrator decided a chapter began.
+  eras: 10
+
+historian:
+  model: gemini-3.7-flash        # D-067
+  prompt_version: "0.1.0"        # src/historian/prompt.py
+  narrative_version: "0.1.0"     # schemas/narrative.md
+  temperature: 0.0
+  thinking_level: low
+
+  # 4 worlds x 10 eras + 1 preface = 41 briefs. Each rejected sentence set costs
+  # one repair round, so the call count lands between 41 and 82.
+  briefs: 41
+
+# What the model is allowed to see. Nothing else reaches it: not the Chronicle,
+# not the digest, not a grid, not a checkpoint, not live state.
+inputs:
+  - aggregate.parquet            # exact series; the "aggregate row" the criterion names
+  - digest.json markers          # detector firings, with the detector's verdict attached
+  - digest.json rasters          # reduced to centroid drift and concentration, in Python
+
+# The verifier deletes any sentence failing one of these. Rejections are written
+# into the output beside what was kept (D-068).
+checks: [cited, ids_resolve, numbers_ground, no_phenomena, no_causation, verdict_discipline]
+
+run: |
+  uv sync --group historian
+  uv run python -m historian.build corpus/runs/d712b54d58fde26db2e9d1aa --worlds 4

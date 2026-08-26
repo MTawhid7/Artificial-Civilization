@@ -3,7 +3,7 @@
 **Read this first in a new session.** It is the only document that goes stale on purpose; everything
 else here is design, and this is state. Update it when a stage ships.
 
-*Last updated: after A2 shipped and the Phase B prerequisites landed.*
+*Last updated: after A3 shipped. Phase A is complete.*
 
 ---
 
@@ -15,8 +15,8 @@ else here is design, and this is state. Update it when a stage ships.
 | **A1 — first evolution** | shipped | [a1-gradient-ascent](../experiments/a1-gradient-ascent/result.md) + [heredity control](../experiments/a1-heredity-control/result.md) |
 | **A2 — first picture** | shipped | [a2-wall](../experiments/a2-wall/result.md) — 102 worlds, 9.4× between/within divergence |
 | **Phase B prerequisites** | done | headroom precheck (D-065), S1 budget, `SIGNAL` payload (D-066), [a1-run-length](../experiments/a1-run-length/result.md) |
-| **A3 — the Historian** | **next** | criteria written, nothing built |
-| **B0 — neural policy** | budget measured, nothing built | [00-feasibility § S1](00-feasibility.md#s1-measured-before-b0) |
+| **A3 — the Historian** | shipped | [a3-historian](../experiments/a3-historian/result.md) — 238 cited sentences; the gate rejects 19% of unguarded prose |
+| **B0 — neural policy** | **next** | budget measured, sizes chosen — [00-feasibility § S1](00-feasibility.md#s1-measured-before-b0) |
 
 **Gate:** 59 tests, green on macOS and Ubuntu. `uv run pytest` before anything else.
 
@@ -27,8 +27,9 @@ src/core/       the simulation — 11-phase tick loop, S0 reactive policy, P1 + 
 src/chronicle/  event log (Parquet, 3 tiers), checkpoints
 src/lens/       pop_stability, gradient_ascent, collapse  (+ directed_foraging, WITHDRAWN)
 src/digest/     Chronicle -> versioned viz digest
+src/historian/  facts -> LLM -> verified prose. Never evidence
 src/forge/      run, sweep, viability precheck
-atlas/          wall.template.html — the viewer, no build step
+atlas/          wall.template.html — the wall + the Chronicle panel, no build step
 tools/          render_wall, build_atlas, check_links
 bench/          bench_tick (S0), bench_policy (S1)
 ```
@@ -52,20 +53,7 @@ the dominant phase, so headroom is paid for in wall-clock.
 
 ## What to build next
 
-### 1. A3 — the Historian *(~3 days, next)*
-
-An LLM reading the Chronicle and writing narrative history per era. Criteria are in
-[10-roadmap.md § A3](10-roadmap.md#a3--first-story).
-
-It is deliberately next because it is the **one stage where none of this project's inference
-discipline applies** — its output is never evidence, by construction. That makes it low-risk, and it
-costs API credit rather than compute. Needs an `ANTHROPIC_API_KEY` in `.env` (git-ignored).
-
-The containment rules are the whole design: output lands under `narrative/`, never `metrics/`; it is
-labelled generated wherever it is displayed; and a run with the Historian attached must produce a
-byte-identical Chronicle to one without.
-
-### 2. B0 — neural policy *(~2 weeks)*
+### 1. B0 — neural policy *(~2 weeks, next)*
 
 **The budget question is already answered** — see the table above. Sizes are set, not to be
 discovered: `hidden: 48`, `view_radius: 2`, one to a few lineages, which stays inside a ~13 ms tick.
@@ -79,7 +67,7 @@ discovered: `hidden: 48`, `view_radius: 2`, one to a few lineages, which stays i
 Expect the determinism gate to go red on a new platform once `tanh` runs every tick. That is
 [D-057](DECISIONS.md#d-057), already settled: record the platform's golden, do not chase it.
 
-### 3. B2 — first word ★ *(the biggest payoff)*
+### 2. B2 — first word ★ *(the biggest payoff)*
 
 **The schema is already decided** *(→ [schemas/events.md](../schemas/events.md), [D-066](DECISIONS.md#d-066))*.
 `SIGNAL` (40) and `SIGNAL_HEARD` (43) have their payloads specified and their enum slots claimed;
@@ -124,3 +112,20 @@ committed runs at four windows, at zero simulation cost.
 - **A stale CI run from 2026-08-19 is wedged in `queued`** on GitHub's side — cancel, force-cancel
   and delete all return 5xx. It blocks nothing (no `concurrency:` key, no branch protection) and
   consumed no minutes. Ignore it unless a CI badge is ever added to the README.
+
+### The Historian's environment, which cost an afternoon
+
+- **The Gemini free tier is 20 requests per DAY per model.** Not per minute. Measured by exhausting
+  three of them: `gemini-3.7-flash`, `gemini-3.6-flash` and `gemini-3.5-flash` all report
+  `limit: 20`. A 41-brief narration needs several keys, several models, or several days.
+- **Quota is enforced per Google Cloud *project*, not per key.** Several keys from one project
+  rotate through several names against one 20-request budget. `GEMINI_API_KEY_2` … `_8` in `.env`
+  are read automatically and only help if each comes from a different project.
+- **`uv sync --group historian` silently drops the analysis extras**, and the next `duckdb` import
+  fails. It is `uv sync --all-extras --group historian`.
+- **`google-genai` must be >= 2.0.** A 1.x install passes every test — the gate replays fixtures and
+  never calls the API — and then fails on the first live call with *"the legacy Interactions API
+  schema is no longer supported"*.
+- **The narrative cache is keyed on the brief, not the model.** That is deliberate: it is what lets
+  a run continue tomorrow, or on another model, without re-billing the eras already written.
+  `--refresh` re-asks anyway.

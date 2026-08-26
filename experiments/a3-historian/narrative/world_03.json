@@ -1,0 +1,628 @@
+{
+  "eras": [
+    {
+      "accepted": 6,
+      "generated": 6,
+      "index": 0,
+      "model": "gemini-3.6-flash",
+      "of": 10,
+      "rejected": [],
+      "sentences": [
+        {
+          "cites": [
+            "f01"
+          ],
+          "text": "At the start, the population stood at 206."
+        },
+        {
+          "cites": [
+            "f11"
+          ],
+          "text": "Available food in the world declined over time."
+        },
+        {
+          "cites": [
+            "f07"
+          ],
+          "text": "The average energy stored within agents decreased."
+        },
+        {
+          "cites": [
+            "f03"
+          ],
+          "text": "Fewer new agents were born, dropping from 56 to 6."
+        },
+        {
+          "cites": [
+            "f13",
+            "f14"
+          ],
+          "text": "Over generations, the agents moved less and changed direction more frequently."
+        },
+        {
+          "cites": [
+            "f01"
+          ],
+          "text": "The total count of living agents shrank."
+        }
+      ],
+      "sources": {
+        "f01": "aggregate.parquet world=3 tick 14..2999",
+        "f03": "aggregate.parquet world=3 tick 14..2999",
+        "f07": "aggregate.parquet world=3 tick 14..2999",
+        "f11": "aggregate.parquet world=3 tick 14..2999",
+        "f13": "aggregate.parquet gene_mean world=3 tick 14..2999",
+        "f14": "aggregate.parquet gene_mean world=3 tick 14..2999"
+      },
+      "tick_range": [
+        14,
+        2999
+      ],
+      "title": "The Slowing Population",
+      "year_range": [
+        1.2,
+        249.9
+      ]
+    },
+    {
+      "accepted": 6,
+      "generated": 6,
+      "index": 1,
+      "model": "gemini-3.6-flash",
+      "of": 10,
+      "rejected": [],
+      "sentences": [
+        {
+          "cites": [
+            "f01"
+          ],
+          "text": "More agents lived in these years than at the start."
+        },
+        {
+          "cites": [
+            "f07"
+          ],
+          "text": "Total food across the area shrank."
+        },
+        {
+          "cites": [
+            "f04"
+          ],
+          "text": "On average, individual agents held less energy."
+        },
+        {
+          "cites": [
+            "f05"
+          ],
+          "text": "Stored energy became less evenly distributed among them."
+        },
+        {
+          "cites": [
+            "f08"
+          ],
+          "text": "Agents avoided crowds less and clustered together."
+        },
+        {
+          "cites": [
+            "f10"
+          ],
+          "text": "The food supply shifted toward the west."
+        }
+      ],
+      "sources": {
+        "f01": "aggregate.parquet world=3 tick 3014..5999",
+        "f04": "aggregate.parquet world=3 tick 3014..5999",
+        "f05": "aggregate.parquet world=3 tick 3014..5999",
+        "f07": "aggregate.parquet world=3 tick 3014..5999",
+        "f08": "aggregate.parquet gene_mean world=3 tick 3014..5999",
+        "f10": "digest.rasters world=3 ticks 3000..4500"
+      },
+      "tick_range": [
+        3014,
+        5999
+      ],
+      "title": "An Era of Crowding and Shift",
+      "year_range": [
+        251.2,
+        499.9
+      ]
+    },
+    {
+      "accepted": 7,
+      "generated": 7,
+      "index": 2,
+      "model": "gemini-3.6-flash",
+      "of": 10,
+      "rejected": [],
+      "sentences": [
+        {
+          "cites": [
+            "f01"
+          ],
+          "text": "More agents lived in the world by the end of the era."
+        },
+        {
+          "cites": [
+            "f06"
+          ],
+          "text": "The food supply in the world declined."
+        },
+        {
+          "cites": [
+            "f04"
+          ],
+          "text": "Agents held less energy on average."
+        },
+        {
+          "cites": [
+            "f05"
+          ],
+          "text": "Energy was shared more evenly among agents."
+        },
+        {
+          "cites": [
+            "f09"
+          ],
+          "text": "The available food shifted toward the north-east."
+        },
+        {
+          "cites": [
+            "f08"
+          ],
+          "text": "Agents gave birth at lower energy levels."
+        },
+        {
+          "cites": [
+            "f07"
+          ],
+          "text": "Random wandering among agents decreased."
+        }
+      ],
+      "sources": {
+        "f01": "aggregate.parquet world=3 tick 6014..8999",
+        "f04": "aggregate.parquet world=3 tick 6014..8999",
+        "f05": "aggregate.parquet world=3 tick 6014..8999",
+        "f06": "aggregate.parquet world=3 tick 6014..8999",
+        "f07": "aggregate.parquet gene_mean world=3 tick 6014..8999",
+        "f08": "aggregate.parquet gene_mean world=3 tick 6014..8999",
+        "f09": "digest.rasters world=3 ticks 6000..7500"
+      },
+      "tick_range": [
+        6014,
+        8999
+      ],
+      "title": "Diminishing Food and Reduced Wandering",
+      "year_range": [
+        501.2,
+        749.9
+      ]
+    },
+    {
+      "accepted": 5,
+      "generated": 5,
+      "index": 3,
+      "model": "gemini-3.6-flash",
+      "of": 10,
+      "rejected": [],
+      "sentences": [
+        {
+          "cites": [
+            "f01"
+          ],
+          "text": "The population grew over these years."
+        },
+        {
+          "cites": [
+            "f10"
+          ],
+          "text": "Food shifted toward the east."
+        },
+        {
+          "cites": [
+            "f08"
+          ],
+          "text": "Traits favoring crowd avoidance increased, and agents spread out."
+        },
+        {
+          "cites": [
+            "f04",
+            "f05"
+          ],
+          "text": "Average energy levels dropped while inequality in stored reserves rose."
+        },
+        {
+          "cites": [
+            "f11"
+          ],
+          "text": "Agents clustered more heavily in high-density areas."
+        }
+      ],
+      "sources": {
+        "f01": "aggregate.parquet world=3 tick 9014..11999",
+        "f04": "aggregate.parquet world=3 tick 9014..11999",
+        "f05": "aggregate.parquet world=3 tick 9014..11999",
+        "f08": "aggregate.parquet gene_mean world=3 tick 9014..11999",
+        "f10": "digest.rasters world=3 ticks 9000..10500",
+        "f11": "digest.rasters world=3 ticks 9000..10500"
+      },
+      "tick_range": [
+        9014,
+        11999
+      ],
+      "title": "Eastward Drift and Population Growth",
+      "year_range": [
+        751.2,
+        999.9
+      ]
+    },
+    {
+      "accepted": 5,
+      "generated": 5,
+      "index": 4,
+      "model": "gemini-3.6-flash",
+      "of": 10,
+      "rejected": [],
+      "sentences": [
+        {
+          "cites": [
+            "f01"
+          ],
+          "text": "The total population grew from 404 to 419 across this era."
+        },
+        {
+          "cites": [
+            "f02",
+            "f03"
+          ],
+          "text": "Births fell over the period while deaths increased."
+        },
+        {
+          "cites": [
+            "f09"
+          ],
+          "text": "The available food shifted west by 3 cells."
+        },
+        {
+          "cites": [
+            "f10"
+          ],
+          "text": "Agents remained tightly clustered together in a small portion of the land."
+        },
+        {
+          "cites": [
+            "f07"
+          ],
+          "text": "Individuals turned more frequently as their heading persistence dropped."
+        }
+      ],
+      "sources": {
+        "f01": "aggregate.parquet world=3 tick 12014..14999",
+        "f02": "aggregate.parquet world=3 tick 12014..14999",
+        "f03": "aggregate.parquet world=3 tick 12014..14999",
+        "f07": "aggregate.parquet gene_mean world=3 tick 12014..14999",
+        "f09": "digest.rasters world=3 ticks 12000..13500",
+        "f10": "digest.rasters world=3 ticks 12000..13500"
+      },
+      "tick_range": [
+        12014,
+        14999
+      ],
+      "title": "A Slow Shift Westward",
+      "year_range": [
+        1001.2,
+        1249.9
+      ]
+    },
+    {
+      "accepted": 6,
+      "generated": 6,
+      "index": 5,
+      "model": "gemini-3.6-flash",
+      "of": 10,
+      "rejected": [],
+      "sentences": [
+        {
+          "cites": [
+            "f01"
+          ],
+          "text": "The population remained almost completely unchanged over this period [f01]."
+        },
+        {
+          "cites": [
+            "f02"
+          ],
+          "text": "Births fell toward the end of the era [f02]."
+        },
+        {
+          "cites": [
+            "f03"
+          ],
+          "text": "Deaths increased over the same time [f03]."
+        },
+        {
+          "cites": [
+            "f06"
+          ],
+          "text": "The available food rose slightly [f06]."
+        },
+        {
+          "cites": [
+            "f07"
+          ],
+          "text": "The occupants began to spread out more [f07]."
+        },
+        {
+          "cites": [
+            "f08"
+          ],
+          "text": "They changed direction more frequently as time passed [f08]."
+        }
+      ],
+      "sources": {
+        "f01": "aggregate.parquet world=3 tick 15014..17999",
+        "f02": "aggregate.parquet world=3 tick 15014..17999",
+        "f03": "aggregate.parquet world=3 tick 15014..17999",
+        "f06": "aggregate.parquet world=3 tick 15014..17999",
+        "f07": "aggregate.parquet gene_mean world=3 tick 15014..17999",
+        "f08": "aggregate.parquet gene_mean world=3 tick 15014..17999"
+      },
+      "tick_range": [
+        15014,
+        17999
+      ],
+      "title": "A Period of Stability",
+      "year_range": [
+        1251.2,
+        1499.9
+      ]
+    },
+    {
+      "accepted": 6,
+      "generated": 6,
+      "index": 6,
+      "model": "gemini-3.6-flash",
+      "of": 10,
+      "rejected": [],
+      "sentences": [
+        {
+          "cites": [
+            "f01"
+          ],
+          "text": "The population grew across these years."
+        },
+        {
+          "cites": [
+            "f02",
+            "f03"
+          ],
+          "text": "Deaths fell while births changed little."
+        },
+        {
+          "cites": [
+            "f09"
+          ],
+          "text": "Food shifted toward the north-east."
+        },
+        {
+          "cites": [
+            "f07"
+          ],
+          "text": "Agents inherited a tendency to give less energy to their offspring."
+        },
+        {
+          "cites": [
+            "f08"
+          ],
+          "text": "They also inherited a tendency to wander less randomly."
+        },
+        {
+          "cites": [
+            "f10"
+          ],
+          "text": "Most agents remained gathered in dense areas."
+        }
+      ],
+      "sources": {
+        "f01": "aggregate.parquet world=3 tick 18014..20999",
+        "f02": "aggregate.parquet world=3 tick 18014..20999",
+        "f03": "aggregate.parquet world=3 tick 18014..20999",
+        "f07": "aggregate.parquet gene_mean world=3 tick 18014..20999",
+        "f08": "aggregate.parquet gene_mean world=3 tick 18014..20999",
+        "f09": "digest.rasters world=3 ticks 18000..19500",
+        "f10": "digest.rasters world=3 ticks 18000..19500"
+      },
+      "tick_range": [
+        18014,
+        20999
+      ],
+      "title": "Population Growth and Settled Movement",
+      "year_range": [
+        1501.2,
+        1749.9
+      ]
+    },
+    {
+      "accepted": 5,
+      "generated": 5,
+      "index": 7,
+      "model": "gemini-3.6-flash",
+      "of": 10,
+      "rejected": [],
+      "sentences": [
+        {
+          "cites": [
+            "f01"
+          ],
+          "text": "The total count of living agents remained nearly unchanged across this period, starting at 487 and ending at 488."
+        },
+        {
+          "cites": [
+            "f06"
+          ],
+          "text": "Available food increased over the course of these years."
+        },
+        {
+          "cites": [
+            "f09"
+          ],
+          "text": "The center of available food shifted slightly toward the north."
+        },
+        {
+          "cites": [
+            "f04"
+          ],
+          "text": "Average stored energy among the population fell slightly."
+        },
+        {
+          "cites": [
+            "f07"
+          ],
+          "text": "Parents devoted less effort to their offspring by the end of the era."
+        }
+      ],
+      "sources": {
+        "f01": "aggregate.parquet world=3 tick 21014..23999",
+        "f04": "aggregate.parquet world=3 tick 21014..23999",
+        "f06": "aggregate.parquet world=3 tick 21014..23999",
+        "f07": "aggregate.parquet gene_mean world=3 tick 21014..23999",
+        "f09": "digest.rasters world=3 ticks 21000..22500"
+      },
+      "tick_range": [
+        21014,
+        23999
+      ],
+      "title": "A Period of Stability",
+      "year_range": [
+        1751.2,
+        1999.9
+      ]
+    },
+    {
+      "accepted": 5,
+      "generated": 5,
+      "index": 8,
+      "model": "gemini-3.6-flash",
+      "of": 10,
+      "rejected": [],
+      "sentences": [
+        {
+          "cites": [
+            "f01"
+          ],
+          "text": "The population grew from 497 to 536 over the era."
+        },
+        {
+          "cites": [
+            "f02",
+            "f03"
+          ],
+          "text": "Births fell while deaths rose to 63 at the end."
+        },
+        {
+          "cites": [
+            "f06"
+          ],
+          "text": "The available resources declined over these years."
+        },
+        {
+          "cites": [
+            "f08"
+          ],
+          "text": "The organisms began to spread out further from one another."
+        },
+        {
+          "cites": [
+            "f07"
+          ],
+          "text": "Parents devoted less reserve to their offspring."
+        }
+      ],
+      "sources": {
+        "f01": "aggregate.parquet world=3 tick 24014..26999",
+        "f02": "aggregate.parquet world=3 tick 24014..26999",
+        "f03": "aggregate.parquet world=3 tick 24014..26999",
+        "f06": "aggregate.parquet world=3 tick 24014..26999",
+        "f07": "aggregate.parquet gene_mean world=3 tick 24014..26999",
+        "f08": "aggregate.parquet gene_mean world=3 tick 24014..26999"
+      },
+      "tick_range": [
+        24014,
+        26999
+      ],
+      "title": "The Spreading Population",
+      "year_range": [
+        2001.2,
+        2249.9
+      ]
+    },
+    {
+      "accepted": 6,
+      "generated": 6,
+      "index": 9,
+      "model": "gemini-3.6-flash",
+      "of": 10,
+      "rejected": [],
+      "sentences": [
+        {
+          "cites": [
+            "f01",
+            "f02"
+          ],
+          "text": "The population grew to 652 agents."
+        },
+        {
+          "cites": [
+            "f10"
+          ],
+          "text": "Total available resource decreased."
+        },
+        {
+          "cites": [
+            "f13"
+          ],
+          "text": "Food shifted toward the north-west."
+        },
+        {
+          "cites": [
+            "f11"
+          ],
+          "text": "The agents spread out to avoid one another."
+        },
+        {
+          "cites": [
+            "f12"
+          ],
+          "text": "Parent agents gave less care to their young."
+        },
+        {
+          "cites": [
+            "f07"
+          ],
+          "text": "On average, agents held less energy by the end of the era."
+        }
+      ],
+      "sources": {
+        "f01": "aggregate.parquet world=3 tick 27014..29999",
+        "f02": "aggregate.parquet world=3 tick 27014..29999",
+        "f07": "aggregate.parquet world=3 tick 27014..29999",
+        "f10": "aggregate.parquet world=3 tick 27014..29999",
+        "f11": "aggregate.parquet gene_mean world=3 tick 27014..29999",
+        "f12": "aggregate.parquet gene_mean world=3 tick 27014..29999",
+        "f13": "digest.rasters world=3 ticks 27000..28500"
+      },
+      "tick_range": [
+        27014,
+        29999
+      ],
+      "title": "A Crowded Era",
+      "year_range": [
+        2251.2,
+        2499.9
+      ]
+    }
+  ],
+  "model": "gemini-3.6-flash",
+  "prompt_version": "0.1.0",
+  "run_id": "d712b54d58fde26db2e9d1aa",
+  "world": 3
+}

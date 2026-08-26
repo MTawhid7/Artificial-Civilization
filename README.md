@@ -51,7 +51,26 @@ on: if a hundred worlds under one config converged, the replication unit would n
 [experiments/a2-wall/result.md](experiments/a2-wall/result.md), and
 [atlas/wall.template.html](atlas/wall.template.html) for the interactive version.
 
-**Next:** A3 — the Historian.
+**Stage A3 — First story: shipped.** The worlds now have written histories. An LLM reads a
+finished run and narrates it era by era — and **every sentence it writes is checked before it
+reaches a file**: it sees only a numbered table of facts computed from the aggregate rows, and a
+verifier deletes any sentence that is uncited, cites a fact that does not exist, contains a number
+not in the facts it cited, names a phenomenon this world does not contain, or asserts a cause.
+
+> **The First Thinning** · *Years 1–250*
+>
+> Available food declined across the map. Agents held less energy by the end of the era. Fewer
+> young were born over time. Only 89 agents remained alive at the lowest point. The agents evolved
+> to move less. They began to invest more energy into their offspring. The food supply shifted
+> towards the south-west.
+
+230 of 231 sentences survived. Run the same model without the rules in its prompt and **19% of what
+it writes does not** — *"this severe depletion forced a drastic biological adaptation"* is a causal
+claim about a world that measured no such thing. Generated prose is never evidence, and here that is
+enforced rather than promised. See
+[experiments/a3-historian/result.md](experiments/a3-historian/result.md).
+
+**Next:** B0 — the neural policy.
 
 **Picking this up?** [docs/14-handoff.md](docs/14-handoff.md) is the entry point — where the
 project actually is, what to build next, and the traps that waste a day. Design is frozen and lives
