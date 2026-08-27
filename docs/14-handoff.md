@@ -3,7 +3,7 @@
 **Read this first in a new session.** It is the only document that goes stale on purpose; everything
 else here is design, and this is state. Update it when a stage ships.
 
-*Last updated: after A3 shipped and A4 tier 1 was built. Phase A is complete; B0 is next.*
+*Last updated: after B0.1 shipped. Phase A is complete; B0.2 — fog and `exploration_rate` — is next.*
 
 ---
 
@@ -17,14 +17,15 @@ else here is design, and this is state. Update it when a stage ships.
 | **Phase B prerequisites** | done | headroom precheck (D-065), S1 budget, `SIGNAL` payload (D-066), [a1-run-length](../experiments/a1-run-length/result.md) |
 | **A3 — the Historian** | shipped | [a3-historian](../experiments/a3-historian/result.md) — 230 cited sentences; the gate rejects 19% of unguarded prose |
 | **A4 — the viewer** | tier 1 shipped | [`tools/scope.py`](../tools/scope.py) — one world, keyframe by keyframe. Tiers 2–3 scoped, not built |
-| **B0 — neural policy** | **next** | budget measured, sizes chosen — [00-feasibility § S1](00-feasibility.md#s1-measured-before-b0) |
+| **B0.1 — S1 policy** | shipped | [b0-neural](../experiments/b0-neural/result.md) — survival criterion **not met**; gradient-following rediscovered from blind in 105/105 scored worlds |
+| **B0.2 — fog + `exploration_rate`** | **next** | P2 at L0, the second B0 criterion |
 
-**Gate:** 86 tests, green on macOS and Ubuntu. `uv run pytest` before anything else.
+**Gate:** 105 tests, green on macOS and Ubuntu. `uv run pytest` before anything else.
 
 ### What exists
 
 ```
-src/core/       the simulation — 11-phase tick loop, S0 reactive policy, P1 + P10 at L0
+src/core/       the simulation — 11-phase tick loop, S0 reactive + S1 neural, P1 + P10 at L0
 src/chronicle/  event log (Parquet, 3 tiers), checkpoints
 src/lens/       pop_stability, gradient_ascent, collapse  (+ directed_foraging, WITHDRAWN)
 src/digest/     Chronicle -> versioned viz digest
@@ -41,7 +42,8 @@ bench/          bench_tick (S0), bench_policy (S1)
 |---|---|
 | S0 cost | **0.425 µs per agent-tick**, scales as `worlds × capacity × ticks` |
 | S0 tick at 32×1000 | 11.0 ms — observe 3.6, decide 0.8 |
-| S1 at hidden 48 | decide **2.60 ms** (3.2× S0), tick 12.8 ms (**1.16×**) |
+| S1 at hidden 48, **measured on the real loop** | 19.35 ms at 32×1000, grid 96 — **1.57× the S0 tick** at 8 lineages, 1.29× at one |
+| ~~S1 projected by `bench_policy`~~ | ~~1.16×~~ — the synthetic bench grouped by lineage; the real one groups by **(world, lineage)** *(→ [00-feasibility](00-feasibility.md#s1-measured-again-after-b0))* |
 | Sustained-load throttle | **1.88×** — every long projection carries it |
 | Chronicle at `aggregated` | ~26 MB per 34-world × 30k run |
 | Digest | 0.91 MB per run; budget is 5 MB |
@@ -54,24 +56,43 @@ the dominant phase, so headroom is paid for in wall-clock.
 
 ## What to build next
 
-### 1. B0 — neural policy *(~2 weeks, next)*
+### 1. B0.2 — fog and `exploration_rate` *(next)*
 
-**The budget question is already answered** — see the table above. Sizes are set, not to be
-discovered: `hidden: 48`, `view_radius: 2`, one to a few lineages, which stays inside a ~13 ms tick.
+The second B0 ship criterion, and the only part of the stage not built. P2 at L0 — a per-agent
+known map — plus the `exploration_rate` detector, its shuffled-step null, and the two tests the
+detector contract requires.
 
-- the gather still dominates at hidden 48; the bottleneck flips between hidden 64 and 128
-- `view_radius` is the expensive lever and gets *worse* at S1: r=4 costs 11.66 ms of gather
-  against 2.88 ms of policy
-- lineages cost ~1.6× on `decide` at two and ~2.2× at sixteen — almost all of it in the 1→2 step,
-  where the single fused matmul is lost
+**The open question tagged `Blocks: B0` is the first thing to settle**: `known_mask` at
+`bool[N,H,W]` is 278 MB at corpus scale and has to be checkpointed, so it dominates memory and
+kills forking. The plan on the table is a **coarse block map** — `[W, N, B, B]` at `block: 4`, ~8 MB
+at B0's scale — with the policy gaining four inputs (unknown-share per sector, computed by reusing
+`sector_masks` over the block patch). Bit-packing was rejected on arithmetic: the update is a
+scatter, `bitwise_or.at` is unbuffered, and 1.7M of them per tick is tens of milliseconds.
 
-Expect the determinism gate to go red on a new platform once `tanh` runs every tick. That is
-[D-057](DECISIONS.md#d-057), already settled: record the platform's golden, do not chase it.
+Adding four inputs moves `n_inputs` 36 → 40, so `tests/golden/tiny_s1.json` gets re-recorded. S0's
+golden is untouched.
 
-**Use the scope on the first S1 run.** A policy that circles, clumps, or never leaves its birth cell
-looks identical in `aggregate.parquet` to bad luck — population falls either way, because the
-aggregate tier is what discarded the positions. `uv run python tools/scope.py corpus/runs/<id>`
-answers in four seconds what the series cannot answer at all.
+### The B0.1 result, and what it licenses
+
+**The survival criterion failed and the interesting number is elsewhere.** S1 loses to S0 at every
+dose in every seed. But S1's founding cohort scores 0.033–0.066 on `gradient_ascent` — a random
+network is nearly blind — and reaches 0.19–0.22 by the last tenth of the run, in **every world that
+survived to be scored**. Selection rediscovered gradient-following from nothing; it did not
+rediscover enough of it in ~79 generations to beat a rule written for this exact world.
+
+Three things worth not re-deriving:
+
+- **Extinction is the mechanism.** S1 loses 28 of 48 worlds at `gather_efficiency` 1.5 and 2 of 48
+  at 2.5. The surviving worlds are not far behind S0. The deficit is a founding-phase failure — the
+  network must become competent before the founding cohort's energy runs out.
+- **`advantage_delta` is survivorship-biased** and the gather-2.5 arm (46 of 48 worlds scored) is
+  the only one where that bias is small enough to ignore.
+- **Run length is the untried lever.** Nothing in the data says S1's improvement has plateaued.
+
+**Use the scope on any S1 run.** It earned its keep here: S0's harvest field is a rectilinear
+cross-hatch — its N/E/S/W sector rule made visible — while S1's population visibly organizes into a
+band along the resource ridges by year ~1,750. Neither is in any series the experiment records.
+`uv run python tools/scope.py corpus/runs/<id> --world 4`.
 
 ### 2. B2 — first word ★ *(the biggest payoff)*
 

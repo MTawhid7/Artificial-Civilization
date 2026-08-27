@@ -38,18 +38,20 @@ stage: B0
 # censors the *control* downward and leaves the treatment untouched, biasing the
 # comparison toward this experiment's own hypothesis.
 #
-# Fixing it exposed something that had to become part of the design. Measured at
-# 4 worlds x 30,000 ticks, the S0 lead over S1 tracks how rich the world is:
+# Fixing it exposed something that had to become part of the design. Those same
+# 4-world prechecks suggested the S0 lead over S1 varied a lot with how rich the
+# world is — so a single choice of `gather_efficiency` would have chosen the
+# answer. Making it an axis converts a researcher degree of freedom into a
+# measured relation, the same move a1-patchiness made, and the resulting question
+# is better than the one B0 started with: *does a hand-written rule's advantage
+# depend on how much there is to find?*
 #
-#     gather 4.0   S0 1479   S1 376   ~4x
-#     gather 2.5   S0  581   S1 285   ~2x
-#     gather 2.0   S0  362   S1 192   ~2x
-#
-# So a single choice of `gather_efficiency` would have chosen the answer. Making
-# it an axis converts a researcher degree of freedom into a measured relation —
-# the same move a1-patchiness made — and the resulting question is better than
-# the one B0 started with: *does a hand-written rule's advantage depend on how
-# much there is to find?*
+# POST-RUN NOTE, kept here because it is the whole justification for the axis:
+# the precheck reading pointed the WRONG WAY. A worst-world mean over four worlds
+# and one seed implied the S0 lead grows with abundance; the full 48-pair paired
+# measurement says the S1/S0 ratio *improves* with abundance, 0.376 -> 0.605 ->
+# 0.698. Fixing the dose on the strength of that reading would have reported a
+# direction this experiment does not have. See result.md.
 #
 # CAPACITY. 1,200, and every one of the six points was run through the precheck
 # at full length before this file was written: the worst is S0 at gather 2.5,

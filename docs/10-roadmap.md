@@ -310,7 +310,33 @@ tested for real"; it was tested first instead, and the answer is reassuring:
 Sizes are therefore chosen up front rather than discovered: **hidden 48, view_radius 2, one to a
 few lineages** stays inside a 13 ms tick, which is ~12 min per 30k-tick run with throttling.
 
-**Ship:** evolved policies beat the reactive genome on survival; `exploration_rate` above null.
+> **The real tick came in at 1.57×, not 1.16×** *(→ [00-feasibility](00-feasibility.md#s1-measured-again-after-b0))*.
+> `bench_policy` grouped agents by lineage; the real policy groups by **(world, lineage)**, because
+> worlds are independent replicates and sharing a network across them would couple exactly what the
+> corpus varies. 256 groups of ~125 rows, not 8 groups of 4,000. The lineage curve is much flatter
+> than projected in exchange — 1 → 8 lineages costs 22% of a tick — so eight policies per world are
+> cheap and the planned counting-sort optimization is not worth writing.
+
+### Shipping in two gates
+
+**B0.1 — S1 exists and is deterministic. Shipped.** The policy, lineages by speciation at birth
+*(→ [D-071](DECISIONS.md#d-071))*, the two new RNG streams that keep the arms paired
+*(→ [D-072](DECISIONS.md#d-072))*, per-platform goldens at S1, and the survival experiment.
+
+**B0.2 — fog and exploration. Not built.** P2 at L0 and the `exploration_rate` detector, which is
+the second ship criterion.
+
+**Ship criteria**
+- [ ] evolved policies beat the reactive genome on survival — **measured and NOT met**. S1 loses at
+      every dose, in every seed, in 128 of 144 paired worlds
+      *(→ [b0-neural](../experiments/b0-neural/result.md))*. What the same experiment does show is
+      that selection **rediscovered gradient-following from a blind start**: S1's founding cohort
+      scores 0.033–0.066 on `gradient_ascent` against S0's 0.169–0.216, and reaches 0.19–0.22 by
+      the last tenth of the run in 105 of 105 worlds that survived to be scored. The criterion is a
+      comparison against a competent hand-written rule; the capability underneath it is present and
+      still rising at 30,000 ticks
+- [ ] `exploration_rate` above null — B0.2, not yet built
+
 **Time:** ~2 weeks. This is where the ms/tick budget gets tested for real.
 
 > S1 puts `tanh`/`exp` on every agent every tick, and those are exactly the functions whose last

@@ -1,10 +1,10 @@
 # Artificial Civilization — Documentation
 
-**Status:** **Phase A is complete — A0, A1, A2 and A3 all shipped.** The deterministic core runs,
-the determinism gate holds, agents demonstrably evolve, there is a picture of it, and the worlds now
-have written histories. Next up is [10-roadmap.md § B0](10-roadmap.md#b0--neural-policy),
-preceded by the two-hour tier 1 of [§ A4](10-roadmap.md#a4--the-viewer-optional-tiered) — a
-viewer built as a B0 debugging instrument rather than as a treat *(→ [D-070](DECISIONS.md#d-070))*.
+**Status:** **Phase A is complete, and B0.1 has shipped.** The deterministic core runs, the
+determinism gate holds, agents demonstrably evolve, there is a picture of it, the worlds have
+written histories, and agents now think with an evolved network rather than a hand-written rule.
+Next up is **B0.2** — P2 fog at L0 and the `exploration_rate` detector, the second of
+[§ B0](10-roadmap.md#b0--neural-policy)'s two ship criteria.
 
 | Stage | Result |
 |---|---|
@@ -15,10 +15,15 @@ viewer built as a B0 debugging instrument rather than as a treat *(→ [D-070](D
 | A2 — first picture | [`experiments/a2-wall/`](../experiments/a2-wall/result.md) — 102 worlds, one config, **9.4× more spread between worlds than within them** |
 | A2 — re-analysis | [`a1-run-length`](../experiments/a1-run-length/result.md) — A1's dose-response is not length-limited; the level is, the slope is not |
 | A3 — first story | [`experiments/a3-historian/`](../experiments/a3-historian/result.md) — an LLM writes the history, and a verifier deletes what it could not source |
+| B0.1 — neural policy | [`experiments/b0-neural/`](../experiments/b0-neural/result.md) — the survival criterion **fails**; selection rediscovers gradient-following from a blind start in 105 of 105 scored worlds |
 
 **Nineteen decisions were added *by* implementation rather than before it** —
 [D-051](DECISIONS.md#d-051) through [D-069](DECISIONS.md#d-069) — every one because a measurement
 contradicted something these documents assumed.
+
+[D-070](DECISIONS.md#d-070) through [D-072](DECISIONS.md#d-072) were decided ahead of A4 and B0
+rather than forced by them — though B0 then corrected two halves of D-071 by measurement, which is
+recorded in the record itself.
 
 **Seven of them are corrections to how we measure, not to what we built**, and all three withdrawn
 claims were inference failures rather than mechanism failures. The simulation core has needed

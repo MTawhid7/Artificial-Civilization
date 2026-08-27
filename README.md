@@ -70,9 +70,26 @@ claim about a world that measured no such thing. Generated prose is never eviden
 enforced rather than promised. See
 [experiments/a3-historian/result.md](experiments/a3-historian/result.md).
 
-**Next:** B0 — the neural policy, preceded by a two-hour viewer built as a debugging
-instrument for it. A policy that circles in a corner and a policy that is merely unlucky look
-identical in the aggregate log, because the aggregate is what threw the positions away.
+**Stage B0.1 — Neural policy: shipped, and the headline is a failed criterion.** S0's agents follow
+resource gradients because a human wrote the line that makes them. S1 deletes the line: the map from
+perception to action is a small evolved network per lineage, and lineages are heritable clades that
+occasionally speciate at birth — so selection over weights is still just birth and death.
+
+The criterion was *evolved policies beat the reactive genome on survival*, and they do not. Across
+144 worlds paired by landscape — the same terrain, the same founders, one policy swapped — the
+network loses in 128 of them.
+
+What the same experiment shows is the part that was actually in doubt. A random network is very
+nearly blind, and its first generation scores **0.03–0.07** on "was the direction you chose better
+than the alternatives you could see". By the end of the run it scores **0.19–0.22** — about where
+the hand-written rule's *unselected* first generation starts — and it improves in **every one of
+the 105 worlds** that survived to be measured. Nobody told it that food was worth walking toward.
+
+Selection rediscovered foraging from nothing. It did not rediscover enough of it, in 79
+generations, to beat a rule written for exactly this world. See
+[experiments/b0-neural/result.md](experiments/b0-neural/result.md).
+
+**Next:** B0.2 — fog, and a detector for exploration under it.
 
 **Picking this up?** [docs/14-handoff.md](docs/14-handoff.md) is the entry point — where the
 project actually is, what to build next, and the traps that waste a day. Design is frozen and lives

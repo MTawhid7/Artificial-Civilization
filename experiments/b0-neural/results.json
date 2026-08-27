@@ -1,0 +1,4905 @@
+{
+  "spec": {
+    "name": "b0-neural",
+    "stage": "B0",
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "sweep": {
+      "intelligence.stage": [
+        "S0",
+        "S1"
+      ],
+      "agent.gather_efficiency": [
+        1.5,
+        2.0,
+        2.5
+      ]
+    },
+    "base": {
+      "world": {
+        "grid": 64,
+        "patchiness": 0.6,
+        "regrowth": 0.05,
+        "seed_rain": 0.004,
+        "resource_capacity": 1.0
+      },
+      "primitives": {
+        "p1": {
+          "level": 0
+        },
+        "p10": {
+          "level": 0,
+          "rate": 0.0
+        }
+      },
+      "intelligence": {
+        "stage": "S0",
+        "genome_size": 8,
+        "view_radius": 2,
+        "sated_gradient_factor": 0.25,
+        "hidden": 48,
+        "lineages": 8,
+        "speciation_rate": 0.02,
+        "weight_mutation_scale": 0.08,
+        "cognition_cost": 0.0
+      },
+      "population": {
+        "initial": 120,
+        "capacity": 1200,
+        "mutation_rate": 0.02,
+        "mutation_scale": 0.05,
+        "birth_cap": 32
+      },
+      "agent": {
+        "metabolism": 0.5,
+        "max_age": 400,
+        "birth_energy": 20.0,
+        "gather_efficiency": 2.0,
+        "start_energy": 50.0
+      },
+      "run": {
+        "worlds": 16,
+        "ticks": 30000,
+        "checkpoint_every": 1500,
+        "aggregate_every": 50,
+        "log_tier": "sampled",
+        "sample_rate": 32,
+        "shard_ticks": 5000
+      }
+    }
+  },
+  "wall_seconds": 5172.9,
+  "headroom": [
+    {
+      "verdict": "ok",
+      "capacity": 1200,
+      "worst_world_mean": 212.3,
+      "worst_world_mean_frac": 0.177,
+      "peak_population": 283.0,
+      "peak_frac": 0.236,
+      "pilot_worlds": 4,
+      "ticks": 30000,
+      "suggested_capacity": 500,
+      "suggestion_is_lower_bound": false,
+      "run_id": "c93e16d0c465f851d8280e56",
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 1.5
+      }
+    },
+    {
+      "verdict": "ok",
+      "capacity": 1200,
+      "worst_world_mean": 362.2,
+      "worst_world_mean_frac": 0.302,
+      "peak_population": 458.0,
+      "peak_frac": 0.382,
+      "pilot_worlds": 4,
+      "ticks": 30000,
+      "suggested_capacity": 800,
+      "suggestion_is_lower_bound": false,
+      "run_id": "287ea4c603752568c9ddc753",
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 2.0
+      }
+    },
+    {
+      "verdict": "ok",
+      "capacity": 1200,
+      "worst_world_mean": 581.0,
+      "worst_world_mean_frac": 0.484,
+      "peak_population": 732.0,
+      "peak_frac": 0.61,
+      "pilot_worlds": 4,
+      "ticks": 30000,
+      "suggested_capacity": 1200,
+      "suggestion_is_lower_bound": false,
+      "run_id": "d2c94f7af6dfd4199b1e6e84",
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 2.5
+      }
+    },
+    {
+      "verdict": "ok",
+      "capacity": 1200,
+      "worst_world_mean": 75.3,
+      "worst_world_mean_frac": 0.063,
+      "peak_population": 148.0,
+      "peak_frac": 0.123,
+      "pilot_worlds": 4,
+      "ticks": 30000,
+      "suggested_capacity": 200,
+      "suggestion_is_lower_bound": false,
+      "run_id": "f3c824ee3a76de78e75407b3",
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 1.5
+      }
+    },
+    {
+      "verdict": "ok",
+      "capacity": 1200,
+      "worst_world_mean": 191.8,
+      "worst_world_mean_frac": 0.16,
+      "peak_population": 257.0,
+      "peak_frac": 0.214,
+      "pilot_worlds": 4,
+      "ticks": 30000,
+      "suggested_capacity": 400,
+      "suggestion_is_lower_bound": false,
+      "run_id": "46421016d5874d733591f403",
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 2.0
+      }
+    },
+    {
+      "verdict": "ok",
+      "capacity": 1200,
+      "worst_world_mean": 284.6,
+      "worst_world_mean_frac": 0.237,
+      "peak_population": 493.0,
+      "peak_frac": 0.411,
+      "pilot_worlds": 4,
+      "ticks": 30000,
+      "suggested_capacity": 600,
+      "suggestion_is_lower_bound": false,
+      "run_id": "daebabf98d76493bcfb6c054",
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 2.5
+      }
+    }
+  ],
+  "results": [
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 1.5
+      },
+      "seed": 0,
+      "run_id": "a3a2e3b2e3fb44a92b508fd2",
+      "ms_per_tick": 7.5026,
+      "chronicle_mb": 39.2,
+      "final_population": [
+        151,
+        168,
+        152,
+        77,
+        136,
+        118,
+        106,
+        100,
+        82,
+        133,
+        89,
+        150,
+        158,
+        65,
+        83,
+        130
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.36247762988949384,
+          "null_mean": 0.09591612193164047,
+          "null_std": 0.01115315463387832,
+          "effect_size": 23.900099721397044,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.36247762988949384,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 110.631875,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.3788742672919861,
+          "null_mean": 0.0,
+          "null_std": 0.06389671067759865,
+          "effect_size": 5.929479988471682,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 1357676,
+          "detail": {
+            "mean_advantage": 0.3788742672919861,
+            "took_best_share": 0.4725810870929441,
+            "flat_share": 0.0,
+            "direction_bias": 0.25071371962088157,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.20469358191956571,
+            "advantage_late": 0.5263831162366162,
+            "advantage_delta": 0.32168953431705044,
+            "advantage_delta_z": 4.562653861623745,
+            "worlds_improved": 14,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 10.208333333333332,
+          "null_mean": 7.415625000000001,
+          "null_std": 0.8443535649882301,
+          "effect_size": 3.3075105609014157,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 10.208333333333332,
+            "drop_threshold": 0.35,
+            "n_episodes": 49,
+            "worlds_with_any": 11,
+            "n_worlds": 16,
+            "deepest": 0.9588,
+            "events": [
+              {
+                "world": 0,
+                "tick": 22299,
+                "depth": 0.4272
+              },
+              {
+                "world": 0,
+                "tick": 22799,
+                "depth": 0.4423
+              },
+              {
+                "world": 0,
+                "tick": 23299,
+                "depth": 0.4245
+              },
+              {
+                "world": 0,
+                "tick": 23799,
+                "depth": 0.5093
+              },
+              {
+                "world": 0,
+                "tick": 24299,
+                "depth": 0.4783
+              },
+              {
+                "world": 0,
+                "tick": 25849,
+                "depth": 0.3723
+              },
+              {
+                "world": 0,
+                "tick": 28549,
+                "depth": 0.3776
+              },
+              {
+                "world": 1,
+                "tick": 15449,
+                "depth": 0.3852
+              },
+              {
+                "world": 1,
+                "tick": 24799,
+                "depth": 0.3874
+              },
+              {
+                "world": 2,
+                "tick": 19849,
+                "depth": 0.4076
+              },
+              {
+                "world": 2,
+                "tick": 28599,
+                "depth": 0.359
+              },
+              {
+                "world": 4,
+                "tick": 15249,
+                "depth": 0.7519
+              },
+              {
+                "world": 4,
+                "tick": 21299,
+                "depth": 0.7794
+              },
+              {
+                "world": 4,
+                "tick": 21849,
+                "depth": 0.7517
+              },
+              {
+                "world": 4,
+                "tick": 25699,
+                "depth": 0.5473
+              },
+              {
+                "world": 4,
+                "tick": 26249,
+                "depth": 0.4516
+              },
+              {
+                "world": 5,
+                "tick": 15399,
+                "depth": 0.7285
+              },
+              {
+                "world": 5,
+                "tick": 16949,
+                "depth": 0.7208
+              },
+              {
+                "world": 5,
+                "tick": 18999,
+                "depth": 0.707
+              },
+              {
+                "world": 5,
+                "tick": 21549,
+                "depth": 0.7006
+              },
+              {
+                "world": 6,
+                "tick": 15499,
+                "depth": 0.4505
+              },
+              {
+                "world": 6,
+                "tick": 16049,
+                "depth": 0.4649
+              },
+              {
+                "world": 6,
+                "tick": 19749,
+                "depth": 0.4741
+              },
+              {
+                "world": 6,
+                "tick": 20299,
+                "depth": 0.4417
+              },
+              {
+                "world": 6,
+                "tick": 22399,
+                "depth": 0.5323
+              },
+              {
+                "world": 6,
+                "tick": 22899,
+                "depth": 0.48
+              },
+              {
+                "world": 6,
+                "tick": 23449,
+                "depth": 0.5197
+              },
+              {
+                "world": 6,
+                "tick": 25999,
+                "depth": 0.5188
+              },
+              {
+                "world": 6,
+                "tick": 29399,
+                "depth": 0.3869
+              },
+              {
+                "world": 7,
+                "tick": 22099,
+                "depth": 0.425
+              },
+              {
+                "world": 7,
+                "tick": 24599,
+                "depth": 0.3525
+              },
+              {
+                "world": 7,
+                "tick": 25099,
+                "depth": 0.528
+              },
+              {
+                "world": 11,
+                "tick": 16049,
+                "depth": 0.4741
+              },
+              {
+                "world": 11,
+                "tick": 16499,
+                "depth": 0.6197
+              },
+              {
+                "world": 11,
+                "tick": 17499,
+                "depth": 0.7682
+              },
+              {
+                "world": 11,
+                "tick": 17999,
+                "depth": 0.8931
+              },
+              {
+                "world": 11,
+                "tick": 18549,
+                "depth": 0.8519
+              },
+              {
+                "world": 11,
+                "tick": 19049,
+                "depth": 0.9451
+              },
+              {
+                "world": 11,
+                "tick": 19599,
+                "depth": 0.9167
+              },
+              {
+                "world": 11,
+                "tick": 20099,
+                "depth": 0.9588
+              },
+              {
+                "world": 11,
+                "tick": 20649,
+                "depth": 0.7841
+              },
+              {
+                "world": 12,
+                "tick": 15499,
+                "depth": 0.5405
+              },
+              {
+                "world": 12,
+                "tick": 16049,
+                "depth": 0.595
+              },
+              {
+                "world": 12,
+                "tick": 16549,
+                "depth": 0.5
+              },
+              {
+                "world": 12,
+                "tick": 17099,
+                "depth": 0.3669
+              },
+              {
+                "world": 13,
+                "tick": 28199,
+                "depth": 0.3855
+              },
+              {
+                "world": 14,
+                "tick": 27949,
+                "depth": 0.4138
+              },
+              {
+                "world": 14,
+                "tick": 28499,
+                "depth": 0.4454
+              },
+              {
+                "world": 14,
+                "tick": 28999,
+                "depth": 0.5328
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 1.5
+      },
+      "seed": 1,
+      "run_id": "7e531f2bdcf5f0882dd1f030",
+      "ms_per_tick": 7.537,
+      "chronicle_mb": 34.72,
+      "final_population": [
+        91,
+        126,
+        145,
+        93,
+        64,
+        41,
+        92,
+        113,
+        149,
+        70,
+        72,
+        104,
+        0,
+        124,
+        124,
+        73
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.3210761114650421,
+          "null_mean": 0.09322474301365508,
+          "null_std": 0.011685117365222882,
+          "effect_size": 19.499279410707143,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.3210761114650421,
+            "bounded_fraction": 0.9375,
+            "bounded_worlds": 15,
+            "n_worlds": 16,
+            "mean_population": 90.76479166666667,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.3683994809467708,
+          "null_mean": 0.0,
+          "null_std": 0.06000593497911558,
+          "effect_size": 6.139384063842822,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 1157322,
+          "detail": {
+            "mean_advantage": 0.3683994809467708,
+            "took_best_share": 0.4775723610196644,
+            "flat_share": 0.0,
+            "direction_bias": 0.25263150618410435,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.23852538043114846,
+            "advantage_late": 0.5213718583517309,
+            "advantage_delta": 0.2828464779205825,
+            "advantage_delta_z": 3.9854331529798426,
+            "worlds_improved": 12,
+            "n_worlds": 15
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 12.083333333333334,
+          "null_mean": 6.961458333333333,
+          "null_std": 0.7748424739100199,
+          "effect_size": 6.610214556455495,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 12.083333333333334,
+            "drop_threshold": 0.35,
+            "n_episodes": 58,
+            "worlds_with_any": 11,
+            "n_worlds": 16,
+            "deepest": 1.0,
+            "events": [
+              {
+                "world": 0,
+                "tick": 17799,
+                "depth": 0.4037
+              },
+              {
+                "world": 0,
+                "tick": 20499,
+                "depth": 0.4123
+              },
+              {
+                "world": 0,
+                "tick": 21549,
+                "depth": 0.3947
+              },
+              {
+                "world": 3,
+                "tick": 17249,
+                "depth": 0.3861
+              },
+              {
+                "world": 3,
+                "tick": 17749,
+                "depth": 0.3725
+              },
+              {
+                "world": 3,
+                "tick": 25899,
+                "depth": 0.3585
+              },
+              {
+                "world": 4,
+                "tick": 15399,
+                "depth": 0.5407
+              },
+              {
+                "world": 4,
+                "tick": 16399,
+                "depth": 0.5735
+              },
+              {
+                "world": 4,
+                "tick": 16899,
+                "depth": 0.6204
+              },
+              {
+                "world": 4,
+                "tick": 17399,
+                "depth": 0.6058
+              },
+              {
+                "world": 4,
+                "tick": 19399,
+                "depth": 0.6187
+              },
+              {
+                "world": 4,
+                "tick": 19899,
+                "depth": 0.7554
+              },
+              {
+                "world": 4,
+                "tick": 23399,
+                "depth": 0.7055
+              },
+              {
+                "world": 4,
+                "tick": 25899,
+                "depth": 0.6667
+              },
+              {
+                "world": 4,
+                "tick": 26399,
+                "depth": 0.7075
+              },
+              {
+                "world": 4,
+                "tick": 28399,
+                "depth": 0.6824
+              },
+              {
+                "world": 4,
+                "tick": 29899,
+                "depth": 0.6913
+              },
+              {
+                "world": 5,
+                "tick": 15799,
+                "depth": 0.5
+              },
+              {
+                "world": 5,
+                "tick": 24649,
+                "depth": 0.3958
+              },
+              {
+                "world": 5,
+                "tick": 25449,
+                "depth": 0.3958
+              },
+              {
+                "world": 6,
+                "tick": 15399,
+                "depth": 0.3556
+              },
+              {
+                "world": 6,
+                "tick": 19749,
+                "depth": 0.5149
+              },
+              {
+                "world": 6,
+                "tick": 21899,
+                "depth": 0.5481
+              },
+              {
+                "world": 6,
+                "tick": 22499,
+                "depth": 0.4476
+              },
+              {
+                "world": 6,
+                "tick": 26999,
+                "depth": 0.422
+              },
+              {
+                "world": 6,
+                "tick": 27449,
+                "depth": 0.4737
+              },
+              {
+                "world": 7,
+                "tick": 20199,
+                "depth": 0.5207
+              },
+              {
+                "world": 7,
+                "tick": 25399,
+                "depth": 0.6172
+              },
+              {
+                "world": 7,
+                "tick": 27499,
+                "depth": 0.6077
+              },
+              {
+                "world": 7,
+                "tick": 28049,
+                "depth": 0.5652
+              },
+              {
+                "world": 7,
+                "tick": 29099,
+                "depth": 0.3944
+              },
+              {
+                "world": 8,
+                "tick": 15249,
+                "depth": 0.3588
+              },
+              {
+                "world": 8,
+                "tick": 15799,
+                "depth": 0.5143
+              },
+              {
+                "world": 8,
+                "tick": 19449,
+                "depth": 0.5035
+              },
+              {
+                "world": 8,
+                "tick": 19999,
+                "depth": 0.5903
+              },
+              {
+                "world": 8,
+                "tick": 21499,
+                "depth": 0.7153
+              },
+              {
+                "world": 8,
+                "tick": 21999,
+                "depth": 0.8387
+              },
+              {
+                "world": 8,
+                "tick": 22549,
+                "depth": 0.8101
+              },
+              {
+                "world": 8,
+                "tick": 23099,
+                "depth": 0.9563
+              },
+              {
+                "world": 8,
+                "tick": 23649,
+                "depth": 0.897
+              },
+              {
+                "world": 8,
+                "tick": 24699,
+                "depth": 0.9152
+              },
+              {
+                "world": 8,
+                "tick": 25249,
+                "depth": 0.8023
+              },
+              {
+                "world": 8,
+                "tick": 26249,
+                "depth": 0.4407
+              },
+              {
+                "world": 10,
+                "tick": 18649,
+                "depth": 0.359
+              },
+              {
+                "world": 10,
+                "tick": 19199,
+                "depth": 0.4096
+              },
+              {
+                "world": 10,
+                "tick": 20349,
+                "depth": 0.4643
+              },
+              {
+                "world": 10,
+                "tick": 22449,
+                "depth": 0.4235
+              },
+              {
+                "world": 12,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 13,
+                "tick": 18749,
+                "depth": 0.3883
+              },
+              {
+                "world": 13,
+                "tick": 19299,
+                "depth": 0.3942
+              },
+              {
+                "world": 13,
+                "tick": 20349,
+                "depth": 0.3942
+              },
+              {
+                "world": 13,
+                "tick": 20849,
+                "depth": 0.4587
+              },
+              {
+                "world": 13,
+                "tick": 23949,
+                "depth": 0.512
+              },
+              {
+                "world": 13,
+                "tick": 25999,
+                "depth": 0.3986
+              },
+              {
+                "world": 14,
+                "tick": 20299,
+                "depth": 0.4062
+              },
+              {
+                "world": 14,
+                "tick": 20799,
+                "depth": 0.5308
+              },
+              {
+                "world": 14,
+                "tick": 21349,
+                "depth": 0.553
+              },
+              {
+                "world": 14,
+                "tick": 21849,
+                "depth": 0.4621
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 1.5
+      },
+      "seed": 2,
+      "run_id": "82f3d14688f1511254265166",
+      "ms_per_tick": 7.4624,
+      "chronicle_mb": 39.76,
+      "final_population": [
+        156,
+        69,
+        110,
+        150,
+        212,
+        138,
+        120,
+        101,
+        69,
+        149,
+        102,
+        92,
+        150,
+        152,
+        82,
+        100
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.34400017811936545,
+          "null_mean": 0.09597084181354823,
+          "null_std": 0.010968214611595188,
+          "effect_size": 22.613464915576127,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.34400017811936545,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 110.97520833333333,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.34300075872812746,
+          "null_mean": 0.0,
+          "null_std": 0.06205916656083642,
+          "effect_size": 5.526995893376764,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 1377058,
+          "detail": {
+            "mean_advantage": 0.34300075872812746,
+            "took_best_share": 0.4501081290693638,
+            "flat_share": 0.0,
+            "direction_bias": 0.2515703768468721,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.20531612094272442,
+            "advantage_late": 0.4362199021924414,
+            "advantage_delta": 0.23090378124971703,
+            "advantage_delta_z": 3.682206196883002,
+            "worlds_improved": 14,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 10.0,
+          "null_mean": 7.502604166666668,
+          "null_std": 0.8152289574335511,
+          "effect_size": 3.063428758953148,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 10.0,
+            "drop_threshold": 0.35,
+            "n_episodes": 48,
+            "worlds_with_any": 13,
+            "n_worlds": 16,
+            "deepest": 0.9162,
+            "events": [
+              {
+                "world": 1,
+                "tick": 23299,
+                "depth": 0.4156
+              },
+              {
+                "world": 1,
+                "tick": 27499,
+                "depth": 0.4737
+              },
+              {
+                "world": 1,
+                "tick": 27999,
+                "depth": 0.4655
+              },
+              {
+                "world": 1,
+                "tick": 28449,
+                "depth": 0.5203
+              },
+              {
+                "world": 2,
+                "tick": 27149,
+                "depth": 0.36
+              },
+              {
+                "world": 4,
+                "tick": 21349,
+                "depth": 0.4167
+              },
+              {
+                "world": 5,
+                "tick": 15599,
+                "depth": 0.4074
+              },
+              {
+                "world": 5,
+                "tick": 16149,
+                "depth": 0.4182
+              },
+              {
+                "world": 5,
+                "tick": 16599,
+                "depth": 0.4909
+              },
+              {
+                "world": 5,
+                "tick": 17099,
+                "depth": 0.55
+              },
+              {
+                "world": 5,
+                "tick": 20799,
+                "depth": 0.3562
+              },
+              {
+                "world": 6,
+                "tick": 22449,
+                "depth": 0.395
+              },
+              {
+                "world": 6,
+                "tick": 23999,
+                "depth": 0.4918
+              },
+              {
+                "world": 6,
+                "tick": 29649,
+                "depth": 0.418
+              },
+              {
+                "world": 7,
+                "tick": 17249,
+                "depth": 0.3694
+              },
+              {
+                "world": 7,
+                "tick": 17749,
+                "depth": 0.3514
+              },
+              {
+                "world": 7,
+                "tick": 19249,
+                "depth": 0.359
+              },
+              {
+                "world": 7,
+                "tick": 19849,
+                "depth": 0.4444
+              },
+              {
+                "world": 7,
+                "tick": 29049,
+                "depth": 0.5323
+              },
+              {
+                "world": 8,
+                "tick": 16549,
+                "depth": 0.3833
+              },
+              {
+                "world": 8,
+                "tick": 17599,
+                "depth": 0.4472
+              },
+              {
+                "world": 8,
+                "tick": 21999,
+                "depth": 0.439
+              },
+              {
+                "world": 8,
+                "tick": 22499,
+                "depth": 0.5814
+              },
+              {
+                "world": 8,
+                "tick": 26499,
+                "depth": 0.5448
+              },
+              {
+                "world": 9,
+                "tick": 28299,
+                "depth": 0.3687
+              },
+              {
+                "world": 9,
+                "tick": 28699,
+                "depth": 0.3911
+              },
+              {
+                "world": 10,
+                "tick": 26149,
+                "depth": 0.378
+              },
+              {
+                "world": 10,
+                "tick": 26649,
+                "depth": 0.3939
+              },
+              {
+                "world": 12,
+                "tick": 15349,
+                "depth": 0.6188
+              },
+              {
+                "world": 12,
+                "tick": 15849,
+                "depth": 0.8343
+              },
+              {
+                "world": 12,
+                "tick": 16849,
+                "depth": 0.7895
+              },
+              {
+                "world": 12,
+                "tick": 17299,
+                "depth": 0.8514
+              },
+              {
+                "world": 12,
+                "tick": 19199,
+                "depth": 0.8901
+              },
+              {
+                "world": 12,
+                "tick": 20649,
+                "depth": 0.9162
+              },
+              {
+                "world": 12,
+                "tick": 21149,
+                "depth": 0.8543
+              },
+              {
+                "world": 12,
+                "tick": 21599,
+                "depth": 0.8844
+              },
+              {
+                "world": 12,
+                "tick": 28349,
+                "depth": 0.815
+              },
+              {
+                "world": 13,
+                "tick": 15399,
+                "depth": 0.7482
+              },
+              {
+                "world": 13,
+                "tick": 17449,
+                "depth": 0.6458
+              },
+              {
+                "world": 13,
+                "tick": 18449,
+                "depth": 0.7586
+              },
+              {
+                "world": 13,
+                "tick": 19999,
+                "depth": 0.7551
+              },
+              {
+                "world": 13,
+                "tick": 24599,
+                "depth": 0.7891
+              },
+              {
+                "world": 13,
+                "tick": 29149,
+                "depth": 0.8389
+              },
+              {
+                "world": 13,
+                "tick": 29699,
+                "depth": 0.7315
+              },
+              {
+                "world": 14,
+                "tick": 19549,
+                "depth": 0.3617
+              },
+              {
+                "world": 15,
+                "tick": 23399,
+                "depth": 0.434
+              },
+              {
+                "world": 15,
+                "tick": 24949,
+                "depth": 0.4414
+              },
+              {
+                "world": 15,
+                "tick": 29199,
+                "depth": 0.4174
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 2.0
+      },
+      "seed": 0,
+      "run_id": "0c37568a46d50cffdbb51e67",
+      "ms_per_tick": 7.8303,
+      "chronicle_mb": 57.47,
+      "final_population": [
+        219,
+        284,
+        316,
+        115,
+        236,
+        88,
+        188,
+        122,
+        147,
+        225,
+        136,
+        209,
+        329,
+        88,
+        77,
+        203
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.3555794452390042,
+          "null_mean": 0.09617438719278076,
+          "null_std": 0.0113287276868636,
+          "effect_size": 22.897986889297425,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.3555794452390042,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 174.39249999999998,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.41606814377648904,
+          "null_mean": 0.0,
+          "null_std": 0.06916384765875523,
+          "effect_size": 6.015688222397793,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 2142048,
+          "detail": {
+            "mean_advantage": 0.41606814377648904,
+            "took_best_share": 0.5199071169273518,
+            "flat_share": 0.0,
+            "direction_bias": 0.25091641270410375,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.1815860715197197,
+            "advantage_late": 0.5318059912965556,
+            "advantage_delta": 0.3502199197768358,
+            "advantage_delta_z": 4.750674964347536,
+            "worlds_improved": 15,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 7.708333333333333,
+          "null_mean": 7.921875,
+          "null_std": 0.8416092956932107,
+          "effect_size": -0.2537301664316558,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 7.708333333333333,
+            "drop_threshold": 0.35,
+            "n_episodes": 37,
+            "worlds_with_any": 8,
+            "n_worlds": 16,
+            "deepest": 0.9181,
+            "events": [
+              {
+                "world": 0,
+                "tick": 17599,
+                "depth": 0.4044
+              },
+              {
+                "world": 0,
+                "tick": 19549,
+                "depth": 0.5141
+              },
+              {
+                "world": 0,
+                "tick": 20049,
+                "depth": 0.619
+              },
+              {
+                "world": 0,
+                "tick": 21049,
+                "depth": 0.3621
+              },
+              {
+                "world": 4,
+                "tick": 15449,
+                "depth": 0.8985
+              },
+              {
+                "world": 4,
+                "tick": 15949,
+                "depth": 0.7042
+              },
+              {
+                "world": 5,
+                "tick": 15399,
+                "depth": 0.8228
+              },
+              {
+                "world": 5,
+                "tick": 15899,
+                "depth": 0.8208
+              },
+              {
+                "world": 5,
+                "tick": 17799,
+                "depth": 0.8025
+              },
+              {
+                "world": 5,
+                "tick": 18249,
+                "depth": 0.874
+              },
+              {
+                "world": 5,
+                "tick": 19199,
+                "depth": 0.8897
+              },
+              {
+                "world": 5,
+                "tick": 20099,
+                "depth": 0.9181
+              },
+              {
+                "world": 6,
+                "tick": 15499,
+                "depth": 0.6871
+              },
+              {
+                "world": 6,
+                "tick": 17499,
+                "depth": 0.6687
+              },
+              {
+                "world": 6,
+                "tick": 19499,
+                "depth": 0.6946
+              },
+              {
+                "world": 6,
+                "tick": 19999,
+                "depth": 0.7688
+              },
+              {
+                "world": 6,
+                "tick": 22449,
+                "depth": 0.7829
+              },
+              {
+                "world": 6,
+                "tick": 22999,
+                "depth": 0.8343
+              },
+              {
+                "world": 6,
+                "tick": 23949,
+                "depth": 0.8785
+              },
+              {
+                "world": 6,
+                "tick": 24449,
+                "depth": 0.7353
+              },
+              {
+                "world": 8,
+                "tick": 28249,
+                "depth": 0.4069
+              },
+              {
+                "world": 8,
+                "tick": 29199,
+                "depth": 0.4122
+              },
+              {
+                "world": 11,
+                "tick": 16299,
+                "depth": 0.4268
+              },
+              {
+                "world": 11,
+                "tick": 16749,
+                "depth": 0.5407
+              },
+              {
+                "world": 11,
+                "tick": 17249,
+                "depth": 0.6541
+              },
+              {
+                "world": 11,
+                "tick": 17699,
+                "depth": 0.6986
+              },
+              {
+                "world": 11,
+                "tick": 18249,
+                "depth": 0.4188
+              },
+              {
+                "world": 13,
+                "tick": 27999,
+                "depth": 0.4087
+              },
+              {
+                "world": 13,
+                "tick": 28499,
+                "depth": 0.3913
+              },
+              {
+                "world": 13,
+                "tick": 29549,
+                "depth": 0.3984
+              },
+              {
+                "world": 14,
+                "tick": 15349,
+                "depth": 0.4025
+              },
+              {
+                "world": 14,
+                "tick": 16349,
+                "depth": 0.4233
+              },
+              {
+                "world": 14,
+                "tick": 16799,
+                "depth": 0.4969
+              },
+              {
+                "world": 14,
+                "tick": 17299,
+                "depth": 0.4049
+              },
+              {
+                "world": 14,
+                "tick": 18749,
+                "depth": 0.4848
+              },
+              {
+                "world": 14,
+                "tick": 19249,
+                "depth": 0.503
+              },
+              {
+                "world": 14,
+                "tick": 19699,
+                "depth": 0.578
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 2.0
+      },
+      "seed": 1,
+      "run_id": "87474d7ed504dfb3ec4066b7",
+      "ms_per_tick": 8.2993,
+      "chronicle_mb": 51.0,
+      "final_population": [
+        257,
+        217,
+        204,
+        137,
+        123,
+        139,
+        135,
+        202,
+        164,
+        163,
+        90,
+        159,
+        67,
+        252,
+        177,
+        99
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.33395513729936344,
+          "null_mean": 0.09639312417915766,
+          "null_std": 0.010990846581915433,
+          "effect_size": 21.614532724994564,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.33395513729936344,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 148.2002083333333,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.3788291257656212,
+          "null_mean": 0.0,
+          "null_std": 0.06368574686067902,
+          "effect_size": 5.948413019232702,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 1873377,
+          "detail": {
+            "mean_advantage": 0.3788291257656212,
+            "took_best_share": 0.48409636714873727,
+            "flat_share": 0.0,
+            "direction_bias": 0.2540727253510639,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.1960637054675879,
+            "advantage_late": 0.5107448330876236,
+            "advantage_delta": 0.3146811276200357,
+            "advantage_delta_z": 4.574698056957282,
+            "worlds_improved": 15,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 11.25,
+          "null_mean": 7.5010416666666675,
+          "null_std": 0.82047303323381,
+          "effect_size": 4.5692645357973545,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 11.25,
+            "drop_threshold": 0.35,
+            "n_episodes": 54,
+            "worlds_with_any": 9,
+            "n_worlds": 16,
+            "deepest": 0.9162,
+            "events": [
+              {
+                "world": 3,
+                "tick": 21599,
+                "depth": 0.4094
+              },
+              {
+                "world": 4,
+                "tick": 15199,
+                "depth": 0.7129
+              },
+              {
+                "world": 4,
+                "tick": 15649,
+                "depth": 0.7917
+              },
+              {
+                "world": 4,
+                "tick": 18899,
+                "depth": 0.8364
+              },
+              {
+                "world": 4,
+                "tick": 22099,
+                "depth": 0.8103
+              },
+              {
+                "world": 4,
+                "tick": 23499,
+                "depth": 0.9034
+              },
+              {
+                "world": 4,
+                "tick": 26699,
+                "depth": 0.8554
+              },
+              {
+                "world": 5,
+                "tick": 15299,
+                "depth": 0.7558
+              },
+              {
+                "world": 5,
+                "tick": 18649,
+                "depth": 0.7907
+              },
+              {
+                "world": 5,
+                "tick": 19599,
+                "depth": 0.7753
+              },
+              {
+                "world": 5,
+                "tick": 21499,
+                "depth": 0.7584
+              },
+              {
+                "world": 5,
+                "tick": 21949,
+                "depth": 0.8617
+              },
+              {
+                "world": 5,
+                "tick": 26699,
+                "depth": 0.8808
+              },
+              {
+                "world": 5,
+                "tick": 29099,
+                "depth": 0.8667
+              },
+              {
+                "world": 7,
+                "tick": 15549,
+                "depth": 0.5806
+              },
+              {
+                "world": 7,
+                "tick": 17499,
+                "depth": 0.5823
+              },
+              {
+                "world": 7,
+                "tick": 18499,
+                "depth": 0.5404
+              },
+              {
+                "world": 7,
+                "tick": 18999,
+                "depth": 0.646
+              },
+              {
+                "world": 7,
+                "tick": 19999,
+                "depth": 0.6605
+              },
+              {
+                "world": 7,
+                "tick": 20449,
+                "depth": 0.7212
+              },
+              {
+                "world": 7,
+                "tick": 20949,
+                "depth": 0.7857
+              },
+              {
+                "world": 7,
+                "tick": 21449,
+                "depth": 0.8444
+              },
+              {
+                "world": 7,
+                "tick": 21949,
+                "depth": 0.8444
+              },
+              {
+                "world": 7,
+                "tick": 22449,
+                "depth": 0.6425
+              },
+              {
+                "world": 8,
+                "tick": 15349,
+                "depth": 0.3933
+              },
+              {
+                "world": 8,
+                "tick": 15849,
+                "depth": 0.4134
+              },
+              {
+                "world": 8,
+                "tick": 16299,
+                "depth": 0.4868
+              },
+              {
+                "world": 8,
+                "tick": 16799,
+                "depth": 0.4607
+              },
+              {
+                "world": 8,
+                "tick": 18299,
+                "depth": 0.4869
+              },
+              {
+                "world": 8,
+                "tick": 18749,
+                "depth": 0.533
+              },
+              {
+                "world": 8,
+                "tick": 19749,
+                "depth": 0.6269
+              },
+              {
+                "world": 8,
+                "tick": 20249,
+                "depth": 0.6188
+              },
+              {
+                "world": 8,
+                "tick": 21199,
+                "depth": 0.6618
+              },
+              {
+                "world": 8,
+                "tick": 27599,
+                "depth": 0.6286
+              },
+              {
+                "world": 8,
+                "tick": 28099,
+                "depth": 0.6698
+              },
+              {
+                "world": 10,
+                "tick": 20149,
+                "depth": 0.3772
+              },
+              {
+                "world": 10,
+                "tick": 23149,
+                "depth": 0.431
+              },
+              {
+                "world": 10,
+                "tick": 23649,
+                "depth": 0.3966
+              },
+              {
+                "world": 10,
+                "tick": 29549,
+                "depth": 0.3802
+              },
+              {
+                "world": 12,
+                "tick": 25749,
+                "depth": 0.3651
+              },
+              {
+                "world": 13,
+                "tick": 17049,
+                "depth": 0.3786
+              },
+              {
+                "world": 13,
+                "tick": 17499,
+                "depth": 0.483
+              },
+              {
+                "world": 13,
+                "tick": 18949,
+                "depth": 0.5669
+              },
+              {
+                "world": 13,
+                "tick": 19449,
+                "depth": 0.6335
+              },
+              {
+                "world": 13,
+                "tick": 19949,
+                "depth": 0.8447
+              },
+              {
+                "world": 13,
+                "tick": 20399,
+                "depth": 0.7778
+              },
+              {
+                "world": 13,
+                "tick": 20899,
+                "depth": 0.8595
+              },
+              {
+                "world": 13,
+                "tick": 21349,
+                "depth": 0.9162
+              },
+              {
+                "world": 13,
+                "tick": 21799,
+                "depth": 0.9158
+              },
+              {
+                "world": 15,
+                "tick": 15599,
+                "depth": 0.5793
+              },
+              {
+                "world": 15,
+                "tick": 16649,
+                "depth": 0.4828
+              },
+              {
+                "world": 15,
+                "tick": 17149,
+                "depth": 0.4662
+              },
+              {
+                "world": 15,
+                "tick": 17699,
+                "depth": 0.6519
+              },
+              {
+                "world": 15,
+                "tick": 29999,
+                "depth": 0.3774
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 2.0
+      },
+      "seed": 2,
+      "run_id": "5bbb3eeb968f9f3f16ad94dd",
+      "ms_per_tick": 7.9325,
+      "chronicle_mb": 60.98,
+      "final_population": [
+        187,
+        164,
+        162,
+        119,
+        360,
+        189,
+        246,
+        415,
+        161,
+        241,
+        254,
+        136,
+        210,
+        227,
+        75,
+        123
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.37199611048815173,
+          "null_mean": 0.09558493627092585,
+          "null_std": 0.010783651460768182,
+          "effect_size": 25.632428423974257,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.37199611048815173,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 185.91979166666667,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.38800385273404475,
+          "null_mean": 0.0,
+          "null_std": 0.051830799352109304,
+          "effect_size": 7.485970843284989,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 2263387,
+          "detail": {
+            "mean_advantage": 0.38800385273404475,
+            "took_best_share": 0.4872644404160667,
+            "flat_share": 0.0,
+            "direction_bias": 0.25132776674956603,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.188914523728093,
+            "advantage_late": 0.5196213675790917,
+            "advantage_delta": 0.3307068438509987,
+            "advantage_delta_z": 5.4547921082677275,
+            "worlds_improved": 15,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 11.875,
+          "null_mean": 7.366145833333333,
+          "null_std": 0.7789464302714526,
+          "effect_size": 5.788400834054006,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 11.875,
+            "drop_threshold": 0.35,
+            "n_episodes": 57,
+            "worlds_with_any": 10,
+            "n_worlds": 16,
+            "deepest": 0.8661,
+            "events": [
+              {
+                "world": 1,
+                "tick": 17349,
+                "depth": 0.4578
+              },
+              {
+                "world": 1,
+                "tick": 17749,
+                "depth": 0.5344
+              },
+              {
+                "world": 3,
+                "tick": 15349,
+                "depth": 0.4296
+              },
+              {
+                "world": 3,
+                "tick": 15849,
+                "depth": 0.4539
+              },
+              {
+                "world": 3,
+                "tick": 17399,
+                "depth": 0.5517
+              },
+              {
+                "world": 3,
+                "tick": 18449,
+                "depth": 0.5946
+              },
+              {
+                "world": 3,
+                "tick": 20949,
+                "depth": 0.5906
+              },
+              {
+                "world": 3,
+                "tick": 25499,
+                "depth": 0.6376
+              },
+              {
+                "world": 3,
+                "tick": 25999,
+                "depth": 0.6908
+              },
+              {
+                "world": 3,
+                "tick": 27499,
+                "depth": 0.7303
+              },
+              {
+                "world": 3,
+                "tick": 27999,
+                "depth": 0.6859
+              },
+              {
+                "world": 3,
+                "tick": 28499,
+                "depth": 0.7115
+              },
+              {
+                "world": 3,
+                "tick": 28999,
+                "depth": 0.4667
+              },
+              {
+                "world": 3,
+                "tick": 29999,
+                "depth": 0.3959
+              },
+              {
+                "world": 5,
+                "tick": 15449,
+                "depth": 0.6351
+              },
+              {
+                "world": 5,
+                "tick": 15949,
+                "depth": 0.8599
+              },
+              {
+                "world": 5,
+                "tick": 16449,
+                "depth": 0.8614
+              },
+              {
+                "world": 5,
+                "tick": 16899,
+                "depth": 0.8193
+              },
+              {
+                "world": 5,
+                "tick": 17449,
+                "depth": 0.5722
+              },
+              {
+                "world": 6,
+                "tick": 15399,
+                "depth": 0.4211
+              },
+              {
+                "world": 6,
+                "tick": 16349,
+                "depth": 0.5723
+              },
+              {
+                "world": 6,
+                "tick": 17299,
+                "depth": 0.7267
+              },
+              {
+                "world": 6,
+                "tick": 18299,
+                "depth": 0.7172
+              },
+              {
+                "world": 7,
+                "tick": 15349,
+                "depth": 0.5848
+              },
+              {
+                "world": 7,
+                "tick": 15749,
+                "depth": 0.3722
+              },
+              {
+                "world": 7,
+                "tick": 18649,
+                "depth": 0.3786
+              },
+              {
+                "world": 7,
+                "tick": 20499,
+                "depth": 0.3753
+              },
+              {
+                "world": 8,
+                "tick": 15249,
+                "depth": 0.375
+              },
+              {
+                "world": 8,
+                "tick": 15699,
+                "depth": 0.4485
+              },
+              {
+                "world": 8,
+                "tick": 16149,
+                "depth": 0.5621
+              },
+              {
+                "world": 8,
+                "tick": 17549,
+                "depth": 0.6023
+              },
+              {
+                "world": 8,
+                "tick": 17999,
+                "depth": 0.5455
+              },
+              {
+                "world": 8,
+                "tick": 18449,
+                "depth": 0.7027
+              },
+              {
+                "world": 8,
+                "tick": 24499,
+                "depth": 0.6811
+              },
+              {
+                "world": 8,
+                "tick": 24949,
+                "depth": 0.7157
+              },
+              {
+                "world": 8,
+                "tick": 25899,
+                "depth": 0.7172
+              },
+              {
+                "world": 10,
+                "tick": 22049,
+                "depth": 0.4217
+              },
+              {
+                "world": 10,
+                "tick": 26749,
+                "depth": 0.3651
+              },
+              {
+                "world": 12,
+                "tick": 15249,
+                "depth": 0.4574
+              },
+              {
+                "world": 12,
+                "tick": 15699,
+                "depth": 0.5098
+              },
+              {
+                "world": 12,
+                "tick": 16149,
+                "depth": 0.5952
+              },
+              {
+                "world": 12,
+                "tick": 16599,
+                "depth": 0.6445
+              },
+              {
+                "world": 12,
+                "tick": 17049,
+                "depth": 0.5953
+              },
+              {
+                "world": 12,
+                "tick": 17499,
+                "depth": 0.6221
+              },
+              {
+                "world": 12,
+                "tick": 18449,
+                "depth": 0.7032
+              },
+              {
+                "world": 12,
+                "tick": 19849,
+                "depth": 0.6771
+              },
+              {
+                "world": 12,
+                "tick": 20299,
+                "depth": 0.704
+              },
+              {
+                "world": 12,
+                "tick": 20749,
+                "depth": 0.7359
+              },
+              {
+                "world": 12,
+                "tick": 21699,
+                "depth": 0.8661
+              },
+              {
+                "world": 12,
+                "tick": 22149,
+                "depth": 0.7645
+              },
+              {
+                "world": 12,
+                "tick": 23999,
+                "depth": 0.8057
+              },
+              {
+                "world": 13,
+                "tick": 20849,
+                "depth": 0.4008
+              },
+              {
+                "world": 14,
+                "tick": 20399,
+                "depth": 0.3969
+              },
+              {
+                "world": 14,
+                "tick": 26949,
+                "depth": 0.4104
+              },
+              {
+                "world": 14,
+                "tick": 27999,
+                "depth": 0.4148
+              },
+              {
+                "world": 14,
+                "tick": 28499,
+                "depth": 0.3897
+              },
+              {
+                "world": 14,
+                "tick": 28999,
+                "depth": 0.4752
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 2.5
+      },
+      "seed": 0,
+      "run_id": "f17826b6639607c2b8e3406c",
+      "ms_per_tick": 7.9867,
+      "chronicle_mb": 85.05,
+      "final_population": [
+        220,
+        433,
+        436,
+        129,
+        360,
+        253,
+        306,
+        149,
+        138,
+        497,
+        318,
+        416,
+        544,
+        206,
+        298,
+        291
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.3379782020216666,
+          "null_mean": 0.0948465231504595,
+          "null_std": 0.010725321782661114,
+          "effect_size": 22.66894027032935,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.3379782020216666,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 266.06875,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.4282997511098675,
+          "null_mean": 0.0,
+          "null_std": 0.069404859657464,
+          "effect_size": 6.171034034557073,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 3259763,
+          "detail": {
+            "mean_advantage": 0.4282997511098675,
+            "took_best_share": 0.5495341225727146,
+            "flat_share": 0.0,
+            "direction_bias": 0.2534076863870165,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.14485237271503013,
+            "advantage_late": 0.5618502887661172,
+            "advantage_delta": 0.41699791605108716,
+            "advantage_delta_z": 5.926770644375435,
+            "worlds_improved": 13,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 6.25,
+          "null_mean": 6.877083333333334,
+          "null_std": 0.7419972343838847,
+          "effect_size": -0.8451289361664953,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 6.25,
+            "drop_threshold": 0.35,
+            "n_episodes": 30,
+            "worlds_with_any": 7,
+            "n_worlds": 16,
+            "deepest": 0.7526,
+            "events": [
+              {
+                "world": 0,
+                "tick": 15399,
+                "depth": 0.4286
+              },
+              {
+                "world": 0,
+                "tick": 22549,
+                "depth": 0.4024
+              },
+              {
+                "world": 0,
+                "tick": 22999,
+                "depth": 0.5
+              },
+              {
+                "world": 0,
+                "tick": 24349,
+                "depth": 0.4888
+              },
+              {
+                "world": 0,
+                "tick": 24849,
+                "depth": 0.4945
+              },
+              {
+                "world": 0,
+                "tick": 25749,
+                "depth": 0.5297
+              },
+              {
+                "world": 0,
+                "tick": 27099,
+                "depth": 0.6129
+              },
+              {
+                "world": 0,
+                "tick": 28499,
+                "depth": 0.7249
+              },
+              {
+                "world": 0,
+                "tick": 28949,
+                "depth": 0.7526
+              },
+              {
+                "world": 0,
+                "tick": 29349,
+                "depth": 0.6445
+              },
+              {
+                "world": 0,
+                "tick": 29799,
+                "depth": 0.6784
+              },
+              {
+                "world": 4,
+                "tick": 15249,
+                "depth": 0.75
+              },
+              {
+                "world": 4,
+                "tick": 15749,
+                "depth": 0.3913
+              },
+              {
+                "world": 5,
+                "tick": 15349,
+                "depth": 0.5524
+              },
+              {
+                "world": 5,
+                "tick": 15799,
+                "depth": 0.7104
+              },
+              {
+                "world": 5,
+                "tick": 18599,
+                "depth": 0.6178
+              },
+              {
+                "world": 5,
+                "tick": 19499,
+                "depth": 0.5211
+              },
+              {
+                "world": 5,
+                "tick": 22649,
+                "depth": 0.5094
+              },
+              {
+                "world": 11,
+                "tick": 15199,
+                "depth": 0.5393
+              },
+              {
+                "world": 11,
+                "tick": 16999,
+                "depth": 0.4082
+              },
+              {
+                "world": 12,
+                "tick": 15449,
+                "depth": 0.3616
+              },
+              {
+                "world": 12,
+                "tick": 16799,
+                "depth": 0.3665
+              },
+              {
+                "world": 12,
+                "tick": 18549,
+                "depth": 0.4062
+              },
+              {
+                "world": 13,
+                "tick": 18549,
+                "depth": 0.3862
+              },
+              {
+                "world": 13,
+                "tick": 18999,
+                "depth": 0.5839
+              },
+              {
+                "world": 13,
+                "tick": 19999,
+                "depth": 0.6129
+              },
+              {
+                "world": 13,
+                "tick": 20499,
+                "depth": 0.6894
+              },
+              {
+                "world": 13,
+                "tick": 21449,
+                "depth": 0.6287
+              },
+              {
+                "world": 13,
+                "tick": 23799,
+                "depth": 0.5928
+              },
+              {
+                "world": 14,
+                "tick": 15199,
+                "depth": 0.6568
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 2.5
+      },
+      "seed": 1,
+      "run_id": "1d60e53b96b6a4359902b089",
+      "ms_per_tick": 8.1017,
+      "chronicle_mb": 77.1,
+      "final_population": [
+        318,
+        391,
+        297,
+        253,
+        308,
+        193,
+        203,
+        273,
+        393,
+        421,
+        151,
+        237,
+        187,
+        454,
+        160,
+        216
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.33686786833703763,
+          "null_mean": 0.09428535448633,
+          "null_std": 0.01089240462539134,
+          "effect_size": 22.270795310451675,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.33686786833703763,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 237.34229166666665,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.47594707042339957,
+          "null_mean": 0.0,
+          "null_std": 0.0681685986317091,
+          "effect_size": 6.9819107327520955,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 2928243,
+          "detail": {
+            "mean_advantage": 0.47594707042339957,
+            "took_best_share": 0.5577136187126547,
+            "flat_share": 0.0,
+            "direction_bias": 0.25069333385241593,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.18301136619767738,
+            "advantage_late": 0.6264213550335367,
+            "advantage_delta": 0.44340998883585936,
+            "advantage_delta_z": 6.567689395413067,
+            "worlds_improved": 14,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 9.583333333333332,
+          "null_mean": 7.195833333333333,
+          "null_std": 0.8007537681598647,
+          "effect_size": 2.9815657383498597,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 9.583333333333332,
+            "drop_threshold": 0.35,
+            "n_episodes": 46,
+            "worlds_with_any": 6,
+            "n_worlds": 16,
+            "deepest": 0.8208,
+            "events": [
+              {
+                "world": 4,
+                "tick": 15199,
+                "depth": 0.5236
+              },
+              {
+                "world": 4,
+                "tick": 15599,
+                "depth": 0.6016
+              },
+              {
+                "world": 4,
+                "tick": 16449,
+                "depth": 0.677
+              },
+              {
+                "world": 4,
+                "tick": 17799,
+                "depth": 0.7116
+              },
+              {
+                "world": 4,
+                "tick": 18699,
+                "depth": 0.6966
+              },
+              {
+                "world": 4,
+                "tick": 25099,
+                "depth": 0.6929
+              },
+              {
+                "world": 4,
+                "tick": 27299,
+                "depth": 0.5878
+              },
+              {
+                "world": 5,
+                "tick": 15499,
+                "depth": 0.6188
+              },
+              {
+                "world": 5,
+                "tick": 16449,
+                "depth": 0.5196
+              },
+              {
+                "world": 5,
+                "tick": 16849,
+                "depth": 0.5556
+              },
+              {
+                "world": 5,
+                "tick": 17299,
+                "depth": 0.5481
+              },
+              {
+                "world": 5,
+                "tick": 17749,
+                "depth": 0.6262
+              },
+              {
+                "world": 5,
+                "tick": 19649,
+                "depth": 0.6791
+              },
+              {
+                "world": 5,
+                "tick": 23249,
+                "depth": 0.7061
+              },
+              {
+                "world": 7,
+                "tick": 15149,
+                "depth": 0.3935
+              },
+              {
+                "world": 7,
+                "tick": 15599,
+                "depth": 0.4645
+              },
+              {
+                "world": 7,
+                "tick": 16049,
+                "depth": 0.5294
+              },
+              {
+                "world": 7,
+                "tick": 16549,
+                "depth": 0.5412
+              },
+              {
+                "world": 7,
+                "tick": 16999,
+                "depth": 0.6082
+              },
+              {
+                "world": 7,
+                "tick": 17499,
+                "depth": 0.6615
+              },
+              {
+                "world": 7,
+                "tick": 18499,
+                "depth": 0.5692
+              },
+              {
+                "world": 7,
+                "tick": 18949,
+                "depth": 0.7259
+              },
+              {
+                "world": 7,
+                "tick": 19949,
+                "depth": 0.4381
+              },
+              {
+                "world": 8,
+                "tick": 15549,
+                "depth": 0.4449
+              },
+              {
+                "world": 8,
+                "tick": 15999,
+                "depth": 0.4097
+              },
+              {
+                "world": 8,
+                "tick": 16449,
+                "depth": 0.5021
+              },
+              {
+                "world": 8,
+                "tick": 18349,
+                "depth": 0.5287
+              },
+              {
+                "world": 8,
+                "tick": 18799,
+                "depth": 0.5732
+              },
+              {
+                "world": 8,
+                "tick": 19299,
+                "depth": 0.6496
+              },
+              {
+                "world": 8,
+                "tick": 19799,
+                "depth": 0.6226
+              },
+              {
+                "world": 8,
+                "tick": 20249,
+                "depth": 0.6965
+              },
+              {
+                "world": 8,
+                "tick": 20699,
+                "depth": 0.6764
+              },
+              {
+                "world": 8,
+                "tick": 22149,
+                "depth": 0.6255
+              },
+              {
+                "world": 10,
+                "tick": 28349,
+                "depth": 0.3862
+              },
+              {
+                "world": 10,
+                "tick": 29749,
+                "depth": 0.3557
+              },
+              {
+                "world": 15,
+                "tick": 15549,
+                "depth": 0.442
+              },
+              {
+                "world": 15,
+                "tick": 15999,
+                "depth": 0.4444
+              },
+              {
+                "world": 15,
+                "tick": 16499,
+                "depth": 0.6073
+              },
+              {
+                "world": 15,
+                "tick": 17949,
+                "depth": 0.5979
+              },
+              {
+                "world": 15,
+                "tick": 18349,
+                "depth": 0.7081
+              },
+              {
+                "world": 15,
+                "tick": 19799,
+                "depth": 0.8208
+              },
+              {
+                "world": 15,
+                "tick": 22199,
+                "depth": 0.7406
+              },
+              {
+                "world": 15,
+                "tick": 22699,
+                "depth": 0.8169
+              },
+              {
+                "world": 15,
+                "tick": 23649,
+                "depth": 0.607
+              },
+              {
+                "world": 15,
+                "tick": 24149,
+                "depth": 0.4957
+              },
+              {
+                "world": 15,
+                "tick": 24599,
+                "depth": 0.4195
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 2.5
+      },
+      "seed": 2,
+      "run_id": "cf721ea0bd0cd9836bd6972d",
+      "ms_per_tick": 7.9069,
+      "chronicle_mb": 79.03,
+      "final_population": [
+        312,
+        137,
+        235,
+        349,
+        426,
+        348,
+        271,
+        175,
+        173,
+        458,
+        356,
+        147,
+        271,
+        298,
+        221,
+        236
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.3596808149259635,
+          "null_mean": 0.09538868352959795,
+          "null_std": 0.011543922873401058,
+          "effect_size": 22.894481736822282,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.3596808149259635,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 237.43041666666664,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.3710944347256846,
+          "null_mean": 0.0,
+          "null_std": 0.06592982410843308,
+          "effect_size": 5.628627707475075,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 2965511,
+          "detail": {
+            "mean_advantage": 0.3710944347256846,
+            "took_best_share": 0.4947990413793778,
+            "flat_share": 0.0,
+            "direction_bias": 0.25129901726886195,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.17834577626444376,
+            "advantage_late": 0.47036911386914737,
+            "advantage_delta": 0.2920233376047036,
+            "advantage_delta_z": 5.141544465636869,
+            "worlds_improved": 15,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 7.083333333333334,
+          "null_mean": 6.805208333333334,
+          "null_std": 0.752823821751957,
+          "effect_size": 0.36944234755052396,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 7.083333333333334,
+            "drop_threshold": 0.35,
+            "n_episodes": 34,
+            "worlds_with_any": 7,
+            "n_worlds": 16,
+            "deepest": 0.7489,
+            "events": [
+              {
+                "world": 4,
+                "tick": 15999,
+                "depth": 0.4403
+              },
+              {
+                "world": 4,
+                "tick": 17399,
+                "depth": 0.3813
+              },
+              {
+                "world": 4,
+                "tick": 18249,
+                "depth": 0.4231
+              },
+              {
+                "world": 6,
+                "tick": 20699,
+                "depth": 0.3649
+              },
+              {
+                "world": 6,
+                "tick": 21099,
+                "depth": 0.411
+              },
+              {
+                "world": 6,
+                "tick": 21999,
+                "depth": 0.3985
+              },
+              {
+                "world": 6,
+                "tick": 22449,
+                "depth": 0.3849
+              },
+              {
+                "world": 6,
+                "tick": 24599,
+                "depth": 0.3823
+              },
+              {
+                "world": 8,
+                "tick": 16349,
+                "depth": 0.3738
+              },
+              {
+                "world": 8,
+                "tick": 16849,
+                "depth": 0.4348
+              },
+              {
+                "world": 8,
+                "tick": 20999,
+                "depth": 0.4393
+              },
+              {
+                "world": 8,
+                "tick": 21349,
+                "depth": 0.5318
+              },
+              {
+                "world": 8,
+                "tick": 25049,
+                "depth": 0.4545
+              },
+              {
+                "world": 8,
+                "tick": 26899,
+                "depth": 0.482
+              },
+              {
+                "world": 10,
+                "tick": 22099,
+                "depth": 0.4578
+              },
+              {
+                "world": 10,
+                "tick": 23949,
+                "depth": 0.3794
+              },
+              {
+                "world": 12,
+                "tick": 15199,
+                "depth": 0.4703
+              },
+              {
+                "world": 12,
+                "tick": 15599,
+                "depth": 0.5923
+              },
+              {
+                "world": 12,
+                "tick": 16049,
+                "depth": 0.6154
+              },
+              {
+                "world": 12,
+                "tick": 20199,
+                "depth": 0.6192
+              },
+              {
+                "world": 12,
+                "tick": 27499,
+                "depth": 0.6343
+              },
+              {
+                "world": 12,
+                "tick": 29299,
+                "depth": 0.6543
+              },
+              {
+                "world": 14,
+                "tick": 15399,
+                "depth": 0.3544
+              },
+              {
+                "world": 14,
+                "tick": 15849,
+                "depth": 0.3562
+              },
+              {
+                "world": 14,
+                "tick": 16849,
+                "depth": 0.3558
+              },
+              {
+                "world": 14,
+                "tick": 17349,
+                "depth": 0.4364
+              },
+              {
+                "world": 14,
+                "tick": 17849,
+                "depth": 0.4588
+              },
+              {
+                "world": 14,
+                "tick": 18349,
+                "depth": 0.4529
+              },
+              {
+                "world": 14,
+                "tick": 22299,
+                "depth": 0.4706
+              },
+              {
+                "world": 14,
+                "tick": 23799,
+                "depth": 0.6491
+              },
+              {
+                "world": 15,
+                "tick": 15249,
+                "depth": 0.6429
+              },
+              {
+                "world": 15,
+                "tick": 16099,
+                "depth": 0.7489
+              },
+              {
+                "world": 15,
+                "tick": 26199,
+                "depth": 0.7034
+              },
+              {
+                "world": 15,
+                "tick": 26649,
+                "depth": 0.7322
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 1.5
+      },
+      "seed": 0,
+      "run_id": "ead8d91f3b25e0a47d74cbfe",
+      "ms_per_tick": 11.1801,
+      "chronicle_mb": 15.82,
+      "final_population": [
+        0,
+        0,
+        0,
+        0,
+        133,
+        120,
+        116,
+        0,
+        83,
+        0,
+        96,
+        129,
+        0,
+        0,
+        0,
+        74
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.12394773870836855,
+          "null_mean": 0.07720576598904601,
+          "null_std": 0.017021121800549953,
+          "effect_size": 2.746115871035733,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.12394773870836855,
+            "bounded_fraction": 0.4375,
+            "bounded_worlds": 7,
+            "n_worlds": 16,
+            "mean_population": 41.32875000000001,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.07993128281683724,
+          "null_mean": 0.0,
+          "null_std": 0.020910156025123118,
+          "effect_size": 3.8226057577380805,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 480413,
+          "detail": {
+            "mean_advantage": 0.07993128281683724,
+            "took_best_share": 0.2967196974270055,
+            "flat_share": 0.0,
+            "direction_bias": 0.379025963077602,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.07574415558236758,
+            "advantage_late": 0.20620927601404443,
+            "advantage_delta": 0.13046512043167685,
+            "advantage_delta_z": 6.9185815994405475,
+            "worlds_improved": 7,
+            "n_worlds": 7
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 4.375,
+          "null_mean": 4.56875,
+          "null_std": 0.43923762077035255,
+          "effect_size": -0.4411052032842568,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 4.375,
+            "drop_threshold": 0.35,
+            "n_episodes": 21,
+            "worlds_with_any": 13,
+            "n_worlds": 16,
+            "deepest": 1.0,
+            "events": [
+              {
+                "world": 0,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 1,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 2,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 3,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 5,
+                "tick": 21199,
+                "depth": 0.449
+              },
+              {
+                "world": 5,
+                "tick": 21849,
+                "depth": 0.396
+              },
+              {
+                "world": 5,
+                "tick": 22499,
+                "depth": 0.4245
+              },
+              {
+                "world": 5,
+                "tick": 23199,
+                "depth": 0.3871
+              },
+              {
+                "world": 5,
+                "tick": 23699,
+                "depth": 0.3767
+              },
+              {
+                "world": 5,
+                "tick": 24699,
+                "depth": 0.3537
+              },
+              {
+                "world": 5,
+                "tick": 25199,
+                "depth": 0.3667
+              },
+              {
+                "world": 5,
+                "tick": 25649,
+                "depth": 0.4013
+              },
+              {
+                "world": 6,
+                "tick": 20249,
+                "depth": 0.4765
+              },
+              {
+                "world": 7,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 8,
+                "tick": 18199,
+                "depth": 0.3913
+              },
+              {
+                "world": 9,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 10,
+                "tick": 15299,
+                "depth": 0.4
+              },
+              {
+                "world": 10,
+                "tick": 21799,
+                "depth": 0.3545
+              },
+              {
+                "world": 12,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 13,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 14,
+                "tick": 15049,
+                "depth": 1.0
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 1.5
+      },
+      "seed": 1,
+      "run_id": "088639a12f10f90592e4347b",
+      "ms_per_tick": 11.0949,
+      "chronicle_mb": 9.33,
+      "final_population": [
+        0,
+        0,
+        0,
+        67,
+        0,
+        0,
+        0,
+        78,
+        126,
+        0,
+        0,
+        104,
+        0,
+        0,
+        0,
+        0
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.08502604573077381,
+          "null_mean": 0.07095387249716062,
+          "null_std": 0.015975188399873982,
+          "effect_size": 0.8808768248219343,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.08502604573077381,
+            "bounded_fraction": 0.25,
+            "bounded_worlds": 4,
+            "n_worlds": 16,
+            "mean_population": 22.57104166666667,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.05192574233121604,
+          "null_mean": 0.0,
+          "null_std": 0.020459466175310623,
+          "effect_size": 2.5379812887726865,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 281422,
+          "detail": {
+            "mean_advantage": 0.05192574233121604,
+            "took_best_share": 0.31533782007092553,
+            "flat_share": 0.0,
+            "direction_bias": 0.30371825941113345,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.061979549317880495,
+            "advantage_late": 0.23258568881930972,
+            "advantage_delta": 0.17060613950142925,
+            "advantage_delta_z": 5.5811215624578185,
+            "worlds_improved": 4,
+            "n_worlds": 4
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 3.125,
+          "null_mean": 4.090104166666666,
+          "null_std": 0.33737418887041765,
+          "effect_size": -2.860634270505365,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 3.125,
+            "drop_threshold": 0.35,
+            "n_episodes": 15,
+            "worlds_with_any": 14,
+            "n_worlds": 16,
+            "deepest": 1.0,
+            "events": [
+              {
+                "world": 0,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 1,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 2,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 4,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 5,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 6,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 7,
+                "tick": 19799,
+                "depth": 0.3763
+              },
+              {
+                "world": 7,
+                "tick": 26299,
+                "depth": 0.3838
+              },
+              {
+                "world": 9,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 10,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 11,
+                "tick": 19949,
+                "depth": 0.3564
+              },
+              {
+                "world": 12,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 13,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 14,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 15,
+                "tick": 15049,
+                "depth": 1.0
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 1.5
+      },
+      "seed": 2,
+      "run_id": "67589960ced734cb021132e4",
+      "ms_per_tick": 11.1677,
+      "chronicle_mb": 20.55,
+      "final_population": [
+        107,
+        0,
+        0,
+        0,
+        247,
+        80,
+        98,
+        86,
+        0,
+        0,
+        84,
+        0,
+        107,
+        127,
+        0,
+        86
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.15511241233004347,
+          "null_mean": 0.08173024171619658,
+          "null_std": 0.014866427326932078,
+          "effect_size": 4.936099911571051,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.15511241233004347,
+            "bounded_fraction": 0.5625,
+            "bounded_worlds": 9,
+            "n_worlds": 16,
+            "mean_population": 53.397083333333335,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.08953104815898855,
+          "null_mean": 0.0,
+          "null_std": 0.02335350736111408,
+          "effect_size": 3.8337302733407266,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 625651,
+          "detail": {
+            "mean_advantage": 0.08953104815898855,
+            "took_best_share": 0.30451002236070907,
+            "flat_share": 0.0,
+            "direction_bias": 0.3806419233726151,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.059553981110475794,
+            "advantage_late": 0.22951379105913455,
+            "advantage_delta": 0.16995980994865872,
+            "advantage_delta_z": 3.7064981448447756,
+            "worlds_improved": 9,
+            "n_worlds": 9
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 3.7500000000000004,
+          "null_mean": 4.8703125,
+          "null_std": 0.48412263811212025,
+          "effect_size": -2.314108888542702,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 3.7500000000000004,
+            "drop_threshold": 0.35,
+            "n_episodes": 18,
+            "worlds_with_any": 12,
+            "n_worlds": 16,
+            "deepest": 1.0,
+            "events": [
+              {
+                "world": 0,
+                "tick": 20599,
+                "depth": 0.3504
+              },
+              {
+                "world": 0,
+                "tick": 22799,
+                "depth": 0.3852
+              },
+              {
+                "world": 0,
+                "tick": 24199,
+                "depth": 0.4634
+              },
+              {
+                "world": 0,
+                "tick": 25249,
+                "depth": 0.3906
+              },
+              {
+                "world": 0,
+                "tick": 26399,
+                "depth": 0.4058
+              },
+              {
+                "world": 1,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 2,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 3,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 5,
+                "tick": 18149,
+                "depth": 0.3919
+              },
+              {
+                "world": 5,
+                "tick": 23899,
+                "depth": 0.3605
+              },
+              {
+                "world": 7,
+                "tick": 25749,
+                "depth": 0.3636
+              },
+              {
+                "world": 8,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 9,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 11,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 12,
+                "tick": 24349,
+                "depth": 0.4029
+              },
+              {
+                "world": 12,
+                "tick": 26349,
+                "depth": 0.3946
+              },
+              {
+                "world": 14,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 15,
+                "tick": 22299,
+                "depth": 0.3684
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 2.0
+      },
+      "seed": 0,
+      "run_id": "923fe73f0fe2b181cda96097",
+      "ms_per_tick": 11.54,
+      "chronicle_mb": 40.01,
+      "final_population": [
+        122,
+        125,
+        102,
+        0,
+        145,
+        170,
+        169,
+        138,
+        152,
+        73,
+        158,
+        166,
+        0,
+        0,
+        137,
+        163
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.2784289200798672,
+          "null_mean": 0.09028524345048541,
+          "null_std": 0.013180351015160885,
+          "effect_size": 14.274557362923556,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.2784289200798672,
+            "bounded_fraction": 0.8125,
+            "bounded_worlds": 13,
+            "n_worlds": 16,
+            "mean_population": 105.88333333333333,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.11141275368411911,
+          "null_mean": 0.0,
+          "null_std": 0.011143348727974126,
+          "effect_size": 9.998139374785058,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 1363503,
+          "detail": {
+            "mean_advantage": 0.11141275368411911,
+            "took_best_share": 0.284364610858942,
+            "flat_share": 0.0,
+            "direction_bias": 0.2809872805560384,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.038825869195015676,
+            "advantage_late": 0.18582664219098824,
+            "advantage_delta": 0.14700077299597253,
+            "advantage_delta_z": 14.044283677511007,
+            "worlds_improved": 13,
+            "n_worlds": 13
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 4.583333333333333,
+          "null_mean": 5.607291666666668,
+          "null_std": 0.6254434190924957,
+          "effect_size": -1.6371718081534459,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 4.583333333333333,
+            "drop_threshold": 0.35,
+            "n_episodes": 22,
+            "worlds_with_any": 11,
+            "n_worlds": 16,
+            "deepest": 1.0,
+            "events": [
+              {
+                "world": 0,
+                "tick": 24149,
+                "depth": 0.3617
+              },
+              {
+                "world": 3,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 5,
+                "tick": 20099,
+                "depth": 0.3632
+              },
+              {
+                "world": 6,
+                "tick": 29749,
+                "depth": 0.4128
+              },
+              {
+                "world": 7,
+                "tick": 19949,
+                "depth": 0.3546
+              },
+              {
+                "world": 7,
+                "tick": 20949,
+                "depth": 0.3916
+              },
+              {
+                "world": 7,
+                "tick": 23449,
+                "depth": 0.3517
+              },
+              {
+                "world": 7,
+                "tick": 25399,
+                "depth": 0.3636
+              },
+              {
+                "world": 9,
+                "tick": 15199,
+                "depth": 0.6216
+              },
+              {
+                "world": 9,
+                "tick": 17399,
+                "depth": 0.4783
+              },
+              {
+                "world": 9,
+                "tick": 20149,
+                "depth": 0.5532
+              },
+              {
+                "world": 9,
+                "tick": 28099,
+                "depth": 0.3857
+              },
+              {
+                "world": 9,
+                "tick": 28849,
+                "depth": 0.3514
+              },
+              {
+                "world": 9,
+                "tick": 29549,
+                "depth": 0.369
+              },
+              {
+                "world": 10,
+                "tick": 21099,
+                "depth": 0.3963
+              },
+              {
+                "world": 10,
+                "tick": 21999,
+                "depth": 0.3611
+              },
+              {
+                "world": 11,
+                "tick": 15949,
+                "depth": 0.4053
+              },
+              {
+                "world": 11,
+                "tick": 16399,
+                "depth": 0.4031
+              },
+              {
+                "world": 11,
+                "tick": 16899,
+                "depth": 0.3776
+              },
+              {
+                "world": 12,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 13,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 15,
+                "tick": 19849,
+                "depth": 0.3899
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 2.0
+      },
+      "seed": 1,
+      "run_id": "1cbce6709df22cc997ba224e",
+      "ms_per_tick": 11.2032,
+      "chronicle_mb": 32.74,
+      "final_population": [
+        69,
+        115,
+        106,
+        126,
+        151,
+        134,
+        0,
+        150,
+        186,
+        97,
+        0,
+        135,
+        0,
+        140,
+        171,
+        0
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.22966331834003362,
+          "null_mean": 0.08671857907835538,
+          "null_std": 0.012762380770000898,
+          "effect_size": 11.200475979974085,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.22966331834003362,
+            "bounded_fraction": 0.75,
+            "bounded_worlds": 12,
+            "n_worlds": 16,
+            "mean_population": 86.15666666666667,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.1105817203728556,
+          "null_mean": 0.0,
+          "null_std": 0.015167118055126255,
+          "effect_size": 7.290885451734232,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 1057883,
+          "detail": {
+            "mean_advantage": 0.1105817203728556,
+            "took_best_share": 0.29659045471001994,
+            "flat_share": 0.0,
+            "direction_bias": 0.2893467425036606,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.05486376218009343,
+            "advantage_late": 0.20152237889504113,
+            "advantage_delta": 0.1466586167149477,
+            "advantage_delta_z": 8.356269564508844,
+            "worlds_improved": 12,
+            "n_worlds": 12
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 4.375,
+          "null_mean": 5.634375,
+          "null_std": 0.6325232963979359,
+          "effect_size": -1.9910333851287854,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 4.375,
+            "drop_threshold": 0.35,
+            "n_episodes": 21,
+            "worlds_with_any": 8,
+            "n_worlds": 16,
+            "deepest": 1.0,
+            "events": [
+              {
+                "world": 6,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 7,
+                "tick": 15799,
+                "depth": 0.3986
+              },
+              {
+                "world": 7,
+                "tick": 16249,
+                "depth": 0.4231
+              },
+              {
+                "world": 7,
+                "tick": 16749,
+                "depth": 0.4472
+              },
+              {
+                "world": 7,
+                "tick": 18199,
+                "depth": 0.4383
+              },
+              {
+                "world": 9,
+                "tick": 20449,
+                "depth": 0.3676
+              },
+              {
+                "world": 9,
+                "tick": 25399,
+                "depth": 0.4786
+              },
+              {
+                "world": 9,
+                "tick": 27949,
+                "depth": 0.4966
+              },
+              {
+                "world": 9,
+                "tick": 28449,
+                "depth": 0.4967
+              },
+              {
+                "world": 10,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 11,
+                "tick": 16499,
+                "depth": 0.3984
+              },
+              {
+                "world": 11,
+                "tick": 20349,
+                "depth": 0.4662
+              },
+              {
+                "world": 11,
+                "tick": 20849,
+                "depth": 0.5633
+              },
+              {
+                "world": 11,
+                "tick": 21349,
+                "depth": 0.5621
+              },
+              {
+                "world": 11,
+                "tick": 22849,
+                "depth": 0.6154
+              },
+              {
+                "world": 11,
+                "tick": 23349,
+                "depth": 0.617
+              },
+              {
+                "world": 11,
+                "tick": 29699,
+                "depth": 0.4202
+              },
+              {
+                "world": 12,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 13,
+                "tick": 24149,
+                "depth": 0.3631
+              },
+              {
+                "world": 13,
+                "tick": 25999,
+                "depth": 0.3609
+              },
+              {
+                "world": 15,
+                "tick": 15049,
+                "depth": 1.0
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 2.0
+      },
+      "seed": 2,
+      "run_id": "620b2103d456f73a8508f47b",
+      "ms_per_tick": 10.9977,
+      "chronicle_mb": 40.6,
+      "final_population": [
+        163,
+        0,
+        123,
+        0,
+        166,
+        112,
+        153,
+        140,
+        295,
+        116,
+        122,
+        87,
+        177,
+        224,
+        108,
+        197
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.28127486373421673,
+          "null_mean": 0.09115848161770057,
+          "null_std": 0.011191003509391244,
+          "effect_size": 16.988322982561364,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.28127486373421673,
+            "bounded_fraction": 0.875,
+            "bounded_worlds": 14,
+            "n_worlds": 16,
+            "mean_population": 115.66166666666666,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.1287020195858411,
+          "null_mean": 0.0,
+          "null_std": 0.015183506630797997,
+          "effect_size": 8.476435827069345,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 1388045,
+          "detail": {
+            "mean_advantage": 0.1287020195858411,
+            "took_best_share": 0.2913882474991805,
+            "flat_share": 0.0,
+            "direction_bias": 0.2808388777020918,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.0462492372920636,
+            "advantage_late": 0.20943440154419454,
+            "advantage_delta": 0.16318516425213092,
+            "advantage_delta_z": 8.470784385500847,
+            "worlds_improved": 14,
+            "n_worlds": 14
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 1.25,
+          "null_mean": 5.908333333333334,
+          "null_std": 0.6508674766972323,
+          "effect_size": -7.157114927560403,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 1.25,
+            "drop_threshold": 0.35,
+            "n_episodes": 6,
+            "worlds_with_any": 4,
+            "n_worlds": 16,
+            "deepest": 1.0,
+            "events": [
+              {
+                "world": 1,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 3,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 8,
+                "tick": 17699,
+                "depth": 0.3807
+              },
+              {
+                "world": 15,
+                "tick": 19499,
+                "depth": 0.3614
+              },
+              {
+                "world": 15,
+                "tick": 24349,
+                "depth": 0.3571
+              },
+              {
+                "world": 15,
+                "tick": 24699,
+                "depth": 0.5373
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 2.5
+      },
+      "seed": 0,
+      "run_id": "e72ac134ca3ae15fe8d48049",
+      "ms_per_tick": 11.3982,
+      "chronicle_mb": 59.04,
+      "final_population": [
+        174,
+        126,
+        146,
+        68,
+        316,
+        230,
+        364,
+        147,
+        155,
+        170,
+        264,
+        179,
+        136,
+        0,
+        198,
+        279
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.3129646369695957,
+          "null_mean": 0.09483035461215998,
+          "null_std": 0.012355608526639705,
+          "effect_size": 17.65467737886971,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.3129646369695957,
+            "bounded_fraction": 0.9375,
+            "bounded_worlds": 15,
+            "n_worlds": 16,
+            "mean_population": 166.08625,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.1102428500217051,
+          "null_mean": 0.0,
+          "null_std": 0.010227584174364755,
+          "effect_size": 10.778972643219765,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 2125944,
+          "detail": {
+            "mean_advantage": 0.1102428500217051,
+            "took_best_share": 0.2876279902010589,
+            "flat_share": 0.0,
+            "direction_bias": 0.32584207298028545,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.03575918216487215,
+            "advantage_late": 0.1641778899474403,
+            "advantage_delta": 0.12841870778256817,
+            "advantage_delta_z": 7.033175253174118,
+            "worlds_improved": 15,
+            "n_worlds": 15
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 2.0833333333333335,
+          "null_mean": 5.4875,
+          "null_std": 0.6306825006821315,
+          "effect_size": -5.39759175652535,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 2.0833333333333335,
+            "drop_threshold": 0.35,
+            "n_episodes": 10,
+            "worlds_with_any": 5,
+            "n_worlds": 16,
+            "deepest": 1.0,
+            "events": [
+              {
+                "world": 0,
+                "tick": 29449,
+                "depth": 0.3867
+              },
+              {
+                "world": 5,
+                "tick": 19799,
+                "depth": 0.4198
+              },
+              {
+                "world": 5,
+                "tick": 26649,
+                "depth": 0.4436
+              },
+              {
+                "world": 5,
+                "tick": 27999,
+                "depth": 0.406
+              },
+              {
+                "world": 5,
+                "tick": 28899,
+                "depth": 0.3732
+              },
+              {
+                "world": 6,
+                "tick": 16999,
+                "depth": 0.4329
+              },
+              {
+                "world": 6,
+                "tick": 26549,
+                "depth": 0.417
+              },
+              {
+                "world": 13,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 15,
+                "tick": 20149,
+                "depth": 0.3695
+              },
+              {
+                "world": 15,
+                "tick": 29149,
+                "depth": 0.5484
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 2.5
+      },
+      "seed": 1,
+      "run_id": "83e6f41a1b120b676d998d34",
+      "ms_per_tick": 11.2523,
+      "chronicle_mb": 53.25,
+      "final_population": [
+        186,
+        165,
+        135,
+        188,
+        166,
+        145,
+        148,
+        175,
+        196,
+        166,
+        80,
+        185,
+        0,
+        344,
+        296,
+        147
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.296016698420867,
+          "null_mean": 0.09382313075626908,
+          "null_std": 0.011282478681298294,
+          "effect_size": 17.921023684250486,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.296016698420867,
+            "bounded_fraction": 0.9375,
+            "bounded_worlds": 15,
+            "n_worlds": 16,
+            "mean_population": 151.93916666666667,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.12750305712128124,
+          "null_mean": 0.0,
+          "null_std": 0.011629937491925315,
+          "effect_size": 10.963348445321122,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 1904802,
+          "detail": {
+            "mean_advantage": 0.12750305712128124,
+            "took_best_share": 0.29513671237220457,
+            "flat_share": 0.0,
+            "direction_bias": 0.3252112293036232,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.02329199725779248,
+            "advantage_late": 0.1984122809761399,
+            "advantage_delta": 0.17512028371834737,
+            "advantage_delta_z": 10.523463871086843,
+            "worlds_improved": 15,
+            "n_worlds": 15
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 1.25,
+          "null_mean": 5.553125,
+          "null_std": 0.5911300016235383,
+          "effect_size": -7.2794901090817055,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 1.25,
+            "drop_threshold": 0.35,
+            "n_episodes": 6,
+            "worlds_with_any": 5,
+            "n_worlds": 16,
+            "deepest": 1.0,
+            "events": [
+              {
+                "world": 1,
+                "tick": 17649,
+                "depth": 0.3761
+              },
+              {
+                "world": 1,
+                "tick": 29149,
+                "depth": 0.3797
+              },
+              {
+                "world": 6,
+                "tick": 24899,
+                "depth": 0.4383
+              },
+              {
+                "world": 11,
+                "tick": 18349,
+                "depth": 0.3667
+              },
+              {
+                "world": 12,
+                "tick": 15049,
+                "depth": 1.0
+              },
+              {
+                "world": 14,
+                "tick": 26099,
+                "depth": 0.3597
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 2.5
+      },
+      "seed": 2,
+      "run_id": "cc88f9751130bc3260ca3d85",
+      "ms_per_tick": 11.2667,
+      "chronicle_mb": 67.89,
+      "final_population": [
+        192,
+        50,
+        143,
+        147,
+        255,
+        179,
+        154,
+        170,
+        380,
+        198,
+        247,
+        382,
+        203,
+        466,
+        100,
+        212
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.2745582481725522,
+          "null_mean": 0.0946877954481137,
+          "null_std": 0.011307991739633401,
+          "effect_size": 15.906489575333719,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.2745582481725522,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 199.30083333333334,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.13971583535461013,
+          "null_mean": 0.0,
+          "null_std": 0.009213645841469076,
+          "effect_size": 15.164011918688319,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 2453846,
+          "detail": {
+            "mean_advantage": 0.13971583535461013,
+            "took_best_share": 0.2823889518739155,
+            "flat_share": 0.0,
+            "direction_bias": 0.3446051626711701,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.038674085537232436,
+            "advantage_late": 0.21230799228761826,
+            "advantage_delta": 0.1736339067503858,
+            "advantage_delta_z": 10.224495349305098,
+            "worlds_improved": 16,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 1.6666666666666667,
+          "null_mean": 5.664583333333334,
+          "null_std": 0.5458134538364632,
+          "effect_size": -7.324694249593422,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 1.6666666666666667,
+            "drop_threshold": 0.35,
+            "n_episodes": 8,
+            "worlds_with_any": 4,
+            "n_worlds": 16,
+            "deepest": 0.5418,
+            "events": [
+              {
+                "world": 1,
+                "tick": 16749,
+                "depth": 0.4706
+              },
+              {
+                "world": 1,
+                "tick": 17799,
+                "depth": 0.3529
+              },
+              {
+                "world": 1,
+                "tick": 22399,
+                "depth": 0.44
+              },
+              {
+                "world": 11,
+                "tick": 16399,
+                "depth": 0.4835
+              },
+              {
+                "world": 11,
+                "tick": 20399,
+                "depth": 0.5418
+              },
+              {
+                "world": 13,
+                "tick": 18999,
+                "depth": 0.4931
+              },
+              {
+                "world": 15,
+                "tick": 19649,
+                "depth": 0.4387
+              },
+              {
+                "world": 15,
+                "tick": 28549,
+                "depth": 0.523
+              }
+            ],
+            "events_truncated": false
+          }
+        }
+      }
+    }
+  ],
+  "summary": [
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 1.5
+      },
+      "n_seeds": 3,
+      "pop_stability": {
+        "mean_effect_size": 22.004,
+        "mean_magnitude": 0.34252,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      },
+      "gradient_ascent": {
+        "mean_effect_size": 5.865,
+        "mean_magnitude": 0.36342,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      },
+      "collapse": {
+        "mean_effect_size": 4.327,
+        "mean_magnitude": 10.76389,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 2.0
+      },
+      "n_seeds": 3,
+      "pop_stability": {
+        "mean_effect_size": 23.382,
+        "mean_magnitude": 0.35384,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      },
+      "gradient_ascent": {
+        "mean_effect_size": 6.483,
+        "mean_magnitude": 0.3943,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      },
+      "collapse": {
+        "mean_effect_size": 3.368,
+        "mean_magnitude": 10.27778,
+        "seeds_fired": 2,
+        "verdict": "candidate"
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S0",
+        "agent.gather_efficiency": 2.5
+      },
+      "n_seeds": 3,
+      "pop_stability": {
+        "mean_effect_size": 22.611,
+        "mean_magnitude": 0.34484,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      },
+      "gradient_ascent": {
+        "mean_effect_size": 6.261,
+        "mean_magnitude": 0.42511,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      },
+      "collapse": {
+        "mean_effect_size": 0.835,
+        "mean_magnitude": 7.63889,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 1.5
+      },
+      "n_seeds": 3,
+      "pop_stability": {
+        "mean_effect_size": 2.854,
+        "mean_magnitude": 0.12136,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      },
+      "gradient_ascent": {
+        "mean_effect_size": 3.398,
+        "mean_magnitude": 0.0738,
+        "seeds_fired": 2,
+        "verdict": "candidate"
+      },
+      "collapse": {
+        "mean_effect_size": -1.872,
+        "mean_magnitude": 3.75,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 2.0
+      },
+      "n_seeds": 3,
+      "pop_stability": {
+        "mean_effect_size": 14.154,
+        "mean_magnitude": 0.26312,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      },
+      "gradient_ascent": {
+        "mean_effect_size": 8.588,
+        "mean_magnitude": 0.1169,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      },
+      "collapse": {
+        "mean_effect_size": -3.595,
+        "mean_magnitude": 3.40278,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      }
+    },
+    {
+      "params": {
+        "intelligence.stage": "S1",
+        "agent.gather_efficiency": 2.5
+      },
+      "n_seeds": 3,
+      "pop_stability": {
+        "mean_effect_size": 17.161,
+        "mean_magnitude": 0.29451,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      },
+      "gradient_ascent": {
+        "mean_effect_size": 12.302,
+        "mean_magnitude": 0.12582,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      },
+      "collapse": {
+        "mean_effect_size": -6.667,
+        "mean_magnitude": 1.66667,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      }
+    }
+  ]
+}

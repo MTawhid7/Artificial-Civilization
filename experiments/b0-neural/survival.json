@@ -1,0 +1,59 @@
+{
+  "statistic": "post-burn-in mean population per world",
+  "burn_in_fraction": 0.5,
+  "replication_unit": "(seed, world) pair \u2014 paired by landscape, D-072",
+  "comparison": "raw effect, not z (D-060)",
+  "doses": [
+    {
+      "gather_efficiency": 1.5,
+      "n_pairs": 48,
+      "s0_mean": 104.12,
+      "s1_mean": 39.1,
+      "paired_delta": -65.02,
+      "paired_delta_se": 7.032,
+      "paired_t": -9.246,
+      "ratio_s1_over_s0": 0.3755,
+      "s1_win_share": 0.062,
+      "per_seed_delta": [
+        -69.3,
+        -68.19,
+        -57.58
+      ],
+      "seeds_with_s1_ahead": 0
+    },
+    {
+      "gather_efficiency": 2.0,
+      "n_pairs": 48,
+      "s0_mean": 169.5,
+      "s1_mean": 102.57,
+      "paired_delta": -66.94,
+      "paired_delta_se": 10.336,
+      "paired_t": -6.476,
+      "ratio_s1_over_s0": 0.6051,
+      "s1_win_share": 0.125,
+      "per_seed_delta": [
+        -68.51,
+        -62.04,
+        -70.26
+      ],
+      "seeds_with_s1_ahead": 0
+    },
+    {
+      "gather_efficiency": 2.5,
+      "n_pairs": 48,
+      "s0_mean": 246.95,
+      "s1_mean": 172.44,
+      "paired_delta": -74.51,
+      "paired_delta_se": 14.873,
+      "paired_t": -5.009,
+      "ratio_s1_over_s0": 0.6983,
+      "s1_win_share": 0.229,
+      "per_seed_delta": [
+        -99.98,
+        -85.4,
+        -38.13
+      ],
+      "seeds_with_s1_ahead": 0
+    }
+  ]
+}
