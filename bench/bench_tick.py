@@ -309,6 +309,66 @@ def run_throttle(cfg: dict[str, int], seconds: float, seed: int = 0) -> dict:
     }
 
 
+def run_real(stage: str, cfg: dict[str, int], ticks: int, warmup: int, seed: int = 0) -> dict:
+    """Time the **actual** tick loop, not a synthetic stand-in.
+
+    The promise the module docstring has been making since A0: once
+    `core/tick.py` existed, point this at the real loop and keep the numbers
+    comparable. B0 is when it started mattering, because `bench_policy` measures
+    an S1 forward pass in isolation and the interesting number is what that does
+    to a whole tick once the gather, the births and the emit are also present.
+
+    Imported here rather than at module scope so the synthetic path — the one
+    that ran before `src/core/` existed — still runs without it.
+    """
+    from core.config import resolve
+    from core.pending import Accumulators, PendingQueue
+    from core.rng import RngStreams
+    from core.tick import TickContext, step
+    from forge.run import init_world
+
+    intelligence = {"stage": stage, "genome_size": GENOME_SIZE, "view_radius": VIEW_RADIUS}
+    resolved = resolve(
+        {
+            "world": {"grid": cfg["grid"], "patchiness": 0.6, "regrowth": 0.05,
+                      "seed_rain": 0.004},
+            "primitives": {"p1": {"level": 0}, "p10": {"level": 0, "rate": 0.0}},
+            "intelligence": intelligence,
+            "population": {"initial": cfg["agents"] // 2, "capacity": cfg["agents"],
+                           "birth_cap": 64},
+            "agent": {"metabolism": 0.5, "gather_efficiency": 4.0},
+            "run": {"worlds": cfg["worlds"], "ticks": ticks},
+        },
+        source=f"bench_tick::real::{stage}",
+    )
+
+    rng = RngStreams(seed)
+    world = init_world(resolved, rng)
+    ctx = TickContext.build(resolved, world)
+    pending, acc = PendingQueue.empty(), Accumulators.empty()
+
+    # No Chronicle: the emit phase writes Parquet, and a benchmark that measures
+    # the disk is measuring the disk. The synthetic path times emit separately.
+    for _ in range(warmup):
+        step(world, ctx, rng, pending, acc, None)
+    start = time.perf_counter()
+    for _ in range(ticks):
+        step(world, ctx, rng, pending, acc, None)
+    ms = (time.perf_counter() - start) * 1000.0 / ticks
+
+    return {
+        "stage": stage,
+        "scale": f"{cfg['worlds']}x{cfg['agents']}",
+        "n_slots": cfg["worlds"] * cfg["agents"],
+        "mean_population": int(world.population.sum()),
+        "lineages": int(world.lineages),
+        "hidden": int(world.hidden),
+        "ms_per_tick": round(ms, 3),
+        "min_per_30k_ticks": round(ms * 30_000 / 1000 / 60, 1),
+        "min_per_30k_throttled": round(ms * 30_000 / 1000 / 60 * 1.88, 1),
+    }
+
+
 def machine_info() -> dict:
     def sysctl(key: str) -> str:
         try:
@@ -346,11 +406,39 @@ def main() -> None:
         help="sustained-load run at the default scale; use 900 for the real number",
     )
     p.add_argument("--out", default=None)
+    p.add_argument(
+        "--real",
+        default=None,
+        help="time the real tick loop at these stages, e.g. S0,S1 (docs/10-roadmap.md#b0--neural-policy)",
+    )
     args = p.parse_args()
 
     names = list(SCALES) if args.scales == "all" else args.scales.split(",")
     info = machine_info()
     print(f"{info['cpu']} · {info['memory_gb']} GB · numpy {info['numpy']} ({info['blas']})\n")
+
+    if args.real:
+        stages = args.real.split(",")
+        scale = SCALES[names[0]]
+        print(f"  real tick loop, {scale['worlds']}x{scale['agents']} "
+              f"= {scale['worlds'] * scale['agents']:,} slots\n")
+        print(f"    {'stage':>6}{'ms/tick':>10}{'pop':>9}{'min/30k*':>10}{'vs S0':>8}")
+        rows, base = [], None
+        for stage in stages:
+            r = run_real(stage, scale, args.ticks, args.warmup)
+            rows.append(r)
+            base = base or r["ms_per_tick"]
+            print(f"    {stage:>6}{r['ms_per_tick']:>10.2f}{r['mean_population']:>9,}"
+                  f"{r['min_per_30k_throttled']:>10.1f}"
+                  f"{r['ms_per_tick'] / base:>7.2f}x")
+        print("\n  * includes the 1.88x sustained-load throttle factor")
+
+        RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+        out = Path(args.out) if args.out else RESULTS_DIR / "bench_tick_real.json"
+        out.write_text(json.dumps({"machine": info, "target": "real", "stages": rows},
+                                  indent=2) + "\n")
+        print(f"\n  wrote {out}")
+        return
 
     results = []
     for name in names:

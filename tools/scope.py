@@ -39,6 +39,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -54,7 +55,10 @@ from chronicle import checkpoint
 # the core's own docstring table and fails if the mirror drifts. A third copy
 # here would be a third thing to keep in sync, which is the bug that test exists
 # to prevent. TICKS_PER_YEAR is imported for the same reason: one definition.
-from historian.facts import GENE_LABELS, TICKS_PER_YEAR
+#
+# `gene_labels` rather than the raw table because naming a gene is a claim, and
+# which claims are true depends on the stage the run was written at.
+from historian.facts import TICKS_PER_YEAR, gene_labels
 
 INK = "#0b0f19"
 PAPER = "#e8edf5"
@@ -172,10 +176,16 @@ def render(
     run_id: str,
     world: int,
     *,
+    stage: str = "S0",
     start: int = 0,
     play: bool = False,
 ) -> None:
-    """The window: three panels and a slider over the checkpoints."""
+    """The window: three panels and a slider over the checkpoints.
+
+    `stage` decides what the gene panel is allowed to call its rows. At S1 five
+    of the eight genes are an embedding, and printing S0's trait names beside
+    them would put a false label on a true number.
+    """
     grid = frames[0].harvest.shape[0]
     # Pooled, not per-frame. See the module docstring.
     e_max = float(max(np.percentile(f.energy, 99) if f.population else 1.0 for f in frames))
@@ -226,12 +236,13 @@ def render(
         ax_pop.set_yticks([])
 
     # --- genes -------------------------------------------------------------
-    ypos = np.arange(len(GENE_LABELS))
+    labels = gene_labels(stage)
+    ypos = np.arange(len(labels))
     bars = ax_gene.barh(ypos, frames[0].gene_mean, color=ACCENT, alpha=0.75, height=0.62)
     ax_gene.scatter(gene0, ypos, marker="|", s=90, color="#ff9a3c", linewidths=1.4,
                     zorder=3, label="at tick 0")
     ax_gene.set_yticks(ypos)
-    ax_gene.set_yticklabels(GENE_LABELS, fontsize=7.5, color=PAPER, family="monospace")
+    ax_gene.set_yticklabels(labels, fontsize=7.5, color=PAPER, family="monospace")
     ax_gene.invert_yaxis()
     ax_gene.set_xlim(0.0, 1.0)
     ax_gene.set_title("mean genome over living agents · orange = tick 0",
@@ -291,7 +302,7 @@ def render(
 
 
 def contact_sheet(frames: list[Frame], run_id: str, world: int, out: Path,
-                  *, columns: int = 7) -> None:
+                  *, stage: str = "S0", columns: int = 7) -> None:
     """Every keyframe at once — the whole history on one page.
 
     Better than the window for two jobs: comparing frame 3 with frame 17, and
@@ -315,7 +326,7 @@ def contact_sheet(frames: list[Frame], run_id: str, world: int, out: Path,
             spine.set_color("#232c3d")
     for ax in np.ravel(axes)[len(frames):]:
         ax.set_visible(False)
-    fig.suptitle(f"{run_id[:12]} · world {world:02d} · {len(frames)} keyframes"
+    fig.suptitle(f"{run_id[:12]} · world {world:02d} · {stage} · {len(frames)} keyframes"
                  f"  —  scope, a4 tier 1, not evidence",
                  color=PAPER, fontsize=9, family="monospace", y=0.995)
     fig.tight_layout(rect=(0, 0, 1, 0.975))
@@ -334,18 +345,22 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     run_dir = args.run_dir
-    if not (run_dir / "meta.json").exists():
+    meta_path = run_dir / "meta.json"
+    if not meta_path.exists():
         raise SystemExit(f"{run_dir} is not a run directory (no meta.json)")
     # The scope reads. Nothing below writes into run_dir, and --out defaults
     # nowhere near it.
     run_id = run_dir.name
+    # Pre-B0 runs have no `stage` key, and S0 is the right reading for all of
+    # them — S1 did not exist when they were written.
+    stage = str(json.loads(meta_path.read_text()).get("stage", "S0"))
 
     frames = scan(run_dir, args.world)
     if args.out:
-        contact_sheet(frames, run_id, args.world, args.out)
+        contact_sheet(frames, run_id, args.world, args.out, stage=stage)
     else:
         render(frames, population_trace(run_dir, args.world), run_id, args.world,
-               start=args.frame, play=args.play)
+               stage=stage, start=args.frame, play=args.play)
     return 0
 
 

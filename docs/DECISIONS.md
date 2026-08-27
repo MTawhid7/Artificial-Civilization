@@ -1406,6 +1406,92 @@ sampling, the permission and the guard are both still there.
 
 ---
 
+<a id="d-071"></a>
+### D-071 · settled · S1 lineages are heritable clades founded by speciation at birth
+
+Weights live in per-world lineage banks. `lineage` is an agent column inherited from the parent;
+with probability `speciation_rate` a child instead claims a free lineage slot carrying its parent's
+weights plus Gaussian noise; a lineage whose last member dies frees its slot. **Phase 10 LEARN
+stays a no-op** — there is no generation clock, no fitness function and no scoring window.
+
+**Why:** [D-004](DECISIONS.md#d-004) shares one network per lineage, so at S1 weights are no longer
+inherited per-agent the way the S0 genome is, and something has to create and select variants. The
+cheapest correct answer turns out to be the one that changes least: selection over weights is birth
+and death, so [D-007](DECISIONS.md#d-007) — *the only fitness is offspring* — holds literally rather
+than by analogy. At S0 the population **is** the population of policies; at S1 the population of
+lineages is.
+
+[D-035](DECISIONS.md#d-035)'s multi-generation lineage scoring is untouched by this and remains a
+B1 question. It describes an outer loop this stage does not have.
+
+**Rejected: weights in the genome, per agent** — the literal reading of the S1 row in
+[04-intelligence.md](04-intelligence.md#the-stage-ladder). The arithmetic is identical either way,
+which is what makes it tempting: the same MACs happen. What differs is memory traffic — per-agent
+weights mean streaming `[W, N, n_in, H]` floats every tick, **470 MB per tick** at corpus scale on
+a machine with 8 GB. That number is what D-004 means, measured.
+
+**Rejected: a generational tournament** — score each lineage by offspring in a window, replace the
+worst with mutated copies of the best. It gives a stronger selection signal on weights, and it buys
+that by adding an explicit fitness function to a project whose central discipline is not having one.
+
+**Corrected during implementation, twice, both times by measurement rather than review:**
+
+- **Zero-initializing the output layer** was specified and is wrong. With `W2` at zero the logits
+  are zero whatever `W1` says, so `W1` is invisible to selection and the founding lineage cannot
+  improve — only be replaced. Every slot is now seeded independently, and the founding cohort is
+  spread across all of them by `slot % L`, so each world starts with `L` policies under selection
+  instead of one. S0's founders draw eight genes uniformly per agent; S1's should not be less
+  varied than that.
+- **Drawing speciation noise at `[W, birth_cap, n_in, H]`** is the honest shape for "any birth may
+  found a lineage" and costs 885,000 gaussians per tick to serve an event that happens ~0.04 times
+  per world-tick. At most one lineage is founded per world per tick, by the lowest-slot candidate —
+  the same fixed-arbitrary rule `_reproduce` already uses when more agents are fertile than there
+  is room for, and the same arithmetic that sized `mutation_noise` by `birth_cap` rather than
+  capacity.
+
+*(→ [10-roadmap.md § B0](10-roadmap.md#b0--neural-policy),
+[04-intelligence.md](04-intelligence.md#architecture-one-shared-network-not-ten-thousand),
+[D-053](DECISIONS.md#d-053))*
+
+---
+
+<a id="d-072"></a>
+### D-072 · settled · The S0 and S1 arms are paired by world, and S0 configs still hash as they did
+
+S1's randomness comes from two new streams, `policy_init` and `lineage`. The `generator` stream is
+untouched, so world *w* of seed *s* is **the same landscape with the same founding cohort** in both
+arms. The S1 config keys are applied in `resolve` only when the stage has a network, and are
+deliberately **not** merged into `DEFAULTS`.
+
+**Why, for the streams:** [00-feasibility.md](00-feasibility.md) already makes worlds the replicate
+axis, and B0's claim is a comparison between two policies. Drawing S1's weights from `generator`
+would have shifted every later draw, giving the two arms different landscapes and different
+founders — two samples from one distribution, where a paired comparison was available for free.
+`rng.py` was built so adding a stream name costs nothing, and this is the first stage to spend that.
+`lineage` is separate from `mutation` one step further down: an S1 run with speciation off then
+reproduces S0's mutation sequence exactly, so a divergence has one candidate cause instead of two.
+
+**Why, for the defaults:** `config_hash` hashes the *resolved* config and `run_id` hashes that.
+Merging five S1 keys into `DEFAULTS` changes the id of every run ever made — including the ones
+cited by name in the committed `experiments/` results — so a stage adding surface it does not use
+would silently orphan the corpus behind it. An S0 config resolves after B0 exactly as it did
+before, and `tests/golden/tiny_s0.json` keeps `config_hash` `129df393…` as proof.
+
+**The consequence that had to be paid:** appending `lineage` to `AGENT_COLUMNS` changes
+`state_hash`, so the goldens were re-recorded on purpose. Conditional hashing to protect a hash is
+how a hash stops meaning anything. That the *simulation* did not change is checkable rather than
+asserted — the golden now pins `chronicle_digest` alongside the state hashes, and it is unchanged
+at `1694d1b4…` across the column append. The event log records what actually happened; identity's
+coverage grew and no trajectory moved.
+
+**Compared on raw effect, never on z** *(→ [D-060](DECISIONS.md#d-060))*. A control arm that works
+shrinks between-replicate variance and inflates its own z, and `sweep.py`'s printed table is a z
+table — the B0 analysis reads `results.json`.
+
+*(→ [D-058](DECISIONS.md#d-058), [D-064](DECISIONS.md#d-064), [D-057](DECISIONS.md#d-057))*
+
+---
+
 ## Open questions
 
 Tracked here so they are not mistaken for oversights. Each blocks a specific version.

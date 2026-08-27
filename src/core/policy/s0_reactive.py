@@ -26,6 +26,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from core.policy.sampling import softmax_sample
+
 GENOME_SIZE = 8
 
 (
@@ -78,6 +80,26 @@ def sector_masks(view_radius: int) -> list[tuple[tuple[slice, slice], np.float32
     return [(r, np.float32(1.0 / max(c, 1))) for r, c in zip(regions, counts)]
 
 
+def sector_scores(obs: np.ndarray, masks) -> np.ndarray:
+    """Mean perceived resource in each direction, `[W, N, 4]`.
+
+    Summed over slice views in a fixed order rather than by matmul — see
+    `sector_masks` for why this is not `obs @ masks.T`.
+
+    S1 calls this too, and never feeds the result to its network: at S1 the
+    scores exist only so `PERCEIVE` carries the same three numbers at both
+    stages, and `gradient_ascent` can therefore ask whether an evolved policy
+    rediscovered what the S0 rule was handed.
+    """
+    side = int(round(obs.shape[2] ** 0.5))
+    patch = obs.reshape(obs.shape[0], obs.shape[1], side, side)
+    sector = np.empty(obs.shape[:2] + (4,), dtype=np.float32)
+    for d, (region, weight) in enumerate(masks):
+        np.multiply(patch[:, :, region[0], region[1]].sum(axis=(2, 3)), weight,
+                    out=sector[:, :, d])
+    return sector
+
+
 def decode(genome: np.ndarray) -> dict[str, np.ndarray]:
     """Map genes in [0, 1] onto behavioral ranges. [W, N, G] -> named [W, N]."""
     g = genome
@@ -126,16 +148,7 @@ def choose_action(
     whole reason `test_noop_fork` exists.
     """
     p = decode(genome)
-
-    # Perceived resource in each direction, [W, N, 4]. Summed over slice views in
-    # a fixed order rather than by matmul — see `sector_masks` for why this is not
-    # `obs @ masks.T`.
-    side = int(round(obs.shape[2] ** 0.5))
-    patch = obs.reshape(obs.shape[0], obs.shape[1], side, side)
-    sector = np.empty(obs.shape[:2] + (4,), dtype=np.float32)
-    for d, (region, weight) in enumerate(masks):
-        np.multiply(patch[:, :, region[0], region[1]].sum(axis=(2, 3)), weight,
-                    out=sector[:, :, d])
+    sector = sector_scores(obs, masks)
 
     hungry = energy < p["hunger_threshold"]
     # Hunger sharpens the gradient response rather than switching it on. A hard
@@ -161,17 +174,10 @@ def choose_action(
     persistence = np.maximum(p["persistence"] - crowding, 0.0)
     logits = logits + persistence[..., None] * onehot
 
-    # Softmax sample by inverse CDF. Gumbel-max is the more familiar spelling and
-    # samples the same distribution, but it needs four random numbers and two
-    # logarithms per agent; this needs one uniform and one exponential. Measured
-    # at 4.3 -> 1.9 ms/tick at W=32, N=1000, which is a fifth of the whole tick.
-    temperature = np.maximum(p["temperature"], 1e-3)[..., None]
-    scaled = logits / temperature
-    np.subtract(scaled, scaled.max(axis=2, keepdims=True), out=scaled)
-    weights = np.exp(scaled)
-    cumulative = np.cumsum(weights, axis=2)
-    draw = rng_policy.random(logits.shape[:2], dtype=np.float32) * cumulative[:, :, -1]
-    action = np.count_nonzero(cumulative < draw[..., None], axis=2).astype(np.int8)
+    # Exploration temperature is a gene here, so it arrives per agent. At S1 it
+    # is a constant and the network scales its own logits instead — same
+    # sampler, and both stages draw one [W, N] float32 from the policy stream.
+    action = softmax_sample(logits, p["temperature"], rng_policy)
     return action, sector
 
 

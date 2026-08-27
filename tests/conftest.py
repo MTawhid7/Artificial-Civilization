@@ -25,9 +25,31 @@ TINY = {
 }
 
 
+# The same world with a brain. Deliberately identical outside `intelligence`:
+# every draw from the `generator` stream then matches TINY's, so the two
+# fixtures are the same landscape with the same founding cohort and any
+# difference between them is the policy (D-072).
+#
+# hidden 16 and 4 lineages rather than the documented 48 and 8 for the same
+# reason the rest of TINY is small — determinism is a property of the machinery,
+# not of scale, and a gate that takes ten minutes gets skipped. `speciation_rate`
+# is 25x the production value so a 200-tick test actually founds lineages.
+TINY_S1 = {
+    **TINY,
+    "intelligence": {**TINY["intelligence"], "stage": "S1", "hidden": 16,
+                     "lineages": 4, "speciation_rate": 0.05,
+                     "weight_mutation_scale": 0.08},
+}
+
+
 @pytest.fixture
 def tiny_config():
     return resolve(TINY, source="tests/conftest.py::TINY")
+
+
+@pytest.fixture
+def tiny_s1_config():
+    return resolve(TINY_S1, source="tests/conftest.py::TINY_S1")
 
 
 @pytest.fixture

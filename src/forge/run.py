@@ -28,6 +28,7 @@ from chronicle.writer import ChronicleWriter
 from core.config import Config, load, run_id
 from core.generators import world_gen
 from core.pending import Accumulators, PendingQueue
+from core.policy import s1_neural
 from core.policy.s0_reactive import GENOME_SIZE
 from core.rng import RngStreams
 from core.state import World
@@ -63,12 +64,25 @@ def init_world(cfg: Config, rng: RngStreams) -> World:
     grid = int(cfg.get("world.grid"))
     initial = int(cfg.get("population.initial"))
 
+    genome_size = int(cfg.get("intelligence.genome_size", GENOME_SIZE))
+    view_radius = int(cfg.get("intelligence.view_radius"))
+
+    # Zero-width at S0: no lineages, no hidden layer, no input matrix. The
+    # neural machinery is absent at that stage rather than allocated and unused.
+    neural = cfg.stage != "S0"
+    lineages = int(cfg.get("intelligence.lineages")) if neural else 0
+    hidden = int(cfg.get("intelligence.hidden")) if neural else 0
+    n_in = s1_neural.n_inputs(view_radius, genome_size) if neural else 0
+
     world = World.allocate(
         n_worlds=n_worlds,
         n_agents=capacity,
         grid=grid,
-        genome_size=int(cfg.get("intelligence.genome_size", GENOME_SIZE)),
-        view_radius=int(cfg.get("intelligence.view_radius")),
+        genome_size=genome_size,
+        view_radius=view_radius,
+        lineages=lineages,
+        hidden=hidden,
+        n_inputs=n_in,
     )
 
     world.capacity[:] = generate = world_gen.generate_resource_field(cfg, rng)
@@ -88,6 +102,14 @@ def init_world(cfg: Config, rng: RngStreams) -> World:
         world.y[w, slots] = start_y[w, slots]
         world.genome[w, slots] = start_g[w, slots]
         world.energy[w, slots] = np.float32(cfg.get("agent.start_energy"))
+
+    # Last, and from its own stream. Everything above draws from `generator`, so
+    # an S0 arm and an S1 arm of the same seed get the same landscape and the
+    # same founding cohort down to the byte — which is what makes the B0
+    # comparison paired by world rather than two independent samples (D-072).
+    if neural:
+        s1_neural.initial_weights(world, rng.policy_init)
+        s1_neural.assign_founders(world)
     return world
 
 
@@ -143,6 +165,13 @@ def run(
         "seed": seed,
         "code_version": version,
         "schema_version": cfg.data["schema_version"],
+        # Recorded here as well as in config.yaml because the stage decides how
+        # the run's own numbers should be *read*: at S0 the eight genes have the
+        # names in s0_reactive's decode table, and at S1 five of them are an
+        # embedding that means whatever selection made it mean. A reader that
+        # labels an S1 gene "gradient_sensitivity" produces a sentence that is
+        # cited, verified, and false.
+        "stage": cfg.stage,
         "config_hash": cfg.config_hash,
         "config_source": cfg.source,
         "ticks_completed": world.tick,

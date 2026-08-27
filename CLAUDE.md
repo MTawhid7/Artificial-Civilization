@@ -29,6 +29,10 @@ away discovering it.
 7. **Determinism is per-platform, not cross-ISA.** `np.exp` differs in the last ulp between NEON and
    AVX. When the cross-machine test goes red on a new platform, add that platform's golden. Do not
    re-litigate. *(D-057)*
+8. **Never add a key to `config.DEFAULTS` for a stage that does not read it.** `config_hash` hashes
+   the resolved config and `run_id` hashes that, so a new default changes the id of every run ever
+   made — including the ones cited by name in committed `experiments/` results. Apply stage-specific
+   keys conditionally in `resolve`, the way `S1_DEFAULTS` is. *(D-072)*
 
 ## The traps this project actually falls into
 
@@ -56,8 +60,9 @@ uv sync --all-extras                                     # exact versions from u
 uv run pytest                                            # the gate — green before anything else
 uv run python tools/check_links.py .                     # docs are cross-referenced ~450 times
 
-uv run python -m bench.bench_tick --scales all           # tick cost
-uv run python -m bench.bench_policy                      # S1 forward-pass cost
+uv run python -m bench.bench_tick --scales all           # tick cost (synthetic)
+uv run python -m bench.bench_tick --real S0,S1           # tick cost, the actual loop
+uv run python -m bench.bench_policy                      # S1 forward-pass cost (synthetic)
 
 uv run python -m forge.run configs/frozen/a0_smoke.yaml --seed 0
 uv run python -m forge.sweep experiments/<name>/spec.yaml   # runs the headroom precheck first

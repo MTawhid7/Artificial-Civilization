@@ -254,24 +254,33 @@ def test_config_hash_ignores_key_order():
 
 
 GOLDEN = GOLDEN_DIR / "tiny_s0.json"
+GOLDEN_S1 = GOLDEN_DIR / "tiny_s1.json"
+
+STAGES = ("world_init", "tick_10", "tick_500", "chronicle_digest")
 
 
 def _platform_tag() -> str:
     return f"{platform.system().lower()}-{platform.machine().lower()}"
 
 
-def _stage_hashes(tiny_config) -> dict:
-    """Hashes at three points, so a divergence can be located rather than guessed.
+def _stage_hashes(cfg, corpus_dir: Path) -> dict:
+    """Hashes at four points, so a divergence can be located rather than guessed.
 
     `world_init` is taken straight after the generators and before any tick. If it
     already differs across machines, the cause is in world generation — which is
     where `np.exp` lives — and no amount of care in the tick loop will help.
+
+    `chronicle_digest` pins the *event log* rather than the state, and it is the
+    one entry that survives a change to what `state_hash` covers. When B0
+    appended the `lineage` column, every state hash here moved and every
+    Chronicle digest did not — which is exactly how "the column changed identity,
+    not history" was established rather than assumed.
     """
     rng = RngStreams(7)
-    world = init_world(tiny_config, rng)
-    out = {"config_hash": tiny_config.config_hash, "world_init": world.state_hash()}
+    world = init_world(cfg, rng)
+    out = {"config_hash": cfg.config_hash, "world_init": world.state_hash()}
 
-    ctx = TickContext.build(tiny_config, world)
+    ctx = TickContext.build(cfg, world)
     pending, acc = PendingQueue.empty(), Accumulators.empty()
     for _ in range(10):
         step(world, ctx, rng, pending, acc, None)
@@ -279,16 +288,21 @@ def _stage_hashes(tiny_config) -> dict:
     for _ in range(490):
         step(world, ctx, rng, pending, acc, None)
     out["tick_500"] = world.state_hash()
+
+    out["chronicle_digest"] = run(cfg, seed=3, out_root=corpus_dir, progress=False)[
+        "chronicle_digest"
+    ]
     return out
 
 
-def test_cross_machine(tiny_config):
+def _assert_against_golden(cfg, path: Path, corpus_dir: Path) -> None:
     """State hashes must match the golden recorded for THIS platform.
 
     Determinism is guaranteed within a platform, not across instruction sets
-    *(→ D-057)*. Bit-identical float across ISAs would mean giving up `np.exp`,
-    and every forking, checkpointing, and replay operation this project performs
-    happens on one machine.
+    *(→ D-057)*. Bit-identical float across ISAs would mean giving up `np.exp` —
+    and, from B0, `tanh` on every agent every tick — while every forking,
+    checkpointing, and replay operation this project performs happens on one
+    machine.
 
     The golden therefore holds one entry per platform, and the test still does the
     job that matters: catching the day a code change silently alters results on the
@@ -296,25 +310,37 @@ def test_cross_machine(tiny_config):
     information, and the per-stage hashes say where they begin.
     """
     tag = _platform_tag()
-    actual = _stage_hashes(tiny_config)
+    actual = _stage_hashes(cfg, corpus_dir)
 
-    golden = json.loads(GOLDEN.read_text()) if GOLDEN.exists() else {}
+    golden = json.loads(path.read_text()) if path.exists() else {}
     if tag not in golden:
         golden[tag] = actual
-        GOLDEN.parent.mkdir(parents=True, exist_ok=True)
-        GOLDEN.write_text(json.dumps(golden, indent=2, sort_keys=True) + "\n")
-        pytest.skip(f"recorded golden for {tag}; commit it")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(golden, indent=2, sort_keys=True) + "\n")
+        pytest.skip(f"recorded {path.name} golden for {tag}; commit it")
 
     expected = golden[tag]
-    assert actual["config_hash"] == expected["config_hash"], "the tiny config itself changed"
-    for stage in ("world_init", "tick_10", "tick_500"):
+    assert actual["config_hash"] == expected["config_hash"], "the config itself changed"
+    for stage in STAGES:
         assert actual[stage] == expected[stage], f"{tag} diverged from its own golden at {stage}"
 
     # Informational: where do platforms first disagree?
     for other, ref in sorted(golden.items()):
         if other == tag or ref.get("config_hash") != actual["config_hash"]:
             continue
-        first = next(
-            (s for s in ("world_init", "tick_10", "tick_500") if ref.get(s) != actual[s]), None
-        )
-        print(f"  vs {other}: {'identical' if first is None else f'first differs at {first}'}")
+        first = next((s for s in STAGES if ref.get(s) != actual[s]), None)
+        print(f"  {path.name} vs {other}: "
+              f"{'identical' if first is None else f'first differs at {first}'}")
+
+
+def test_cross_machine(tiny_config, corpus):
+    _assert_against_golden(tiny_config, GOLDEN, corpus)
+
+
+def test_cross_machine_s1(tiny_s1_config, corpus):
+    """The same gate at S1, where `tanh` runs on every agent every tick.
+
+    Expect this to need its own entry on a new platform, and do not chase the
+    difference — that is D-057, already settled. Record the platform's golden.
+    """
+    _assert_against_golden(tiny_s1_config, GOLDEN_S1, corpus)

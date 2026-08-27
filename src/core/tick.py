@@ -35,6 +35,7 @@ from chronicle.writer import ChronicleWriter, gini
 from core.config import Config
 from core.pending import Accumulators, PendingQueue
 from core.policy import s0_reactive as s0
+from core.policy import s1_neural as s1
 from core.primitives import p01_scarcity as p1
 from core.primitives import p10_drift as p10
 from core.rng import RngStreams
@@ -63,6 +64,13 @@ class TickContext:
     sated_gradient_factor: float
     aggregate_every: int
 
+    # S1. `stage` is read once here rather than per tick: a string comparison in
+    # the hot path is cheap, and a dict lookup in the hot path is not.
+    stage: str
+    speciation_rate: float
+    weight_mutation_scale: float
+    cognition_cost: float
+
     masks: np.ndarray  # [4, P] direction sectors
     world_offset: np.ndarray  # [W, 1] flat-index base per world
     n_cells: int
@@ -88,6 +96,12 @@ class TickContext:
             inherit=bool(cfg.get("population.inherit")),
             sated_gradient_factor=float(cfg.get("intelligence.sated_gradient_factor")),
             aggregate_every=int(cfg.get("run.aggregate_every", 100) or 100),
+            stage=str(cfg.stage),
+            speciation_rate=float(cfg.get("intelligence.speciation_rate", 0.0) or 0.0),
+            weight_mutation_scale=float(
+                cfg.get("intelligence.weight_mutation_scale", 0.0) or 0.0
+            ),
+            cognition_cost=float(cfg.get("intelligence.cognition_cost", 0.0) or 0.0),
             masks=s0.sector_masks(world.view_radius),
             world_offset=(np.arange(w, dtype=np.int64) * (g * g))[:, None],
             n_cells=g * g,
@@ -132,10 +146,16 @@ def step(
     # `sector` is what each agent perceived in each direction. It is carried out of
     # the policy so the Chronicle can record the alternatives that were on offer:
     # whether a choice was good is a question about the options, not the outcome.
-    action, sector = s0.choose_action(
-        world._obs, world.energy, world.heading, world.genome, density, ctx.masks,
-        rng.policy, ctx.sated_gradient_factor,
-    )
+    #
+    # Both branches draw exactly one [W, N] float32 from the policy stream, so
+    # the stream sits at the same position after this phase whichever ran.
+    if ctx.stage == "S0":
+        action, sector = s0.choose_action(
+            world._obs, world.energy, world.heading, world.genome, density, ctx.masks,
+            rng.policy, ctx.sated_gradient_factor,
+        )
+    else:
+        action, sector = s1.choose_action(world, density, ctx.masks, rng.policy)
 
     # --- 5. RESOLVE -----------------------------------------------------------
     # a. movement
@@ -154,10 +174,17 @@ def step(
     # c-f. transfer / signal / pledge / coercion — no primitives at S0.
 
     # --- 6. METABOLISM --------------------------------------------------------
+    # `decode` is S0's table, and genes 4-6 are read here and in phase 7 at every
+    # stage: reproduction thresholds and movement vigour are structural, not
+    # policy. What S1 changes is the meaning of the other five, which it consumes
+    # as an embedding rather than as named traits.
     genes = s0.decode(world.genome)
-    world.energy -= np.where(world.alive, ctx.metabolism * genes["metabolic"], 0.0).astype(
-        np.float32
-    )
+    cost = ctx.metabolism * genes["metabolic"]
+    if ctx.cognition_cost:
+        # Thinking is paid for per tick, per hidden unit, and a larger brain is
+        # therefore something selection can act *against* (04-intelligence.md).
+        cost = cost + np.float32(ctx.cognition_cost * world.hidden)
+    world.energy -= np.where(world.alive, cost, 0.0).astype(np.float32)
     world.age += world.alive
 
     # --- 7. VITALS ------------------------------------------------------------
@@ -167,6 +194,10 @@ def step(
     world.alive &= ~died
 
     born = _reproduce(world, ctx, genes, rng)
+    if ctx.stage != "S0":
+        # After births, so a lineage founded this tick is never reaped before it
+        # has drawn breath, and a slot freed this tick is reusable from the next.
+        s1.reap_lineages(world)
 
     # --- 8. AGGREGATE ---------------------------------------------------------
     ctx.births_this_window += born["count"]
@@ -178,9 +209,12 @@ def step(
               dead_worlds, born)
 
     # --- 10. LEARN ------------------------------------------------------------
-    # S0 has no within-life learning. Selection happens through birth and death,
-    # which already ran in phase 7 — there is no separate evolution step, because
-    # the population *is* the population of policies.
+    # Still a no-op at S1, and that is a result rather than an omission (D-071).
+    # Neither stage has within-life learning, and neither has a generation
+    # boundary: selection happens through birth and death, which already ran in
+    # phase 7. At S0 the population *is* the population of policies; at S1 the
+    # population of lineages is, and speciation at birth is what creates the
+    # variants for it to select among. Plastic updates arrive at S2.
 
     world.tick += 1
 
@@ -234,10 +268,29 @@ def _reproduce(world: World, ctx: TickContext, genes: dict, rng: RngStreams) -> 
 
     Both RNG draws happen at full [W, N, G] shape before any world is inspected,
     so the streams advance identically whatever the populations happen to be.
+
+    At S1 this is also the entire evolutionary outer loop (D-071). A child takes
+    its parent's lineage, and therefore its parent's network; occasionally it
+    founds a new lineage carrying a perturbed copy. There is no generation
+    boundary and no fitness function anywhere in the file, because offspring
+    already are the fitness.
     """
     fertile = world.alive & (world.energy > genes["reproduce_at"])
     shape = (world.n_worlds, ctx.birth_cap, world.genome_size)
     noise = s0.mutation_noise(shape, ctx.mutation_rate, ctx.mutation_scale, rng.mutation)
+
+    # Drawn unconditionally at S1, before any world is inspected, and drawn even
+    # on a tick where nothing is born. A draw conditioned on there being a birth
+    # would make the stream position depend on the population — the failure with
+    # no symptom that `test_noop_fork` exists to catch.
+    spec = (
+        s1.speciation_draws(
+            world.n_worlds, ctx.birth_cap, world.n_inputs, world.hidden,
+            ctx.speciation_rate, ctx.weight_mutation_scale, rng.lineage,
+        )
+        if ctx.stage != "S0" and world.lineages
+        else None
+    )
 
     # Drawn only when inheritance is off. Drawing it unconditionally would be
     # tidier — the control would then consume the RNG identically to the treatment
@@ -283,6 +336,11 @@ def _reproduce(world: World, ctx: TickContext, genes: dict, rng: RngStreams) -> 
             else orphan[w, : slots.size]
         )
 
+        if spec is not None:
+            # A clade tag: the child runs its parent's network by default.
+            world.lineage[w, slots] = world.lineage[w, parents]
+            _speciate(world, w, slots, parents, spec)
+
         counts[w] = slots.size
         child_worlds.append(np.full(slots.size, w, dtype=np.uint16))
         child_ids.append(ids)
@@ -296,6 +354,36 @@ def _reproduce(world: World, ctx: TickContext, genes: dict, rng: RngStreams) -> 
                    else np.empty(0, dtype=np.uint16)),
         "parent_ids": np.concatenate(parent_ids) if parent_ids else empty_u32,
     }
+
+
+def _speciate(world: World, w: int, slots: np.ndarray, parents: np.ndarray, spec: dict) -> None:
+    """Found at most one new lineage in world `w`, from this tick's births.
+
+    The founder is the **lowest-slot candidate**, and at most one per world per
+    tick. Both are arbitrary rules and both are fixed ones — the same trade
+    `_reproduce` makes when more agents are fertile than there is room for. The
+    alternative, a draw sized by how many candidates there happen to be, is
+    exactly what breaks forks.
+
+    A full lineage bank means no speciation this tick. The child stays in its
+    parent's clade rather than displacing a living lineage: eviction would be a
+    selection rule, and the whole point of D-071 is that there isn't one.
+    """
+    candidates = np.flatnonzero(spec["founds"][w, : slots.size])
+    if candidates.size == 0:
+        return
+    k = s1.free_lineage_slot(world, w)
+    if k < 0:
+        return
+
+    i = int(candidates[0])
+    src = int(world.lineage[w, parents[i]])
+    world.w1[w, k] = world.w1[w, src] + spec["w1"][w]
+    world.b1[w, k] = world.b1[w, src] + spec["b1"][w]
+    world.w2[w, k] = world.w2[w, src] + spec["w2"][w]
+    world.b2[w, k] = world.b2[w, src] + spec["b2"][w]
+    world.lineage_alive[w, k] = True
+    world.lineage[w, slots[i]] = k
 
 
 def _apply_effects(world: World, due: dict, resource_flat: np.ndarray) -> None:

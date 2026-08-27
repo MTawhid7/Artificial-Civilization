@@ -32,7 +32,7 @@ Never build ahead of what the world can reward.
 | Stage | Mechanism | Unlocks | Roadmap |
 |---|---|---|---|
 | **S0** | genome (~8 floats) → reactive rule; no within-life learning | foraging, migration, population dynamics, crude specialization | A1 |
-| **S1** | genome encodes weights of a tiny MLP (~30–60 hidden); neuroevolution only | resource choice, exploration under fog | B0 |
+| **S1** | a tiny MLP (~30–60 hidden) **per lineage**, with the genome as its input embedding; neuroevolution only | resource choice, exploration under fog | B0 |
 | **S2** | genome encodes a **local plasticity rule**, not weights | within-life adaptation; *how to learn* becomes selectable | B1 |
 | **S3** | recurrent state + episodic buffer with retrieval | reputation, reciprocity, trust — **gate for P3** | C0 |
 | **S4** | learned forward model + short-horizon rollouts | investment, building, delayed payoff — **gate for P5, P8** | C2 |
@@ -96,6 +96,32 @@ input (all numeric, fixed width)
 One shared network **per lineage**. Individual variation comes from the genome embedding and
 the per-agent plastic layer. A tick becomes **one batched forward pass for all agents** — the
 only reason batching worlds is feasible at all. See [D-004](DECISIONS.md#d-004).
+
+> The S1 row above once read *"genome encodes weights of a tiny MLP"*, which is the natural
+> reading and contradicts this section. B0 resolved it by measurement rather than by preference:
+> per-agent weights are the same arithmetic — the same MACs happen — but they mean streaming
+> `[W, N, n_in, H]` floats every tick, **470 MB per tick** at corpus scale on a machine with 8 GB.
+> That number is what D-004 means. The genome is the *input embedding*, not the weights.
+
+### Where the variants come from, since weights are not inherited per agent
+
+Sharing a network is what makes S1 affordable and it removes the thing that made S0's selection
+free: at S0 the policy is per-agent and inherited, so *the population is the population of
+policies* and evolution needs no separate step at all.
+
+**A lineage is a heritable clade** *(→ [D-071](DECISIONS.md#d-071))*. A child normally takes its
+parent's lineage, and therefore its parent's network. With probability `speciation_rate` it instead
+founds a new lineage in a free slot, carrying a perturbed copy. A lineage whose last member dies
+frees its slot.
+
+There is no generation clock, no fitness function and no scoring window, so phase 10 LEARN stays
+the no-op it was at S0. Selection over weights is birth and death, which means
+[D-007](DECISIONS.md#d-007) — *the only fitness is offspring* — holds literally at S1 rather than
+by analogy. What changed is only which population is under selection: at S0 it is the agents, at S1
+it is the lineages.
+
+The two-loop table below still describes S2 onward. At S1 there is only the outer loop, and it is
+the one that was already there.
 
 ### Training: two loops
 

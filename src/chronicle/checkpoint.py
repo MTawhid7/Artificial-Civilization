@@ -24,7 +24,11 @@ from core.pending import Accumulators, PendingQueue
 from core.rng import RngStreams
 from core.state import World
 
-FORMAT_VERSION = 1
+# v2 (B0): agent columns gained `lineage` and the world gained the S1 weight
+# banks. A v1 checkpoint has neither, so forking one at S1 would silently give
+# every agent lineage 0 and a bank of zeros — a policy that always picks north.
+# The version refuses instead.
+FORMAT_VERSION = 2
 
 
 def save(

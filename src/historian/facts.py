@@ -84,6 +84,33 @@ GENE_LABELS: tuple[str, ...] = (
     "crowd_avoidance",
 )
 
+# At S1 only three of the eight genes keep those meanings. `reproduce_threshold`,
+# `offspring_investment` and `metabolic_rate` are still read by the tick loop's
+# metabolism and vitals phases, outside the policy; the other five are fed to
+# the network as an embedding and mean whatever selection made them mean.
+#
+# This is the one falsehood A3's verifier cannot catch. Every check it runs is
+# about the *number* — that the number exists, that it is derivable, that it is
+# cited — and the number is real. Only the name is wrong, so a sentence saying
+# "gradient sensitivity rose" about an S1 run would pass the gate, carry a
+# citation, and be untrue.
+STRUCTURAL_GENES: frozenset[int] = frozenset({4, 5, 6})
+
+
+def gene_labels(stage: str) -> tuple[str, ...]:
+    """Trait names for a run's genome, given the intelligence stage it ran at.
+
+    Falls back to positional names for the genes a stage does not give meaning
+    to. Naming a gene is a claim about the world, and a stage that does not make
+    that claim should not have one made on its behalf.
+    """
+    if stage == "S0":
+        return GENE_LABELS
+    return tuple(
+        GENE_LABELS[i] if i in STRUCTURAL_GENES else f"gene_{i}"
+        for i in range(len(GENE_LABELS))
+    )
+
 
 @dataclass(slots=True)
 class RunData:
@@ -327,6 +354,9 @@ def _add_gene_facts(f: _Facts, data: RunData, w: int, lo: int, hi: int,
     window = data.genes[w, lo:hi]
     if window.size == 0:
         return
+    # Pre-B0 runs carry no `stage` in meta.json, and S0 is the correct reading
+    # for every one of them: S1 did not exist when they were written.
+    labels = gene_labels(str(data.meta.get("stage", "S0")))
     deltas = window[-1] - window[0]
     for idx in np.argsort(-np.abs(deltas))[:MAX_GENE_FACTS]:
         i = int(idx)
@@ -337,7 +367,7 @@ def _add_gene_facts(f: _Facts, data: RunData, w: int, lo: int, hi: int,
              "end": round(float(window[-1, i]), 4),
              "delta": round(float(deltas[i]), 4)},
             gene_index=i,
-            trait=GENE_LABELS[i] if i < len(GENE_LABELS) else f"gene_{i}",
+            trait=labels[i] if i < len(labels) else f"gene_{i}",
         )
 
 

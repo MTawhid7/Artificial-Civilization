@@ -1,14 +1,9 @@
 {
   "darwin-arm64": {
+    "chronicle_digest": "1694d1b485adf1ee11f9838c39d38349",
     "config_hash": "129df393289d4844e2740111dab08917",
-    "tick_10": "7eeaefef8302de1b94db4bc8162c9fd9",
-    "tick_500": "f28930568d97e595d5185d69385c548c",
-    "world_init": "09c9dc7a1b404323bf051d336e0fde62"
-  },
-  "linux-x86_64": {
-    "config_hash": "129df393289d4844e2740111dab08917",
-    "tick_10": "7a2e687bf3b46b41da4645c8468925d0",
-    "tick_500": "8b41298e90ec4b7e166e1e00df2ef462",
-    "world_init": "5568c2087840fb72b5c4a3a791bfd184"
+    "tick_10": "68e4fb7d929bdc09c963675090323496",
+    "tick_500": "17a9fc0a7b22a0994486028556277719",
+    "world_init": "853da60a39c7ac60529c0600ea1acdcb"
   }
 }

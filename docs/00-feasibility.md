@@ -189,6 +189,45 @@ that going from 8 lineages to 32 costs less than going from 1 to 2.
 > bookkeeping turns out to cost. It bounds the part that runs every tick for every agent, which is
 > the part that was in doubt.
 
+<a id="s1-measured-again-after-b0"></a>
+
+### What the real tick actually cost, and where the projection missed
+
+The caveat above was right to exist and understated the size of the gap. Measured on the **real**
+loop once B0 built it — `uv run python -m bench.bench_tick --real S0,S1`, 32 worlds × 1,000, hidden
+48, against a 12.33 ms S0 baseline on the same machine and the same day:
+
+| lineages | groups per tick | ms/tick | vs S0 | min per 30k, throttled |
+|---|---|---|---|---|
+| 1 | 32 | 15.91 | 1.29× | 15.0 |
+| 2 | 64 | 16.87 | 1.37× | 15.9 |
+| 4 | 128 | 17.85 | 1.45× | 16.8 |
+| **8** *(the default)* | 256 | **19.35** | **1.57×** | **18.2** |
+| 16 | 512 | 21.37 | 1.73× | 20.1 |
+
+**The projection said 1.16× and the answer is 1.57×, and the reason is a modelling error worth
+naming.** `bench_policy` grouped agents by *lineage*: L groups of `W·N/L` rows each. The real
+policy groups by **(world, lineage)**, because weights differ on both axes — worlds are independent
+replicates and sharing a network across them would couple the very thing the corpus varies. So
+there are `W × L = 256` groups of ~125 rows, not 8 groups of 4,000, and a matmul on 125 rows is
+overhead-dominated. The synthetic benchmark under-modelled the group count by a factor of `W`.
+
+Two consequences:
+
+- **The lineage curve is much flatter than projected.** 1 → 8 lineages costs 22% of a tick, not the
+  ~2× `bench_policy` implied, because per-world grouping already fragments the batch at L=1. Eight
+  independent policies per world are cheap, and they are what gives selection something to act on
+  from tick zero *(→ [D-071](DECISIONS.md#d-071))*.
+- **The floor moved, not the ceiling.** Even L=1 costs 1.29×, so the *unavoidable* part of S1 is
+  larger than projected while the *optional* part is smaller. A profile puts `build_inputs` at
+  0.50 ms and the stable argsort at 0.83 ms — neither is the problem, and the counting-sort
+  optimization B0 was planning is not worth writing. The matmuls are the cost, and their shape is
+  set by the replicate axis.
+
+The general lesson is the one this document keeps relearning: a synthetic benchmark measures the
+model you built of the thing, and the model omits whatever you had not yet decided. Group count was
+not a knob when `bench_policy` was written, because per-world weights were not yet a decision.
+
 ### Time scale
 
 Pick tick duration so a lifetime is 200–400 ticks — long enough for a life to have structure,

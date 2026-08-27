@@ -1,0 +1,119 @@
+name: b0-neural
+stage: B0
+
+# Can selection rediscover, from scratch, the foraging competence S0 was handed?
+#
+# S0 is a hand-written reactive rule: `s0_reactive.choose_action` weighs the
+# perceived resource gradient because someone wrote the line that does it. That
+# is why `gradient_ascent`'s docstring has to warn that firing at S0 "is not
+# evidence of evolution" — agents ascend gradients from tick zero.
+#
+# S1 deletes the line. The map from perception to action is a small network per
+# lineage (D-004, D-071), initialized at random, and nothing in the world tells
+# it that resource is worth moving toward. Whether it finds out is the question.
+#
+# TWO ARMS, PAIRED BY WORLD. S1's randomness comes from the `policy_init` and
+# `lineage` streams, so `generator` is untouched and world w of seed s is the
+# SAME landscape with the SAME founding cohort in both arms (D-072). This is a
+# within-world comparison, not two samples from one distribution — which is what
+# makes 16 worlds x 3 seeds, 48 pairs per dose, a paired design rather than an
+# underpowered one. Between-world spread in this project runs about ten to one,
+# and pairing removes all of it.
+#
+# THE CONTROL IS A CEILING, NOT A FLOOR. S0's rule is a competent hand-designed
+# solution, so "S1 beats S0" is a strong claim and "S1 approaches S0" is already
+# informative. The honest prior is that ~79 generations is thin for
+# neuroevolution and S1 loses. That is a result about run length and lineage
+# count, and it gets committed either way (docs/11-engineering.md).
+#
+# READ results.json, NOT THE CONSOLE TABLE. sweep.py prints z, and D-060 forbids
+# ranking two arms by it: a control that works shrinks between-replicate variance
+# and inflates its own z independently of any effect. analyse.py compares raw
+# per-world effects, paired.
+#
+# WHY gather_efficiency IS AN AXIS AND NOT A CONSTANT. It had to be lowered from
+# the a1/a2 value of 4.0 because the headroom precheck failed the S0 arm there —
+# worst world mean 1,479 of 2,000 with the peak pinned at exactly 2,000, while
+# the S1 arm sat at 19%. That asymmetry is worse than an ordinary D-065 miss: it
+# censors the *control* downward and leaves the treatment untouched, biasing the
+# comparison toward this experiment's own hypothesis.
+#
+# Fixing it exposed something that had to become part of the design. Measured at
+# 4 worlds x 30,000 ticks, the S0 lead over S1 tracks how rich the world is:
+#
+#     gather 4.0   S0 1479   S1 376   ~4x
+#     gather 2.5   S0  581   S1 285   ~2x
+#     gather 2.0   S0  362   S1 192   ~2x
+#
+# So a single choice of `gather_efficiency` would have chosen the answer. Making
+# it an axis converts a researcher degree of freedom into a measured relation —
+# the same move a1-patchiness made — and the resulting question is better than
+# the one B0 started with: *does a hand-written rule's advantage depend on how
+# much there is to find?*
+#
+# CAPACITY. 1,200, and every one of the six points was run through the precheck
+# at full length before this file was written: the worst is S0 at gather 2.5,
+# 48% mean and 61% peak. The 8,000-tick pilot that suggested 2,000 was still
+# climbing when it stopped, which is exactly how a1-patchiness,
+# a1-gradient-ascent and a2-wall each set this wrong. Do not --skip-precheck.
+#
+# Note that capacity is not a free parameter: `init_world` draws the founding
+# cohort at shape (worlds, capacity), so changing it changes which world a seed
+# produces. It is held fixed across the sweep for that reason.
+
+seeds: [0, 1, 2]
+
+sweep:
+  intelligence.stage: [S0, S1]
+  agent.gather_efficiency: [1.5, 2.0, 2.5]
+
+base:
+  world:
+    grid: 64
+    patchiness: 0.6        # mid-range: A1 showed the low end is marginal for viability
+    regrowth: 0.05
+    seed_rain: 0.004       # recolonization; without it zero is absorbing (D-051)
+    resource_capacity: 1.0
+
+  primitives:
+    p1: { level: 0 }
+    p10: { level: 0, rate: 0.0 }
+
+  intelligence:
+    stage: S0              # overridden by the sweep axis
+    genome_size: 8
+    view_radius: 2
+    sated_gradient_factor: 0.25
+    # Read only at S1. Widths are the measured ones: hidden 48 costs 1.29x the
+    # S0 tick at one lineage and 1.57x at eight, and the 1 -> 8 step is worth
+    # its 22% because it is what gives selection eight policies per world to act
+    # on from tick zero instead of one.
+    # (docs/00-feasibility.md#s1-measured-again-after-b0)
+    hidden: 48
+    lineages: 8
+    speciation_rate: 0.02
+    weight_mutation_scale: 0.08
+    cognition_cost: 0.0    # off at B0 on purpose — that is E7's question
+
+  population:
+    initial: 120
+    capacity: 1200
+    mutation_rate: 0.02
+    mutation_scale: 0.05
+    birth_cap: 32
+
+  agent:
+    metabolism: 0.5
+    max_age: 400           # ~33 years at 1 tick/month
+    birth_energy: 20.0
+    gather_efficiency: 2.0    # overridden by the sweep axis
+    start_energy: 50.0
+
+  run:
+    worlds: 16             # the replication unit is the world (D-058), so n = 16
+    ticks: 30000           # ~79 generations at a ~380-tick lifespan
+    checkpoint_every: 1500 # 21 keyframes, which is what tools/scope.py reads
+    aggregate_every: 50
+    log_tier: sampled      # PERCEIVE is sampled-tier; gradient_ascent needs it
+    sample_rate: 32
+    shard_ticks: 5000

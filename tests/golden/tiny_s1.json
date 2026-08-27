@@ -1,0 +1,9 @@
+{
+  "darwin-arm64": {
+    "chronicle_digest": "cdc6a94c80da3181290b12b76c1c4b18",
+    "config_hash": "f4eda748ce31d19bd5889345c906e96a",
+    "tick_10": "fe7102e1f9534218f65b410019a47866",
+    "tick_500": "e15597a925602667af7f336c9fa4d819",
+    "world_init": "3ccb4ad6dcfb15ea5d6558b9182d00fa"
+  }
+}

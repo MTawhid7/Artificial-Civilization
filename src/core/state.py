@@ -16,7 +16,7 @@ operation whose result depends on order sorts a *copy* of the indices and breaks
 ties on agent id (determinism rule 3).
 
 Fields not yet used are deliberately absent rather than zero-filled: health,
-inventory, lineage, culture, and the neural columns (embed, plastic, hidden)
+inventory, culture, and the remaining neural columns (plastic, recurrent hidden)
 arrive with the stages that need them, per docs/06-data-model.md.
 """
 
@@ -38,9 +38,19 @@ AGENT_COLUMNS: tuple[tuple[str, type], ...] = (
     ("age", np.uint32),      # ticks
     ("parent", np.uint32),   # genealogy; 0 for the founding cohort
     ("heading", np.int8),    # last movement direction, 0..3
+    # Appended at B0. Which shared network governs this agent (D-004, D-071).
+    # Always allocated, zero at S0, where there are no networks to share — a
+    # stage-dependent column set would make `state_hash` and the checkpoint
+    # layout stage-dependent too, and identity must not be conditional.
+    ("lineage", np.uint16),
 )
 
 N_ACTIONS = 4  # N, E, S, W — P1/P2 at L0 need no more
+
+# The lineage weight banks, [W, L, ...]. Zero-width at S0. Named here for the
+# same reason AGENT_COLUMNS is: this tuple fixes the checkpoint layout and the
+# hash order, so append, never insert.
+LINEAGE_ARRAYS: tuple[str, ...] = ("w1", "b1", "w2", "b2", "lineage_alive")
 
 
 @dataclass(slots=True)
@@ -53,6 +63,12 @@ class World:
     genome_size: int
     view_radius: int
 
+    # S1 shape. All zero at S0, which makes every lineage array zero-width and
+    # the neural machinery absent rather than merely unused.
+    lineages: int = 0
+    hidden: int = 0
+    n_inputs: int = 0
+
     tick: int = 0
 
     # Agent columns, all [W, N]
@@ -64,6 +80,7 @@ class World:
     age: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
     parent: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
     heading: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
+    lineage: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
     genome: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]  # [W, N, G]
 
     next_id: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]  # [W]
@@ -73,6 +90,15 @@ class World:
     capacity: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
     terrain: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
 
+    # Lineage weight banks (D-004): one shared network per lineage, per world.
+    # These are state, not parameters — speciation writes to them at birth and a
+    # fork that omitted them would replay with the wrong brains.
+    w1: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]  # [W, L, n_in, H]
+    b1: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]  # [W, L, H]
+    w2: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]  # [W, L, H, A]
+    b2: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]  # [W, L, A]
+    lineage_alive: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]  # [W, L]
+
     # --- derived scratch, excluded from state identity ------------------------
     # These are recomputed every tick and never checkpointed. Including them in
     # the hash would make identity depend on buffer contents that carry no
@@ -80,6 +106,8 @@ class World:
     _padded: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
     _idx_buf: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
     _obs: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
+    _policy_in: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
+    _hidden_buf: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
 
     @classmethod
     def allocate(
@@ -89,6 +117,9 @@ class World:
         grid: int,
         genome_size: int,
         view_radius: int,
+        lineages: int = 0,
+        hidden: int = 0,
+        n_inputs: int = 0,
     ) -> "World":
         w = cls(
             n_worlds=n_worlds,
@@ -96,6 +127,9 @@ class World:
             grid=grid,
             genome_size=genome_size,
             view_radius=view_radius,
+            lineages=lineages,
+            hidden=hidden,
+            n_inputs=n_inputs,
         )
         shape = (n_worlds, n_agents)
         for name, dtype in AGENT_COLUMNS:
@@ -107,11 +141,24 @@ class World:
         w.capacity = np.ones((n_worlds, grid, grid), dtype=np.float32)
         w.terrain = np.zeros((grid, grid), dtype=np.uint8)
 
+        # Zero-width at S0 rather than None: every consumer then handles one
+        # shape family instead of branching on whether the arrays exist.
+        L, H, A = lineages, hidden, N_ACTIONS
+        w.w1 = np.zeros((n_worlds, L, n_inputs, H), dtype=np.float32)
+        w.b1 = np.zeros((n_worlds, L, H), dtype=np.float32)
+        w.w2 = np.zeros((n_worlds, L, H, A), dtype=np.float32)
+        w.b2 = np.zeros((n_worlds, L, A), dtype=np.float32)
+        w.lineage_alive = np.zeros((n_worlds, L), dtype=np.bool_)
+
         d, gp = view_radius, grid + 2 * view_radius
         patch = (2 * d + 1) ** 2
         w._padded = np.zeros((n_worlds, gp, gp), dtype=np.float32)
         w._idx_buf = np.empty((n_worlds, n_agents, patch), dtype=np.intp)
         w._obs = np.empty((n_worlds, n_agents, patch), dtype=np.float32)
+        # Flat [W*N, n_in]: the grouped forward pass wants 2-D, and a [W, N, n_in]
+        # view of the same buffer is free when the observe phase fills it.
+        w._policy_in = np.zeros((n_worlds * n_agents, n_inputs), dtype=np.float32)
+        w._hidden_buf = np.empty((n_worlds * n_agents, H), dtype=np.float32)
         return w
 
     # --- population -----------------------------------------------------------
@@ -162,14 +209,15 @@ class World:
         h = hashlib.blake2b(digest_size=16)
         h.update(
             np.array(
-                [self.tick, self.n_worlds, self.n_agents, self.grid, self.genome_size],
+                [self.tick, self.n_worlds, self.n_agents, self.grid, self.genome_size,
+                 self.lineages, self.hidden, self.n_inputs],
                 dtype=np.int64,
             ).tobytes()
         )
         for name, _ in AGENT_COLUMNS:
             arr = getattr(self, name)
             h.update(np.ascontiguousarray(arr).tobytes())
-        for name in ("genome", "next_id", "resource", "capacity", "terrain"):
+        for name in ("genome", "next_id", "resource", "capacity", "terrain", *LINEAGE_ARRAYS):
             h.update(np.ascontiguousarray(getattr(self, name)).tobytes())
         return h.hexdigest()
 
@@ -178,12 +226,16 @@ class World:
     def to_arrays(self) -> dict[str, np.ndarray]:
         """Everything a checkpoint must persist, minus RNG/pending (added by caller)."""
         out = {name: getattr(self, name) for name, _ in AGENT_COLUMNS}
+        out.update({name: getattr(self, name) for name in LINEAGE_ARRAYS})
         out.update(
             genome=self.genome,
             next_id=self.next_id,
             resource=self.resource,
             capacity=self.capacity,
             terrain=self.terrain,
+            # Append only. `from_arrays` unpacks positionally, and a checkpoint
+            # written before a field existed is refused by FORMAT_VERSION rather
+            # than silently misread.
             _dims=np.array(
                 [
                     self.tick,
@@ -192,6 +244,9 @@ class World:
                     self.grid,
                     self.genome_size,
                     self.view_radius,
+                    self.lineages,
+                    self.hidden,
+                    self.n_inputs,
                 ],
                 dtype=np.int64,
             ),
@@ -200,11 +255,11 @@ class World:
 
     @classmethod
     def from_arrays(cls, data: dict[str, np.ndarray]) -> "World":
-        tick, nw, na, grid, gs, vr = (int(v) for v in data["_dims"])
-        w = cls.allocate(nw, na, grid, gs, vr)
+        tick, nw, na, grid, gs, vr, lin, hid, nin = (int(v) for v in data["_dims"])
+        w = cls.allocate(nw, na, grid, gs, vr, lineages=lin, hidden=hid, n_inputs=nin)
         w.tick = tick
         for name, _ in AGENT_COLUMNS:
             getattr(w, name)[...] = data[name]
-        for name in ("genome", "next_id", "resource", "capacity", "terrain"):
+        for name in ("genome", "next_id", "resource", "capacity", "terrain", *LINEAGE_ARRAYS):
             getattr(w, name)[...] = data[name]
         return w

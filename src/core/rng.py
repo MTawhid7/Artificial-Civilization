@@ -36,10 +36,18 @@ import numpy as np
 # Every stream the simulation may draw from. Add freely — names are hashed, so a
 # new entry does not perturb the streams already here.
 STREAM_NAMES: tuple[str, ...] = (
-    "generator",  # world structure at init: terrain, resource fields, latent rules
-    "world",      # per-tick world dynamics: drift, regrowth noise, shocks
-    "policy",     # action sampling / exploration noise
-    "mutation",   # genome perturbation at birth
+    "generator",    # world structure at init: terrain, resource fields, latent rules
+    "world",        # per-tick world dynamics: drift, regrowth noise, shocks
+    "policy",       # action sampling / exploration noise
+    "mutation",     # genome perturbation at birth
+    # Added at B0. Both exist so that S1's draws never touch `generator`, which
+    # is what makes an S0 arm and an S1 arm of one seed the *same landscape with
+    # the same founding cohort* — a paired comparison rather than two samples
+    # (D-072). `lineage` is separate from `mutation` for the same reason one
+    # step down: an S1 run with speciation off reproduces S0's mutation stream
+    # exactly, so a divergence has one candidate cause instead of two.
+    "policy_init",  # initial network weights, drawn once at world init (S1)
+    "lineage",      # speciation draws and weight perturbation at birth (S1)
 )
 
 

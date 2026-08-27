@@ -70,6 +70,30 @@ DEFAULTS: dict[str, Any] = {
             "log_tier": "sampled", "sample_rate": 64, "shard_ticks": 5000},
 }
 
+# Applied only when the stage has a network, and deliberately NOT merged into
+# DEFAULTS.
+#
+# `config_hash` is a hash of the *resolved* config, and `run_id` is a hash of
+# that. Adding these five keys to DEFAULTS would therefore change the id of
+# every run ever made, including the ones cited by name in the committed
+# experiments/ results — a stage adding surface it does not use would silently
+# orphan the corpus behind it. An S0 config resolves today exactly as it did
+# before B0 existed, and `tests/golden/tiny_s0.json` is the proof.
+#
+# Widths are the measured ones, not guesses: bench_policy put hidden 48 at 1.16x
+# the S0 tick with the gather still dominant
+# (docs/00-feasibility.md#s1-measured-before-b0).
+S1_DEFAULTS: dict[str, Any] = {
+    "hidden": 48,
+    "lineages": 8,
+    "speciation_rate": 0.02,
+    "weight_mutation_scale": 0.08,
+    # Brains must cost energy (04-intelligence.md), and the mechanism exists so
+    # E7 can sweep it. Off at B0: charging for cognition would answer "is a
+    # brain worth its cost" while B0 is asking "can a brain be evolved at all".
+    "cognition_cost": 0.0,
+}
+
 
 class ConfigError(ValueError):
     """Raised at load time. Never caught by the runner — a bad config stops the run."""
@@ -144,6 +168,8 @@ def check_gates(data: dict) -> None:
 def resolve(raw: dict[str, Any], *, source: str = "<inline>") -> Config:
     """Merge over defaults, validate, hash. The only way to build a Config."""
     data = _deep_merge(DEFAULTS, raw or {})
+    if data["intelligence"]["stage"] != "S0":
+        data["intelligence"] = {**S1_DEFAULTS, **data["intelligence"]}
     data["schema_version"] = SCHEMA_VERSION
 
     check_gates(data)
@@ -158,6 +184,27 @@ def resolve(raw: dict[str, Any], *, source: str = "<inline>") -> Config:
         raise ConfigError(f"unknown run.log_tier {run['log_tier']!r}")
     if run["checkpoint_every"] <= 0:
         raise ConfigError("run.checkpoint_every must be positive — forking depends on it")
+
+    # Checked only at the stages that have a network, so an S0 config carrying
+    # leftover S1 keys is not rejected for values nothing reads.
+    if data["intelligence"]["stage"] != "S0":
+        intel = data["intelligence"]
+        if int(intel["hidden"]) <= 0:
+            raise ConfigError(
+                f"intelligence.hidden must be positive at stage {data['intelligence']['stage']}; "
+                f"got {intel['hidden']}. A zero-width hidden layer is not a smaller policy, "
+                "it is no policy."
+            )
+        if int(intel["lineages"]) < 1:
+            raise ConfigError(
+                f"intelligence.lineages must be at least 1 at stage "
+                f"{data['intelligence']['stage']}; got {intel['lineages']}. Weights live in "
+                "lineage slots (D-071), so zero slots means no agent has a network."
+            )
+        if not 0.0 <= float(intel["speciation_rate"]) <= 1.0:
+            raise ConfigError(
+                f"intelligence.speciation_rate must be in [0, 1], got {intel['speciation_rate']}"
+            )
 
     return Config(data=data, config_hash=compute_hash(data), source=source)
 
