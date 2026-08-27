@@ -5,5 +5,12 @@
     "tick_10": "b470d49c29651103a2d6a841ecf53cba",
     "tick_500": "6adf95911151f310cfaaf53a9c390b4d",
     "world_init": "16e6593d9c247906b00e129c4db315dc"
+  },
+  "linux-x86_64": {
+    "chronicle_digest": "4c44afaa37c72e9b86e2d2fe373108ea",
+    "config_hash": "ff386b4ecc6c94481830f8c24172ac0d",
+    "tick_10": "5c2b51b3740ee18803b483415a5f95c1",
+    "tick_500": "f3763ee0b079d51cc7e93a2242ff0cd8",
+    "world_init": "3437401855c635be60627fde285bfcf0"
   }
 }
