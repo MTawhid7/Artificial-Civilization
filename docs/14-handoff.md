@@ -3,7 +3,8 @@
 **Read this first in a new session.** It is the only document that goes stale on purpose; everything
 else here is design, and this is state. Update it when a stage ships.
 
-*Last updated: after B0.1 shipped. Phase A is complete; B0.2 — fog and `exploration_rate` — is next.*
+*Last updated: after B0 shipped whole. Both its criteria were measured and neither was met; the
+next stage is B1 or B2.*
 
 ---
 
@@ -18,16 +19,16 @@ else here is design, and this is state. Update it when a stage ships.
 | **A3 — the Historian** | shipped | [a3-historian](../experiments/a3-historian/result.md) — 230 cited sentences; the gate rejects 19% of unguarded prose |
 | **A4 — the viewer** | tier 1 shipped | [`tools/scope.py`](../tools/scope.py) — one world, keyframe by keyframe. Tiers 2–3 scoped, not built |
 | **B0.1 — S1 policy** | shipped | [b0-neural](../experiments/b0-neural/result.md) — survival criterion **not met**; gradient-following rediscovered from blind in 105/105 scored worlds |
-| **B0.2 — fog + `exploration_rate`** | **next** | P2 at L0, the second B0 criterion |
+| **B0.2 — fog + `exploration_rate`** | shipped | [b0-fog](../experiments/b0-fog/result.md) — detector **silent**, 0/3 seeds; fires 14–26× larger on S0, so the silence is about the policy |
 
-**Gate:** 105 tests, green on macOS and Ubuntu. `uv run pytest` before anything else.
+**Gate:** 112 tests, green on macOS and Ubuntu. `uv run pytest` before anything else.
 
 ### What exists
 
 ```
-src/core/       the simulation — 11-phase tick loop, S0 reactive + S1 neural, P1 + P10 at L0
+src/core/       the simulation — 11-phase tick loop, S0 reactive + S1 neural, P1 + P2 + P10 at L0
 src/chronicle/  event log (Parquet, 3 tiers), checkpoints
-src/lens/       pop_stability, gradient_ascent, collapse  (+ directed_foraging, WITHDRAWN)
+src/lens/       pop_stability, gradient_ascent, collapse, exploration_rate  (+ directed_foraging, WITHDRAWN)
 src/digest/     Chronicle -> versioned viz digest
 src/historian/  facts -> LLM -> verified prose. Never evidence
 src/forge/      run, sweep, viability precheck
@@ -56,53 +57,60 @@ the dominant phase, so headroom is paid for in wall-clock.
 
 ## What to build next
 
-### 1. B0.2 — fog and `exploration_rate` *(next)*
+### 1. B2 — first word ★ *(next, and the biggest payoff)*
 
-The second B0 ship criterion, and the only part of the stage not built. P2 at L0 — a per-agent
-known map — plus the `exploration_rate` detector, its shuffled-step null, and the two tests the
-detector contract requires.
-
-**The open question tagged `Blocks: B0` is the first thing to settle**: `known_mask` at
-`bool[N,H,W]` is 278 MB at corpus scale and has to be checkpointed, so it dominates memory and
-kills forking. The plan on the table is a **coarse block map** — `[W, N, B, B]` at `block: 4`, ~8 MB
-at B0's scale — with the policy gaining four inputs (unknown-share per sector, computed by reusing
-`sector_masks` over the block patch). Bit-packing was rejected on arithmetic: the update is a
-scatter, `bitwise_or.at` is unbuffered, and 1.7M of them per tick is tens of milliseconds.
-
-Adding four inputs moves `n_inputs` 36 → 40, so `tests/golden/tiny_s1.json` gets re-recorded. S0's
-golden is untouched.
-
-### The B0.1 result, and what it licenses
-
-**The survival criterion failed and the interesting number is elsewhere.** S1 loses to S0 at every
-dose in every seed. But S1's founding cohort scores 0.033–0.066 on `gradient_ascent` — a random
-network is nearly blind — and reaches 0.19–0.22 by the last tenth of the run, in **every world that
-survived to be scored**. Selection rediscovered gradient-following from nothing; it did not
-rediscover enough of it in ~79 generations to beat a rule written for this exact world.
-
-Three things worth not re-deriving:
-
-- **Extinction is the mechanism.** S1 loses 28 of 48 worlds at `gather_efficiency` 1.5 and 2 of 48
-  at 2.5. The surviving worlds are not far behind S0. The deficit is a founding-phase failure — the
-  network must become competent before the founding cohort's energy runs out.
-- **`advantage_delta` is survivorship-biased** and the gather-2.5 arm (46 of 48 worlds scored) is
-  the only one where that bias is small enough to ignore.
-- **Run length is the untried lever.** Nothing in the data says S1's improvement has plateaued.
-
-**Use the scope on any S1 run.** It earned its keep here: S0's harvest field is a rectilinear
-cross-hatch — its N/E/S/W sector rule made visible — while S1's population visibly organizes into a
-band along the resource ridges by year ~1,750. Neither is in any series the experiment records.
-`uv run python tools/scope.py corpus/runs/<id> --world 4`.
-
-### 2. B2 — first word ★ *(the biggest payoff)*
+B0 is finished and B1 (plasticity, S2) is the roadmap's next rung, but **B2 is the better next
+move** and B0's results are the argument. B0.2 found a channel with no payoff attached going
+unused; B1 would add a second one — a plasticity rule refines a policy toward a reward, and this
+world's only reward is food that the local patch already reports. A signal channel is different:
+what one agent knows and another does not is *created* by the world rather than added to the agent,
+so there is something for the channel to carry.
 
 **The schema is already decided** *(→ [schemas/events.md](../schemas/events.md), [D-066](DECISIONS.md#d-066))*.
-`SIGNAL` (40) and `SIGNAL_HEARD` (43) have their payloads specified and their enum slots claimed;
-implement to that spec rather than re-deriving it. The reasoning matters more than the layout: each
-column closes a specific way this stage could produce a confident wrong number.
+`SIGNAL` (40) and `SIGNAL_HEARD` (43) have their payloads specified and their enum slots claimed.
+Implement to that spec rather than re-deriving it — each column closes a specific way this stage
+could produce a confident wrong number.
 
-The criterion that separates a result from a correlation is the **remap test** — rebuild the world
-so the referent moves, and ask whether the signal follows the concept or the location.
+The criterion that separates a result from a correlation is the **remap test**: rebuild the world so
+the referent moves, and ask whether the signal follows the concept or the location.
+
+### The B0 results, and what they license
+
+**Both criteria were measured and neither was met.** What sits underneath them is worth more.
+
+- **Selection rediscovered gradient-following from a blind start.** S1's founding cohort scores
+  0.033–0.066 on `gradient_ascent` — a random network is nearly blind — and reaches 0.19–0.22 by the
+  last tenth of the run, in **every world that survived to be scored**. It did not reach a rule
+  written for this exact world in ~79 generations. Two results; only the first was in doubt.
+- **Extinction is the survival mechanism**, not a lower steady state: S1 loses 28 of 48 worlds at
+  `gather_efficiency` 1.5 and 2 of 48 at 2.5, and survivors are not far behind S0. The deficit is a
+  founding-phase failure — the network must become competent before the founders' energy runs out.
+- **`advantage_delta` is survivorship-biased.** The gather-2.5 arm (46 of 48 worlds scored) is the
+  only one where that bias is small enough to ignore.
+- **Fog earned nothing, and the measurement is trustworthy.** `exploration_rate` is silent on S1
+  at 0/3 seeds, and reads **14–26× larger** on S0, whose `heading_persistence` gene is exactly the
+  path-ordering it looks for. Fog moved observed coverage by +1.8% and shuffled coverage by +1.8%,
+  so it changed how far agents walk and not how they order it.
+
+**The one-line diagnosis, and the cheapest thing that would test it: the capacity was added without
+the incentive.** `primitives.p10.rate` has been **0.0 in every run this project has ever made**. A
+capacity field that drifts makes yesterday's knowledge stale, which is the first world in which
+remembering where you have been could pay. Turning it on costs nothing — the primitive is built and
+has been since A0.
+
+**Use the scope on any S1 run.** It earned its keep at B0.1: S0's harvest field is a rectilinear
+cross-hatch — its N/E/S/W sector rule made visible — while S1's population organizes into a band
+along the resource ridges by year ~1,750. Neither is in any series either experiment records.
+`uv run python tools/scope.py corpus/runs/<id> --world 4`.
+
+### 2. B1 — plasticity *(deferred, deliberately)*
+
+S2: the genome encodes a local update rule rather than weights
+*(→ [10-roadmap.md § B1](10-roadmap.md#b1--plasticity))*. Still the interesting rung, and still
+worth building — but it refines a policy toward a reward, and B0.2's finding is that this world's
+rewards are already fully described by the local patch. Build it after B2, or after P10 drift makes
+within-life adaptation worth something. [D-035](DECISIONS.md#d-035)'s multi-generation scoring
+window is a B1 question and is untouched by B0's outer loop *(→ [D-071](DECISIONS.md#d-071))*.
 
 ---
 

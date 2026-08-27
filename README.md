@@ -89,7 +89,23 @@ Selection rediscovered foraging from nothing. It did not rediscover enough of it
 generations, to beat a rule written for exactly this world. See
 [experiments/b0-neural/result.md](experiments/b0-neural/result.md).
 
-**Next:** B0.2 — fog, and a detector for exploration under it.
+**Stage B0.2 — Fog: shipped, and it earned nothing.** Agents got a memory of where they had been
+and four senses of their own ignorance. Nothing changed. They cover 1.8% more ground with a map than
+without one — and so do randomly reshuffled versions of their own walks, which is the tell: fog
+changed how far they went, not where they chose to go.
+
+The measurement is trustworthy rather than merely negative. The same detector, pointed at the S0
+arm — whose hand-written rule has a gene for *keep going the way you were going* — reads an effect
+**14 to 26 times larger**. It can see path structure. There is none in the evolved policy to see.
+
+The diagnosis is the interesting part: **the capacity was added without the incentive.** Nothing in
+this world pays for going where you have not been. Food is already visible in the local patch, and
+the only fitness is offspring, so walking toward the unknown spends energy for information there is
+no way to cash in. A world whose resources *drift* would be the first one where remembering somewhere
+pays — and `primitives.p10.rate` has been zero in every run this project has ever made. See
+[experiments/b0-fog/result.md](experiments/b0-fog/result.md).
+
+**Next:** B2 — a signal channel, and the first emergent word.
 
 **Picking this up?** [docs/14-handoff.md](docs/14-handoff.md) is the entry point — where the
 project actually is, what to build next, and the traps that waste a day. Design is frozen and lives

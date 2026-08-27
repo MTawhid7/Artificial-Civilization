@@ -1,0 +1,207 @@
+{
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "block": 4,
+  "detectors": [
+    {
+      "arm": "fog",
+      "seed": 0,
+      "detector": "exploration_rate",
+      "magnitude": 0.0006734040588705568,
+      "null_mean": 0.0,
+      "null_std": 0.00044400480107064223,
+      "effect_size": 1.516659408291886,
+      "threshold": 3.0,
+      "fired": false,
+      "tick_range": [
+        0,
+        29999
+      ],
+      "n_observations": 6409,
+      "detail": {
+        "excess_blocks_per_tick": 0.0006734040588705568,
+        "observed_blocks_per_tick": 0.14664793402864398,
+        "shuffled_blocks_per_tick": 0.14617002747940674,
+        "n_agents": 6409,
+        "n_worlds": 16,
+        "block": 4,
+        "block_source": "run config",
+        "has_fog": true,
+        "null": "shuffled-step (64 surrogates per agent)",
+        "explore_cell_events": 19359,
+        "explore_cell_blocks": 31034.0
+      }
+    },
+    {
+      "arm": "fog",
+      "seed": 1,
+      "detector": "exploration_rate",
+      "magnitude": 0.0007620386295390687,
+      "null_mean": 0.0,
+      "null_std": 0.0002602806858036377,
+      "effect_size": 2.9277571141562526,
+      "threshold": 3.0,
+      "fired": false,
+      "tick_range": [
+        0,
+        29999
+      ],
+      "n_observations": 7749,
+      "detail": {
+        "excess_blocks_per_tick": 0.0007620386295390687,
+        "observed_blocks_per_tick": 0.15345213033082986,
+        "shuffled_blocks_per_tick": 0.15275909461531909,
+        "n_agents": 7749,
+        "n_worlds": 16,
+        "block": 4,
+        "block_source": "run config",
+        "has_fog": true,
+        "null": "shuffled-step (64 surrogates per agent)",
+        "explore_cell_events": 23739,
+        "explore_cell_blocks": 38155.0
+      }
+    },
+    {
+      "arm": "fog",
+      "seed": 2,
+      "detector": "exploration_rate",
+      "magnitude": 8.183004116500377e-05,
+      "null_mean": 0.0,
+      "null_std": 0.0003166909305267971,
+      "effect_size": 0.25839085770117953,
+      "threshold": 3.0,
+      "fired": false,
+      "tick_range": [
+        0,
+        29999
+      ],
+      "n_observations": 8159,
+      "detail": {
+        "excess_blocks_per_tick": 8.183004116500377e-05,
+        "observed_blocks_per_tick": 0.1669080323602675,
+        "shuffled_blocks_per_tick": 0.16708589863473244,
+        "n_agents": 8159,
+        "n_worlds": 16,
+        "block": 4,
+        "block_source": "run config",
+        "has_fog": true,
+        "null": "shuffled-step (64 surrogates per agent)",
+        "explore_cell_events": 24706,
+        "explore_cell_blocks": 39485.0
+      }
+    },
+    {
+      "arm": "no fog",
+      "seed": 0,
+      "detector": "exploration_rate",
+      "magnitude": 0.0008549413609785128,
+      "null_mean": 0.0,
+      "null_std": 0.0005332943632770601,
+      "effect_size": 1.6031321908691332,
+      "threshold": 3.0,
+      "fired": false,
+      "tick_range": [
+        0,
+        29999
+      ],
+      "n_observations": 6535,
+      "detail": {
+        "excess_blocks_per_tick": 0.0008549413609785128,
+        "observed_blocks_per_tick": 0.14579200076791338,
+        "shuffled_blocks_per_tick": 0.14472272521344676,
+        "n_agents": 6535,
+        "n_worlds": 16,
+        "block": 4,
+        "block_source": "caller override (run has no P2)",
+        "has_fog": false,
+        "null": "shuffled-step (64 surrogates per agent)",
+        "explore_cell_events": 0,
+        "explore_cell_blocks": 0.0
+      }
+    },
+    {
+      "arm": "no fog",
+      "seed": 1,
+      "detector": "exploration_rate",
+      "magnitude": -0.0008966243430292225,
+      "null_mean": 0.0,
+      "null_std": 0.0012113998895457454,
+      "effect_size": -0.740155542993686,
+      "threshold": 3.0,
+      "fired": false,
+      "tick_range": [
+        0,
+        29999
+      ],
+      "n_observations": 5666,
+      "detail": {
+        "excess_blocks_per_tick": -0.0008966243430292225,
+        "observed_blocks_per_tick": 0.1615515910488415,
+        "shuffled_blocks_per_tick": 0.16132004518470466,
+        "n_agents": 5666,
+        "n_worlds": 16,
+        "block": 4,
+        "block_source": "caller override (run has no P2)",
+        "has_fog": false,
+        "null": "shuffled-step (64 surrogates per agent)",
+        "explore_cell_events": 0,
+        "explore_cell_blocks": 0.0
+      }
+    },
+    {
+      "arm": "no fog",
+      "seed": 2,
+      "detector": "exploration_rate",
+      "magnitude": 0.00032740273948071925,
+      "null_mean": 0.0,
+      "null_std": 0.0003360851038593102,
+      "effect_size": 0.9741661731540904,
+      "threshold": 3.0,
+      "fired": false,
+      "tick_range": [
+        0,
+        29999
+      ],
+      "n_observations": 8219,
+      "detail": {
+        "excess_blocks_per_tick": 0.00032740273948071925,
+        "observed_blocks_per_tick": 0.15171012339803563,
+        "shuffled_blocks_per_tick": 0.15159264193420238,
+        "n_agents": 8219,
+        "n_worlds": 16,
+        "block": 4,
+        "block_source": "caller override (run has no P2)",
+        "has_fog": false,
+        "null": "shuffled-step (64 surrogates per agent)",
+        "explore_cell_events": 0,
+        "explore_cell_blocks": 0.0
+      }
+    }
+  ],
+  "magnitude": {
+    "fog": 0.00051,
+    "no_fog": 0.0001,
+    "delta": 0.00041
+  },
+  "observed_blocks_per_tick": {
+    "fog": 0.15567,
+    "no_fog": 0.15302,
+    "delta": 0.00265
+  },
+  "shuffled_blocks_per_tick": {
+    "fog": 0.15534,
+    "no_fog": 0.15255,
+    "delta": 0.00279
+  },
+  "survival": {
+    "n_pairs": 48,
+    "fog_mean": 187.03,
+    "no_fog_mean": 172.44,
+    "paired_delta": 14.59,
+    "paired_t": 1.321,
+    "fog_win_share": 0.5
+  }
+}

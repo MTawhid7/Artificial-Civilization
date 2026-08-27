@@ -323,8 +323,8 @@ few lineages** stays inside a 13 ms tick, which is ~12 min per 30k-tick run with
 *(→ [D-071](DECISIONS.md#d-071))*, the two new RNG streams that keep the arms paired
 *(→ [D-072](DECISIONS.md#d-072))*, per-platform goldens at S1, and the survival experiment.
 
-**B0.2 — fog and exploration. Not built.** P2 at L0 and the `exploration_rate` detector, which is
-the second ship criterion.
+**B0.2 — fog and exploration. Shipped.** P2 at L0 at block resolution
+*(→ [D-073](DECISIONS.md#d-073))*, and the `exploration_rate` detector with its shuffled-step null.
 
 **Ship criteria**
 - [ ] evolved policies beat the reactive genome on survival — **measured and NOT met**. S1 loses at
@@ -335,7 +335,28 @@ the second ship criterion.
       the last tenth of the run in 105 of 105 worlds that survived to be scored. The criterion is a
       comparison against a competent hand-written rule; the capability underneath it is present and
       still rising at 30,000 ticks
-- [ ] `exploration_rate` above null — B0.2, not yet built
+- [ ] `exploration_rate` above null — **measured and NOT met**. 0 of 3 seeds on the fog arm, with
+      an excess of 0.4% over each agent's own shuffled walk
+      *(→ [b0-fog](../experiments/b0-fog/result.md))*. The silence is trustworthy rather than
+      merely negative: the same detector reads a **14–26× larger** effect on the S0 arm, whose
+      hand-written `heading_persistence` gene is exactly the path-ordering it looks for. And fog
+      changes nothing — agents with a known map cover 1.8% more ground, and their *shuffled
+      surrogates* cover 1.8% more too, so the whole difference is how far they walk rather than how
+      they order it.
+
+      The diagnosis is that **the capacity was added without the incentive**. Nothing in a static
+      P1ᴸ⁰ world pays for going where you have not been: resource is already reported by the local
+      patch, and [D-007](DECISIONS.md#d-007) means the only fitness is offspring. This is
+      [D-022](DECISIONS.md#d-022) arriving from the other direction — that rule forbids richness the
+      *policy* cannot use, and this is richness the *world* does not reward. **Turning on P10 drift,
+      which has been `rate: 0.0` in every run this project has ever made, is the cheapest thing that
+      would make the question answerable**
+
+**Both criteria measured, neither met — and B0 is the more useful for it.** The stage set out to
+ask whether an evolved policy beats a hand-written one and whether it explores. The answers are no
+and no, and underneath them sit two things worth more than a pair of ticked boxes: selection
+*rediscovered gradient-following from a blind start in every world that survived to be scored*, and
+a channel with no payoff attached went unused exactly as the depth-gate rule predicts it should.
 
 **Time:** ~2 weeks. This is where the ms/tick budget gets tested for real.
 

@@ -1,0 +1,646 @@
+{
+  "spec": {
+    "name": "b0-fog",
+    "stage": "B0.2",
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "base": {
+      "world": {
+        "grid": 64,
+        "patchiness": 0.6,
+        "regrowth": 0.05,
+        "seed_rain": 0.004,
+        "resource_capacity": 1.0
+      },
+      "primitives": {
+        "p1": {
+          "level": 0
+        },
+        "p10": {
+          "level": 0,
+          "rate": 0.0
+        },
+        "p2": {
+          "level": 0,
+          "block": 4,
+          "known_radius": 2
+        }
+      },
+      "intelligence": {
+        "stage": "S1",
+        "genome_size": 8,
+        "view_radius": 2,
+        "sated_gradient_factor": 0.25,
+        "hidden": 48,
+        "lineages": 8,
+        "speciation_rate": 0.02,
+        "weight_mutation_scale": 0.08,
+        "cognition_cost": 0.0
+      },
+      "population": {
+        "initial": 120,
+        "capacity": 1200,
+        "mutation_rate": 0.02,
+        "mutation_scale": 0.05,
+        "birth_cap": 32
+      },
+      "agent": {
+        "metabolism": 0.5,
+        "max_age": 400,
+        "birth_energy": 20.0,
+        "gather_efficiency": 2.5,
+        "start_energy": 50.0
+      },
+      "run": {
+        "worlds": 16,
+        "ticks": 30000,
+        "checkpoint_every": 1500,
+        "aggregate_every": 50,
+        "log_tier": "sampled",
+        "sample_rate": 32,
+        "shard_ticks": 5000
+      }
+    }
+  },
+  "wall_seconds": 1763.3,
+  "headroom": [
+    {
+      "verdict": "ok",
+      "capacity": 1200,
+      "worst_world_mean": 296.6,
+      "worst_world_mean_frac": 0.247,
+      "peak_population": 459.0,
+      "peak_frac": 0.383,
+      "pilot_worlds": 4,
+      "ticks": 30000,
+      "suggested_capacity": 600,
+      "suggestion_is_lower_bound": false,
+      "run_id": "1702d9a269688518becc6e0c",
+      "params": {}
+    }
+  ],
+  "results": [
+    {
+      "params": {},
+      "seed": 0,
+      "run_id": "e550b0d069cb330cfdb0f577",
+      "ms_per_tick": 19.1336,
+      "chronicle_mb": 58.38,
+      "final_population": [
+        130,
+        169,
+        282,
+        121,
+        196,
+        551,
+        171,
+        155,
+        157,
+        108,
+        189,
+        377,
+        152,
+        121,
+        186,
+        220
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.3133140735292617,
+          "null_mean": 0.09539978833429416,
+          "null_std": 0.011014160316050682,
+          "effect_size": 19.78492040627065,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.3133140735292617,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 167.21041666666667,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.11411678160097341,
+          "null_mean": 0.0,
+          "null_std": 0.015356228327088148,
+          "effect_size": 7.431302737253078,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 2100764,
+          "detail": {
+            "mean_advantage": 0.11411678160097341,
+            "took_best_share": 0.28949229899217616,
+            "flat_share": 0.0,
+            "direction_bias": 0.2833183546557348,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.03204813427443924,
+            "advantage_late": 0.16734463090938034,
+            "advantage_delta": 0.13529649663494112,
+            "advantage_delta_z": 4.60197873411275,
+            "worlds_improved": 15,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 0.8333333333333334,
+          "null_mean": 5.596354166666668,
+          "null_std": 0.5890196712989163,
+          "effect_size": -8.086352740698523,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 0.8333333333333334,
+            "drop_threshold": 0.35,
+            "n_episodes": 4,
+            "worlds_with_any": 3,
+            "n_worlds": 16,
+            "deepest": 0.4818,
+            "events": [
+              {
+                "world": 6,
+                "tick": 27849,
+                "depth": 0.4818
+              },
+              {
+                "world": 7,
+                "tick": 18099,
+                "depth": 0.3768
+              },
+              {
+                "world": 7,
+                "tick": 21899,
+                "depth": 0.3529
+              },
+              {
+                "world": 14,
+                "tick": 24799,
+                "depth": 0.4553
+              }
+            ],
+            "events_truncated": false
+          }
+        },
+        "exploration_rate": {
+          "detector": "exploration_rate",
+          "magnitude": 0.0006734040588705568,
+          "null_mean": 0.0,
+          "null_std": 0.00044400480107064223,
+          "effect_size": 1.516659408291886,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 6409,
+          "detail": {
+            "excess_blocks_per_tick": 0.0006734040588705568,
+            "observed_blocks_per_tick": 0.14664793402864398,
+            "shuffled_blocks_per_tick": 0.14617002747940674,
+            "n_agents": 6409,
+            "n_worlds": 16,
+            "block": 4,
+            "block_source": "run config",
+            "has_fog": true,
+            "null": "shuffled-step (64 surrogates per agent)",
+            "explore_cell_events": 19359,
+            "explore_cell_blocks": 31034.0
+          }
+        }
+      }
+    },
+    {
+      "params": {},
+      "seed": 1,
+      "run_id": "b8f21ee06389e5abd5c727f5",
+      "ms_per_tick": 19.3136,
+      "chronicle_mb": 64.98,
+      "final_population": [
+        340,
+        307,
+        211,
+        207,
+        314,
+        177,
+        159,
+        181,
+        182,
+        606,
+        107,
+        399,
+        111,
+        212,
+        142,
+        150
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.24669069866366594,
+          "null_mean": 0.09465085145437138,
+          "null_std": 0.010993733583122414,
+          "effect_size": 13.829682706037758,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.24669069866366594,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 193.39645833333336,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.13320510143079342,
+          "null_mean": 0.0,
+          "null_std": 0.01283520736582998,
+          "effect_size": 10.378102794459979,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 2335953,
+          "detail": {
+            "mean_advantage": 0.13320510143079342,
+            "took_best_share": 0.2880032260923058,
+            "flat_share": 0.0,
+            "direction_bias": 0.3224906494265938,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.029709346527534722,
+            "advantage_late": 0.18669113984895114,
+            "advantage_delta": 0.1569817933214164,
+            "advantage_delta_z": 9.82648722199145,
+            "worlds_improved": 16,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 2.5,
+          "null_mean": 6.286979166666668,
+          "null_std": 0.6974032237596961,
+          "effect_size": -5.430114226101635,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 2.5,
+            "drop_threshold": 0.35,
+            "n_episodes": 12,
+            "worlds_with_any": 7,
+            "n_worlds": 16,
+            "deepest": 0.5444,
+            "events": [
+              {
+                "world": 0,
+                "tick": 24999,
+                "depth": 0.5444
+              },
+              {
+                "world": 1,
+                "tick": 26399,
+                "depth": 0.4317
+              },
+              {
+                "world": 4,
+                "tick": 26949,
+                "depth": 0.3677
+              },
+              {
+                "world": 5,
+                "tick": 21299,
+                "depth": 0.4231
+              },
+              {
+                "world": 9,
+                "tick": 29349,
+                "depth": 0.439
+              },
+              {
+                "world": 12,
+                "tick": 16499,
+                "depth": 0.3778
+              },
+              {
+                "world": 12,
+                "tick": 22749,
+                "depth": 0.3782
+              },
+              {
+                "world": 12,
+                "tick": 27199,
+                "depth": 0.4077
+              },
+              {
+                "world": 14,
+                "tick": 20199,
+                "depth": 0.4138
+              },
+              {
+                "world": 14,
+                "tick": 20649,
+                "depth": 0.4663
+              },
+              {
+                "world": 14,
+                "tick": 21599,
+                "depth": 0.3721
+              },
+              {
+                "world": 14,
+                "tick": 21999,
+                "depth": 0.4348
+              }
+            ],
+            "events_truncated": false
+          }
+        },
+        "exploration_rate": {
+          "detector": "exploration_rate",
+          "magnitude": 0.0007620386295390687,
+          "null_mean": 0.0,
+          "null_std": 0.0002602806858036377,
+          "effect_size": 2.9277571141562526,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 7749,
+          "detail": {
+            "excess_blocks_per_tick": 0.0007620386295390687,
+            "observed_blocks_per_tick": 0.15345213033082986,
+            "shuffled_blocks_per_tick": 0.15275909461531909,
+            "n_agents": 7749,
+            "n_worlds": 16,
+            "block": 4,
+            "block_source": "run config",
+            "has_fog": true,
+            "null": "shuffled-step (64 surrogates per agent)",
+            "explore_cell_events": 23739,
+            "explore_cell_blocks": 38155.0
+          }
+        }
+      }
+    },
+    {
+      "params": {},
+      "seed": 2,
+      "run_id": "d70ac679c7f8216511c044ea",
+      "ms_per_tick": 19.4956,
+      "chronicle_mb": 68.32,
+      "final_population": [
+        180,
+        132,
+        535,
+        146,
+        187,
+        391,
+        158,
+        152,
+        247,
+        180,
+        147,
+        182,
+        235,
+        437,
+        161,
+        672
+      ],
+      "firings": {
+        "pop_stability": {
+          "detector": "pop_stability",
+          "magnitude": 0.2847200606332485,
+          "null_mean": 0.09363740762881806,
+          "null_std": 0.011305332319003158,
+          "effect_size": 16.9019934675639,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            49,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "regulation_coefficient": 0.2847200606332485,
+            "bounded_fraction": 1.0,
+            "bounded_worlds": 16,
+            "n_worlds": 16,
+            "mean_population": 200.4920833333333,
+            "capacity": 1200
+          }
+        },
+        "gradient_ascent": {
+          "detector": "gradient_ascent",
+          "magnitude": 0.14813184705205779,
+          "null_mean": 0.0,
+          "null_std": 0.01582108489594631,
+          "effect_size": 9.362938637034445,
+          "threshold": 3.0,
+          "fired": true,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 2481590,
+          "detail": {
+            "mean_advantage": 0.14813184705205779,
+            "took_best_share": 0.2993367155734831,
+            "flat_share": 0.0,
+            "direction_bias": 0.3048078046736165,
+            "null": "blind-choice (exact, E=0)",
+            "advantage_early": 0.030217350397306907,
+            "advantage_late": 0.20634105765287356,
+            "advantage_delta": 0.17612370725556664,
+            "advantage_delta_z": 9.916462256703262,
+            "worlds_improved": 16,
+            "n_worlds": 16
+          }
+        },
+        "collapse": {
+          "detector": "collapse",
+          "magnitude": 2.7083333333333335,
+          "null_mean": 5.9463541666666675,
+          "null_std": 0.6763038381603469,
+          "effect_size": -4.787819690837866,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            15049,
+            29999
+          ],
+          "n_observations": 16,
+          "detail": {
+            "episodes_per_1000_frames": 2.7083333333333335,
+            "drop_threshold": 0.35,
+            "n_episodes": 13,
+            "worlds_with_any": 6,
+            "n_worlds": 16,
+            "deepest": 0.5137,
+            "events": [
+              {
+                "world": 1,
+                "tick": 16999,
+                "depth": 0.3734
+              },
+              {
+                "world": 2,
+                "tick": 15949,
+                "depth": 0.3787
+              },
+              {
+                "world": 2,
+                "tick": 28949,
+                "depth": 0.3565
+              },
+              {
+                "world": 9,
+                "tick": 18349,
+                "depth": 0.3923
+              },
+              {
+                "world": 9,
+                "tick": 29299,
+                "depth": 0.3622
+              },
+              {
+                "world": 11,
+                "tick": 20799,
+                "depth": 0.4351
+              },
+              {
+                "world": 12,
+                "tick": 19049,
+                "depth": 0.3782
+              },
+              {
+                "world": 12,
+                "tick": 21399,
+                "depth": 0.3976
+              },
+              {
+                "world": 12,
+                "tick": 22749,
+                "depth": 0.5137
+              },
+              {
+                "world": 12,
+                "tick": 26449,
+                "depth": 0.4297
+              },
+              {
+                "world": 12,
+                "tick": 27799,
+                "depth": 0.4436
+              },
+              {
+                "world": 15,
+                "tick": 15849,
+                "depth": 0.3632
+              },
+              {
+                "world": 15,
+                "tick": 28049,
+                "depth": 0.4695
+              }
+            ],
+            "events_truncated": false
+          }
+        },
+        "exploration_rate": {
+          "detector": "exploration_rate",
+          "magnitude": 8.183004116500377e-05,
+          "null_mean": 0.0,
+          "null_std": 0.0003166909305267971,
+          "effect_size": 0.25839085770117953,
+          "threshold": 3.0,
+          "fired": false,
+          "tick_range": [
+            0,
+            29999
+          ],
+          "n_observations": 8159,
+          "detail": {
+            "excess_blocks_per_tick": 8.183004116500377e-05,
+            "observed_blocks_per_tick": 0.1669080323602675,
+            "shuffled_blocks_per_tick": 0.16708589863473244,
+            "n_agents": 8159,
+            "n_worlds": 16,
+            "block": 4,
+            "block_source": "run config",
+            "has_fog": true,
+            "null": "shuffled-step (64 surrogates per agent)",
+            "explore_cell_events": 24706,
+            "explore_cell_blocks": 39485.0
+          }
+        }
+      }
+    }
+  ],
+  "summary": [
+    {
+      "params": {},
+      "n_seeds": 3,
+      "pop_stability": {
+        "mean_effect_size": 16.839,
+        "mean_magnitude": 0.28157,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      },
+      "gradient_ascent": {
+        "mean_effect_size": 9.057,
+        "mean_magnitude": 0.13182,
+        "seeds_fired": 3,
+        "verdict": "FIRING"
+      },
+      "collapse": {
+        "mean_effect_size": -6.101,
+        "mean_magnitude": 2.01389,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      },
+      "exploration_rate": {
+        "mean_effect_size": 1.568,
+        "mean_magnitude": 0.00051,
+        "seeds_fired": 0,
+        "verdict": "silent"
+      }
+    }
+  ]
+}

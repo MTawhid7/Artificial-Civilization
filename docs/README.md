@@ -1,10 +1,14 @@
 # Artificial Civilization — Documentation
 
-**Status:** **Phase A is complete, and B0.1 has shipped.** The deterministic core runs, the
+**Status:** **Phase A is complete and B0 has shipped whole.** The deterministic core runs, the
 determinism gate holds, agents demonstrably evolve, there is a picture of it, the worlds have
 written histories, and agents now think with an evolved network rather than a hand-written rule.
-Next up is **B0.2** — P2 fog at L0 and the `exploration_rate` detector, the second of
-[§ B0](10-roadmap.md#b0--neural-policy)'s two ship criteria.
+
+**Both of B0's ship criteria were measured and neither was met** — which is the stage working, not
+failing. Underneath the two failures sit the results: selection rediscovered gradient-following from
+a blind start in every world that survived to be scored, and a perceptual channel with no payoff
+attached went unused exactly as the depth-gate rule predicts. Next up is
+[§ B2](10-roadmap.md#b2--first-word-) — a signal channel, and the first emergent word.
 
 | Stage | Result |
 |---|---|
@@ -16,14 +20,16 @@ Next up is **B0.2** — P2 fog at L0 and the `exploration_rate` detector, the se
 | A2 — re-analysis | [`a1-run-length`](../experiments/a1-run-length/result.md) — A1's dose-response is not length-limited; the level is, the slope is not |
 | A3 — first story | [`experiments/a3-historian/`](../experiments/a3-historian/result.md) — an LLM writes the history, and a verifier deletes what it could not source |
 | B0.1 — neural policy | [`experiments/b0-neural/`](../experiments/b0-neural/result.md) — the survival criterion **fails**; selection rediscovers gradient-following from a blind start in 105 of 105 scored worlds |
+| B0.2 — fog | [`experiments/b0-fog/`](../experiments/b0-fog/result.md) — `exploration_rate` **silent**; the same detector reads 14–26× larger on S0, so the capacity was added without the incentive |
 
 **Nineteen decisions were added *by* implementation rather than before it** —
 [D-051](DECISIONS.md#d-051) through [D-069](DECISIONS.md#d-069) — every one because a measurement
 contradicted something these documents assumed.
 
-[D-070](DECISIONS.md#d-070) through [D-072](DECISIONS.md#d-072) were decided ahead of A4 and B0
-rather than forced by them — though B0 then corrected two halves of D-071 by measurement, which is
-recorded in the record itself.
+[D-070](DECISIONS.md#d-070) through [D-073](DECISIONS.md#d-073) were decided ahead of A4 and B0
+rather than forced by them — though B0 then corrected two halves of D-071 by measurement, and CI
+found a third thing nobody had thought to ask, now recorded as an addendum to
+[D-057](DECISIONS.md#d-057): `np.matmul` is not invariant to batch size on every BLAS.
 
 **Seven of them are corrections to how we measure, not to what we built**, and all three withdrawn
 claims were inference failures rather than mechanism failures. The simulation core has needed
