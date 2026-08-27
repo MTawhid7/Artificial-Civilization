@@ -1024,7 +1024,37 @@ surfaced later, on top of this one, and been much harder to isolate.
 compact-support polynomial bump and the softmax with an exp-free sampler. Cheap now, constraining
 later. Revisit if the corpus ever needs to be produced on more than one machine.
 
-*(→ [11-engineering.md](11-engineering.md#determinism-rules))*
+### B0 addendum — batch size is a second axis of the same problem
+
+The corollary above removed one BLAS call from the policy. S1 puts a much larger one back, and it
+brought a property nobody had thought to ask about: **`np.matmul` is not invariant to how many rows
+are in the batch.** On darwin-arm64/Accelerate a row's result is identical whether it is computed
+alone or among 20,000; on linux-x86_64/OpenBLAS it differs in the last ulp, because the two block
+their reductions differently at different M. CI found it on the first push, from a test written
+specifically to ask.
+
+S1 groups agents by `(world, lineage)` and runs one matmul per group, and group sizes are a
+function of world state. So on some BLAS builds **an agent's logits depend, at the last ulp, on how
+many agents share its lineage** — a coupling that is in no model and in no config.
+
+**None of the project's guarantees break, and that is the reason this is an addendum rather than a
+new decision.** I1 and I3 are statements about *replay*, not about the abstract purity of the
+arithmetic: group membership is a pure function of state, so a re-run and a fork reconstruct the
+same groups and get the same answer. `test_s1_determinism_same_seed` and `test_s1_noop_fork` pass
+on both platforms, and the per-platform goldens absorb the difference exactly as they absorb
+`np.exp`.
+
+**What it cost was a test, which asserted the stronger property and was wrong to.**
+`test_each_agent_runs_its_own_lineages_network` now checks what actually matters — that grouping
+hands every agent its own lineage's weights — within tolerance, and
+`test_forward_pass_repeats_exactly` pins the repeatability that replay really stands on.
+
+**Rejected: making the forward pass batch-invariant by construction.** Padding every group to
+capacity is L× the matmul work; hand-rolling a fixed-order reduction the way `sector_masks` does is
+affordable for a 4-wide sector sum and not for a 36×48 matmul on 32,000 rows. The price of purity
+here is the stage's whole compute budget.
+
+*(→ [11-engineering.md](11-engineering.md#determinism-rules), [D-071](DECISIONS.md#d-071))*
 
 ---
 

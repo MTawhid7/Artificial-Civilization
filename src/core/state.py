@@ -52,6 +52,11 @@ N_ACTIONS = 4  # N, E, S, W — P1/P2 at L0 need no more
 # hash order, so append, never insert.
 LINEAGE_ARRAYS: tuple[str, ...] = ("w1", "b1", "w2", "b2", "lineage_alive")
 
+# P2 at L0. Zero-width when fog is off, which is what keeps an S0 run's identity
+# byte-identical to what it was before P2 existed: an empty array contributes no
+# bytes to the hash. Append, never insert.
+FOG_ARRAYS: tuple[str, ...] = ("known",)
+
 
 @dataclass(slots=True)
 class World:
@@ -68,6 +73,10 @@ class World:
     lineages: int = 0
     hidden: int = 0
     n_inputs: int = 0
+
+    # P2 at L0. `block` is 0 when fog is off, which makes `known` zero-width.
+    block: int = 0
+    known_radius: int = 0
 
     tick: int = 0
 
@@ -99,6 +108,11 @@ class World:
     b2: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]  # [W, L, A]
     lineage_alive: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]  # [W, L]
 
+    # Per-agent knowledge, [W, N, B, B] uint8 at block resolution (P2 L0, D-073).
+    # This is state: it is what each agent has seen, it feeds the policy, and a
+    # checkpoint that dropped it would fork into agents that had forgotten.
+    known: np.ndarray = field(default=None, repr=False)  # type: ignore[assignment]
+
     # --- derived scratch, excluded from state identity ------------------------
     # These are recomputed every tick and never checkpointed. Including them in
     # the hash would make identity depend on buffer contents that carry no
@@ -120,6 +134,8 @@ class World:
         lineages: int = 0,
         hidden: int = 0,
         n_inputs: int = 0,
+        block: int = 0,
+        known_radius: int = 0,
     ) -> "World":
         w = cls(
             n_worlds=n_worlds,
@@ -130,6 +146,8 @@ class World:
             lineages=lineages,
             hidden=hidden,
             n_inputs=n_inputs,
+            block=block,
+            known_radius=known_radius,
         )
         shape = (n_worlds, n_agents)
         for name, dtype in AGENT_COLUMNS:
@@ -149,6 +167,9 @@ class World:
         w.w2 = np.zeros((n_worlds, L, H, A), dtype=np.float32)
         w.b2 = np.zeros((n_worlds, L, A), dtype=np.float32)
         w.lineage_alive = np.zeros((n_worlds, L), dtype=np.bool_)
+
+        n_blk = (grid + block - 1) // block if block else 0
+        w.known = np.zeros((n_worlds, n_agents, n_blk, n_blk), dtype=np.uint8)
 
         d, gp = view_radius, grid + 2 * view_radius
         patch = (2 * d + 1) ** 2
@@ -217,7 +238,8 @@ class World:
         for name, _ in AGENT_COLUMNS:
             arr = getattr(self, name)
             h.update(np.ascontiguousarray(arr).tobytes())
-        for name in ("genome", "next_id", "resource", "capacity", "terrain", *LINEAGE_ARRAYS):
+        for name in ("genome", "next_id", "resource", "capacity", "terrain",
+                     *LINEAGE_ARRAYS, *FOG_ARRAYS):
             h.update(np.ascontiguousarray(getattr(self, name)).tobytes())
         return h.hexdigest()
 
@@ -226,7 +248,7 @@ class World:
     def to_arrays(self) -> dict[str, np.ndarray]:
         """Everything a checkpoint must persist, minus RNG/pending (added by caller)."""
         out = {name: getattr(self, name) for name, _ in AGENT_COLUMNS}
-        out.update({name: getattr(self, name) for name in LINEAGE_ARRAYS})
+        out.update({name: getattr(self, name) for name in (*LINEAGE_ARRAYS, *FOG_ARRAYS)})
         out.update(
             genome=self.genome,
             next_id=self.next_id,
@@ -247,6 +269,8 @@ class World:
                     self.lineages,
                     self.hidden,
                     self.n_inputs,
+                    self.block,
+                    self.known_radius,
                 ],
                 dtype=np.int64,
             ),
@@ -255,11 +279,13 @@ class World:
 
     @classmethod
     def from_arrays(cls, data: dict[str, np.ndarray]) -> "World":
-        tick, nw, na, grid, gs, vr, lin, hid, nin = (int(v) for v in data["_dims"])
-        w = cls.allocate(nw, na, grid, gs, vr, lineages=lin, hidden=hid, n_inputs=nin)
+        tick, nw, na, grid, gs, vr, lin, hid, nin, blk, kr = (int(v) for v in data["_dims"])
+        w = cls.allocate(nw, na, grid, gs, vr, lineages=lin, hidden=hid, n_inputs=nin,
+                         block=blk, known_radius=kr)
         w.tick = tick
         for name, _ in AGENT_COLUMNS:
             getattr(w, name)[...] = data[name]
-        for name in ("genome", "next_id", "resource", "capacity", "terrain", *LINEAGE_ARRAYS):
+        for name in ("genome", "next_id", "resource", "capacity", "terrain",
+                     *LINEAGE_ARRAYS, *FOG_ARRAYS):
             getattr(w, name)[...] = data[name]
         return w

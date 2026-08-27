@@ -40,36 +40,83 @@ def _advance(state, n, chronicle=None):
 # --- the grouped forward pass -------------------------------------------------
 
 
-def test_forward_pass_is_batch_invariant():
-    """A row's logits must not depend on how many siblings share its lineage.
+def test_each_agent_runs_its_own_lineages_network():
+    """Grouping must give every agent its own lineage's weights.
 
-    The S1 forward pass groups agents by (world, lineage) and runs one matmul
-    per group, so a group's *size* is a function of world state. If BLAS blocked
-    its reduction differently at different M, an agent's action would depend on
-    the population — the tick would stop being a pure function of (config, seed)
-    with no symptom beyond histories quietly failing to replay.
+    The bug this catches is an agent running the wrong network — an off-by-one
+    in the `(world, lineage)` key, a `searchsorted` boundary slip, a group whose
+    rows were scattered back to the wrong indices. Any of those produces a
+    plausible simulation governed by the wrong brains.
 
-    This is the same hazard `s0_reactive.sector_masks` documents, where a
-    matmul's platform-chosen summation order produced a real cross-machine
-    mismatch. Measured clean on darwin-arm64 / numpy 2.5.2; CI is what checks
-    linux-x86_64 and OpenBLAS.
+    **Compared within tolerance, not exactly, and that is a finding rather than
+    a concession.** The batch-invariance this originally asserted — that a row's
+    result does not depend on how many rows share its matmul — holds on
+    darwin-arm64/Accelerate and *fails* on linux-x86_64/OpenBLAS, which blocks
+    its reduction differently at different M. CI found it on the first push.
+
+    Nothing about the project's guarantees breaks. Group membership is a pure
+    function of world state, so a replay and a fork reproduce the same groups and
+    therefore the same arithmetic: `test_s1_determinism_same_seed` and
+    `test_s1_noop_fork` both pass on both platforms. What it means is that at S1,
+    on some BLAS builds, an agent's logits depend at the last ulp on how many
+    agents share its lineage. That is the same category as D-057's `np.exp` and
+    is handled the same way — per-platform goldens, not a chase.
     """
     rng = np.random.default_rng(0)
-    n_in, hidden, n = 36, 48, 20_000
-    x = rng.standard_normal((n, n_in), dtype=np.float32)
-    w = rng.standard_normal((n_in, hidden), dtype=np.float32) * np.float32(0.1)
-    b = rng.standard_normal(hidden, dtype=np.float32)
+    W, N, L, n_in, hidden = 3, 40, 4, 12, 16
 
-    full = np.tanh(np.matmul(x, w) + b)
+    x = rng.standard_normal((W * N, n_in), dtype=np.float32)
+    w1 = rng.standard_normal((W, L, n_in, hidden), dtype=np.float32) * np.float32(0.3)
+    b1 = rng.standard_normal((W, L, hidden), dtype=np.float32)
+    w2 = rng.standard_normal((W, L, hidden, 4), dtype=np.float32) * np.float32(0.3)
+    b2 = rng.standard_normal((W, L, 4), dtype=np.float32)
+    lineage = rng.integers(0, L, size=(W, N))
 
-    for size in (1, 2, 7, 137, 1892, n - 1):
-        part = np.tanh(np.matmul(x[:size], w) + b)
-        assert np.array_equal(part, full[:size]), f"batch of {size} differs from the full batch"
+    # One agent at a time, against its own world's and lineage's weights.
+    expected = np.empty((W * N, 4), dtype=np.float32)
+    for w in range(W):
+        for n in range(N):
+            k = int(lineage[w, n])
+            row = x[w * N + n]
+            expected[w * N + n] = np.tanh(row @ w1[w, k] + b1[w, k]) @ w2[w, k] + b2[w, k]
 
-    # Scattered rows, which is what grouping by lineage actually produces.
-    idx = np.sort(rng.choice(n, size=3_137, replace=False))
-    gathered = np.tanh(np.matmul(x[idx], w) + b)
-    assert np.array_equal(gathered, full[idx])
+    grouped = _grouped_forward(x, w1, b1, w2, b2, lineage, W, N, L)
+    assert np.allclose(grouped, expected, rtol=1e-4, atol=1e-5), (
+        "an agent is running the wrong lineage's network"
+    )
+
+
+def test_forward_pass_repeats_exactly(tiny_s1_config):
+    """Identical state must give bit-identical logits — the property that is load-bearing.
+
+    Batch-invariance is not guaranteed (see above); *repeatability* is, and it is
+    what replay and forking actually stand on.
+    """
+    a = _advance(_fresh(tiny_s1_config), 40)
+    b = _advance(_fresh(tiny_s1_config), 40)
+    assert a.state_hash() == b.state_hash()
+
+    density = np.ones((a.n_worlds, a.n_agents), dtype=np.int64)
+    masks = TickContext.build(tiny_s1_config, a).masks
+    first = s1.choose_action(a, density, masks, RngStreams(1).policy)[0]
+    second = s1.choose_action(b, density, masks, RngStreams(1).policy)[0]
+    assert np.array_equal(first, second)
+
+
+def _grouped_forward(x, w1, b1, w2, b2, lineage, W, N, L):
+    """The production grouping, in miniature — same key, same order, same skips."""
+    out = np.zeros((W * N, 4), dtype=np.float32)
+    world_of = np.repeat(np.arange(W, dtype=np.int64), N)
+    key = world_of * L + lineage.reshape(-1).astype(np.int64)
+    order = np.argsort(key, kind="stable")
+    bounds = np.searchsorted(key[order], np.arange(W * L + 1))
+    w1f, b1f = w1.reshape(-1, x.shape[1], w1.shape[-1]), b1.reshape(-1, b1.shape[-1])
+    w2f, b2f = w2.reshape(-1, w2.shape[-2], 4), b2.reshape(-1, 4)
+    for k in range(W * L):
+        idx = order[bounds[k]:bounds[k + 1]]
+        if idx.size:
+            out[idx] = np.tanh(x[idx] @ w1f[k] + b1f[k]) @ w2f[k] + b2f[k]
+    return out
 
 
 # --- determinism at S1 --------------------------------------------------------

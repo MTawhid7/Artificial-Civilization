@@ -61,11 +61,16 @@ jobs:
 
       - name: Show the golden hashes this platform produced
         # A platform with no committed golden records one and skips. It lives only
-        # in the runner, so print it: paste the new entry into
-        # tests/golden/tiny_s0.json and the gate starts enforcing on that platform
-        # from the next push. See D-057.
+        # in the runner, so print it: paste the new entry into the matching file
+        # and the gate starts enforcing on that platform from the next push.
+        # Both stages, because B0 added tiny_s1.json and a golden that is recorded
+        # but never printed is a test that can never start enforcing. See D-057.
         if: always()
-        run: cat tests/golden/tiny_s0.json
+        run: |
+          for f in tests/golden/*.json; do
+            echo "=== $f ==="
+            cat "$f"
+          done
 
       - name: Check documentation links and anchors
         # docs/ is the single source of truth and is cross-referenced ~300 times.
