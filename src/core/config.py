@@ -70,19 +70,20 @@ DEFAULTS: dict[str, Any] = {
             "log_tier": "sampled", "sample_rate": 64, "shard_ticks": 5000},
 }
 
-# Applied only when the stage has a network, and deliberately NOT merged into
-# DEFAULTS.
+# Two blocks of stage-specific defaults, both applied conditionally in `resolve`
+# and both deliberately NOT merged into DEFAULTS.
 #
-# `config_hash` is a hash of the *resolved* config, and `run_id` is a hash of
-# that. Adding these five keys to DEFAULTS would therefore change the id of
-# every run ever made, including the ones cited by name in the committed
-# experiments/ results — a stage adding surface it does not use would silently
-# orphan the corpus behind it. An S0 config resolves today exactly as it did
-# before B0 existed, and `tests/golden/tiny_s0.json` is the proof.
-#
-# Widths are the measured ones, not guesses: bench_policy put hidden 48 at 1.16x
-# the S0 tick with the gather still dominant
-# (docs/00-feasibility.md#s1-measured-before-b0).
+# `config_hash` hashes the *resolved* config and `run_id` hashes that, so a key
+# added to DEFAULTS changes the id of every run ever made — including the ones
+# cited by name in the committed experiments/ results. A stage adding surface it
+# does not use would silently orphan the corpus behind it. An S0 config resolves
+# today exactly as it did before B0 existed, and `tests/golden/tiny_s0.json`
+# holds `config_hash` 129df393 as the proof.
+
+# Applied when the stage has a network. Widths are the measured ones, not
+# guesses — and the measurement that matters is the real loop, not the synthetic
+# one: hidden 48 costs 1.57x the S0 tick at eight lineages
+# (docs/00-feasibility.md#s1-measured-again-after-b0).
 S1_DEFAULTS: dict[str, Any] = {
     "hidden": 48,
     "lineages": 8,
@@ -92,6 +93,18 @@ S1_DEFAULTS: dict[str, Any] = {
     # E7 can sweep it. Off at B0: charging for cognition would answer "is a
     # brain worth its cost" while B0 is asking "can a brain be evolved at all".
     "cognition_cost": 0.0,
+}
+
+# Applied when a config declares P2. `primitives` has no `p2` key by default, so
+# fog is opt-in and every config written before B0.2 still resolves to the same
+# hash (D-073).
+P2_DEFAULTS: dict[str, Any] = {
+    "level": 0,
+    # Cells per block side. The known map is [W, N, B, B] with B = grid/block,
+    # so this is the knob that decides whether fog costs 8 MB or 278 MB.
+    "block": 4,
+    # Radius, in blocks, of the patch an agent evaluates for unknown-ness.
+    "known_radius": 2,
 }
 
 
@@ -170,6 +183,9 @@ def resolve(raw: dict[str, Any], *, source: str = "<inline>") -> Config:
     data = _deep_merge(DEFAULTS, raw or {})
     if data["intelligence"]["stage"] != "S0":
         data["intelligence"] = {**S1_DEFAULTS, **data["intelligence"]}
+    if "p2" in data.get("primitives", {}):
+        data["primitives"] = {**data["primitives"],
+                              "p2": {**P2_DEFAULTS, **data["primitives"]["p2"]}}
     data["schema_version"] = SCHEMA_VERSION
 
     check_gates(data)
@@ -204,6 +220,32 @@ def resolve(raw: dict[str, Any], *, source: str = "<inline>") -> Config:
         if not 0.0 <= float(intel["speciation_rate"]) <= 1.0:
             raise ConfigError(
                 f"intelligence.speciation_rate must be in [0, 1], got {intel['speciation_rate']}"
+            )
+
+    fog = data.get("primitives", {}).get("p2")
+    if fog is not None:
+        block = int(fog["block"])
+        if block < 1:
+            raise ConfigError(f"primitives.p2.block must be at least 1, got {block}")
+        if block > data["world"]["grid"]:
+            raise ConfigError(
+                f"primitives.p2.block ({block}) exceeds world.grid "
+                f"({data['world']['grid']}); the whole world would be one block, "
+                "which is a config that says agents know everything the moment "
+                "they are born."
+            )
+        if int(fog["known_radius"]) < 1:
+            raise ConfigError(
+                f"primitives.p2.known_radius must be at least 1, got {fog['known_radius']}; "
+                "a zero-radius patch carries no direction and the policy would "
+                "receive four identical zeros."
+            )
+        if data["intelligence"]["stage"] == "S0":
+            raise ConfigError(
+                "primitives.p2 is enabled but intelligence.stage is S0. The S0 reactive "
+                "rule has no input for fog, so the known map would be computed, "
+                "checkpointed, and ignored — richness the policy cannot use is not "
+                "richness, it is a tax (D-022)."
             )
 
     return Config(data=data, config_hash=compute_hash(data), source=source)

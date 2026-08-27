@@ -47,9 +47,25 @@ def tiny_config():
     return resolve(TINY, source="tests/conftest.py::TINY")
 
 
+# The same again with P2 at L0. Fog is opt-in, so TINY_S1 stays fog-free and
+# this is a third configuration rather than a change to the second — which keeps
+# `tiny_s1.json` meaningful as "S1 without fog" and gives the fog path a golden
+# of its own. `block: 4` on a 24 grid is a 6x6 known map per agent.
+TINY_FOG = {
+    **TINY_S1,
+    "primitives": {**TINY_S1["primitives"], "p2": {"level": 0, "block": 4,
+                                                   "known_radius": 2}},
+}
+
+
 @pytest.fixture
 def tiny_s1_config():
     return resolve(TINY_S1, source="tests/conftest.py::TINY_S1")
+
+
+@pytest.fixture
+def tiny_fog_config():
+    return resolve(TINY_FOG, source="tests/conftest.py::TINY_FOG")
 
 
 @pytest.fixture

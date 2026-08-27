@@ -255,6 +255,7 @@ def test_config_hash_ignores_key_order():
 
 GOLDEN = GOLDEN_DIR / "tiny_s0.json"
 GOLDEN_S1 = GOLDEN_DIR / "tiny_s1.json"
+GOLDEN_FOG = GOLDEN_DIR / "tiny_fog.json"
 
 STAGES = ("world_init", "tick_10", "tick_500", "chronicle_digest")
 
@@ -335,6 +336,17 @@ def _assert_against_golden(cfg, path: Path, corpus_dir: Path) -> None:
 
 def test_cross_machine(tiny_config, corpus):
     _assert_against_golden(tiny_config, GOLDEN, corpus)
+
+
+def test_cross_machine_fog(tiny_fog_config, corpus):
+    """The same gate again with P2 at L0.
+
+    Fog puts the per-agent known map into `state_hash` and four more inputs into
+    the policy's first matmul, so a regression in either shows up here and
+    nowhere else. Its own file, because `tiny_s1.json` means "S1 without fog"
+    and should keep meaning that.
+    """
+    _assert_against_golden(tiny_fog_config, GOLDEN_FOG, corpus)
 
 
 def test_cross_machine_s1(tiny_s1_config, corpus):

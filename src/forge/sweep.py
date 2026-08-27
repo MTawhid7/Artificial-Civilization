@@ -25,7 +25,7 @@ import yaml
 from core.config import Config, resolve
 from forge import viability
 from forge.run import run
-from lens import collapse, gradient_ascent, pop_stability
+from lens import collapse, exploration_rate, gradient_ascent, pop_stability
 from lens.base import ChronicleReader, Firing
 
 # `directed_foraging` is deliberately absent: withdrawn under D-056, and a
@@ -39,6 +39,9 @@ DETECTORS = {
     "pop_stability": pop_stability.compute,
     "gradient_ascent": gradient_ascent.compute,
     "collapse": collapse.compute,
+    # Appended at B0.2, and appended is the whole point: `score()` seeds each
+    # detector from its position in this dict.
+    "exploration_rate": exploration_rate.compute,
 }
 
 

@@ -37,6 +37,10 @@ from __future__ import annotations
 
 import numpy as np
 
+# Unknown-share north/east/south/west. Four because the action set is four
+# (core.state.N_ACTIONS) and the direction order is shared with the tick loop.
+N_FOG_INPUTS = 4
+
 
 def n_blocks(grid: int, block: int) -> int:
     """Blocks per side. `block` need not divide `grid` — the last one is short."""

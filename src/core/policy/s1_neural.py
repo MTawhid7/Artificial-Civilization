@@ -79,7 +79,14 @@ TEMPERATURE = 1.0
 
 
 def n_inputs(view_radius: int, genome_size: int, extra: int = 0) -> int:
-    """Input width. `extra` is the fog channel count, 0 until P2 is built."""
+    """Input width. `extra` is P2's fog channel count, 0 when fog is off.
+
+    Turning fog on widens the input layer, so a lineage bank trained without it
+    is not loadable into a run with it. That is correct rather than awkward: the
+    two are different policies over different perceptions, and a checkpoint that
+    silently reinterpreted one as the other would fork into agents whose weights
+    mean something else.
+    """
     return (2 * view_radius + 1) ** 2 + genome_size + N_SCALARS + extra
 
 

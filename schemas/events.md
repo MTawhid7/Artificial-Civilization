@@ -22,19 +22,33 @@ Every event, of every type, is one fixed-width row:
 silently reinterprets every run already in the corpus. Append only, and the
 decade gaps exist so a group can grow without disturbing its neighbours.
 
-## Implemented (A0/A1)
+## Implemented (A0/A1, plus B0.2)
 
 | Value | Event | Tier | `subject` | `object` | `a` | `b` | `c` |
 |---|---|---|---|---|---|---|---|
 | 1 | `BIRTH` | always | child id | parent id | — | — | — |
 | 2 | `DEATH` | always | agent id | — | age at death | — | — |
 | 10 | `MOVE` | sampled | agent id | — | x after moving | y after moving | energy |
+| 11 | `EXPLORE_CELL` | sampled | agent id | — | **blocks** newly known this tick | — | — |
 | 12 | `PERCEIVE` | sampled | agent id | direction taken, 0..3 | score of chosen direction | mean of the four | best of the four |
 | 20 | `GATHER` | sampled | agent id | — | energy gained | — | — |
 
 `MOVE` carries position and energy so trajectories are reconstructable from the
 sampled tier alone; a detector needing a join back to per-tick state would not
 survive tiering.
+
+`EXPLORE_CELL` keeps its name and its number — enum values are permanent — but
+`a` is a **count of blocks**, not a cell id, because P2 at L0 stores knowledge
+per block rather than per cell *(→ [D-073](../docs/DECISIONS.md#d-073))*. One row
+per newly-known block would be the literal reading of the name and would also
+make this the most voluminous event in the log, for a payload every question
+about exploration immediately re-aggregates.
+
+It is a **cross-check, not a measurement**. `exploration_rate` recomputes novelty
+from `MOVE` for both the observed value and its surrogate, because the simulation
+marks by view and the detector marks by position: mixing the two would make the
+difference between an agent and its null partly a difference between two pieces
+of code, which is not a null model.
 
 ### Reserved for B2 — the signal channel
 
@@ -93,7 +107,7 @@ energy — an *outcome* of movement — and inverted its own conclusion
 ## Declared, not yet emitted
 
 Numbers are reserved so that logs written today stay readable when these arrive:
-`MUTATION` 3, `EXPLORE_CELL` 11, `DEPLETE` 21, `REGROW` 22, `TRANSFER` 30,
+`MUTATION` 3, `DEPLETE` 21, `REGROW` 22, `TRANSFER` 30,
 `CLAIM_MAKE` 31, `CLAIM_BREAK` 32, `SIGNAL` 40, `TEACH` 41, `IMITATE` 42,
 `PLEDGE_MAKE` 50, `PLEDGE_HONOR` 51, `PLEDGE_BREAK` 52, `DELEGATE` 53,
 `REVOKE` 54, `COERCE` 60, `DEFEND` 61, `SEIZE` 62, `RECIPE_DISCOVER` 70,

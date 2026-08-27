@@ -160,9 +160,20 @@ perceived worlds.**
 
 | Level | Content |
 |---|---|
-| **L0** | per-agent view radius, binary known/unknown map |
+| **L0** | per-agent view radius, binary known/unknown map — **built at B0.2**, at block resolution *(→ [D-073](DECISIONS.md#d-073))* |
 | **L1** | beliefs carry `(value, confidence, age, provenance_hops, source)`; information decays; first-hand and second-hand are distinguishable |
 | **L2** | partial propositions; contradictory beliefs held simultaneously; information as a tradeable/stealable/withholdable good; observation range modulated by P8 |
+
+**What L0 actually stores.** Knowledge is per *block* of `block x block` cells, not per cell.
+At cell resolution the map is 278 MB at corpus scale and, because a checkpoint must capture
+everything, 278 MB per keyframe — which ends forking. At `block: 4` it is 8 MB. The coarsening is
+the more defensible claim as well as the affordable one: "I have been in this region" is a memory,
+"I have seen this cell and not the one beside it" is a database *(→ [D-073](DECISIONS.md#d-073))*.
+
+An agent marks every block its **view patch** touches, so the map records what it saw rather than
+where it stood — a position-only rule would make it a trail, and a trail is not fog. The policy
+reads four numbers from it: unknown-share north, east, south and west. Nothing makes the unknown
+attractive; whether curiosity pays is what `exploration_rate` asks.
 
 The **partial proposition** is the structure that gives you "knows that something exists
 without knowing where":

@@ -1522,6 +1522,50 @@ table — the B0 analysis reads `results.json`.
 
 ---
 
+<a id="d-073"></a>
+### D-073 · settled · The known map is stored per block, not per cell
+
+P2 at L0 gives each agent a `known` map at **block resolution** — `[W, N, B, B]` uint8 with
+`B = grid / block`, default `block: 4`. An agent marks every block its *view patch* touches, and
+the policy perceives four numbers from it: unknown-share north, east, south and west.
+
+**Why:** this answers the open question that has been tagged `Blocks: B0` since the register was
+written — *"`known_mask` at `bool[N,H,W]` will dominate memory. Chunk, share per-lineage, or store
+sparsely?"* At cell resolution the map is 278 MB resident at corpus scale, and because invariant I3
+requires a checkpoint to capture **everything**, it is also 278 MB per keyframe. Twenty-one
+keyframes per run ends forking, and forking is the whole basis of causal inference here. At
+`block: 4` the same map is 8 MB, and a checkpoint stops having an opinion about it.
+
+**The coarsening is also the more defensible claim.** "I have been in this region" is a memory an
+agent could plausibly hold; "I have seen this exact 1×1 cell and not the one beside it" is a
+database. It fixes what `exploration_rate` can mean, too — novelty per region rather than novelty
+per step, which is the difference between a statement about territory and a restatement of how far
+something walked.
+
+**Rejected: bit-packing to `bool`.** It gets cell resolution down to 35 MB, which is affordable, and
+then costs more than it saves on the write. Marking is a scatter, the only packed-bit scatter numpy
+offers is `np.bitwise_or.at`, and that is an unbuffered ufunc: 1.7M of them per tick is tens of
+milliseconds against a ~19 ms tick budget.
+
+**Rejected: sharing the map per lineage.** It is the cheapest option by far and it deletes the
+primitive. P2 is not "agents cannot see far" — the view radius already does that and needs no
+primitive. P2 is that **two agents in the same world inhabit different perceived worlds**, and a
+map shared across a lineage is one perceived world with several bodies in it.
+
+**Marking is by view, not by position.** An agent marks what it *saw*, not where it stood. Marking
+only the occupied block would make the known map a trail, and a trail is not fog.
+
+**Opt-in, like every stage-specific key** *(→ [D-072](DECISIONS.md#d-072))*. `primitives` has no
+`p2` entry in `DEFAULTS`, so every config written before B0.2 resolves to the same hash and every
+committed `run_id` still names the run it named. Enabling P2 at S0 is refused outright: the reactive
+rule has no input for fog, so the map would be computed, checkpointed and ignored — richness the
+policy cannot use is a tax, not richness *(→ [D-022](DECISIONS.md#d-022))*.
+
+*(→ [02-primitives.md § P2](02-primitives.md#p2--fog--information),
+[07-detectors.md](07-detectors.md#population--space), [06-data-model.md](06-data-model.md))*
+
+---
+
 ## Open questions
 
 Tracked here so they are not mistaken for oversights. Each blocks a specific version.
@@ -1533,7 +1577,6 @@ Tracked here so they are not mistaken for oversights. Each blocks a specific ver
 | — | Is one context slot on `SIGNAL` enough for the remap test, or does the referent need its own event once P2 fog makes "what the emitter could see" unreconstructible from position? *(→ [schemas/events.md](../schemas/events.md))* | B2 |
 | — | Which plasticity-rule family is expressive enough to be interesting but small enough to evolve? | B1 |
 | — | Can opponent modeling (S5) be amortized across a population rather than per-target? | Phase F |
-| — | `known_mask` at `bool[N,H,W]` will dominate memory. Chunk, share per-lineage, or store sparsely? | B0 |
 | — | Does the Chronicle Gap need per-agent beliefs, or are per-record beliefs sufficient? | C0 |
 | — | Should modulators be composable (two recipes stacking on one parameter), and if so with what combination rule? Multiplicative is the obvious default but may compound explosively | E0 |
 | — | Can generated modulator sets be constrained so most worlds are viable, without hand-authoring the tech consequence graph? | E0 |

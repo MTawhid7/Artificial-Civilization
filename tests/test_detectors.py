@@ -21,7 +21,7 @@ import pytest
 import yaml
 
 from chronicle import schema as S
-from lens import collapse, directed_foraging, gradient_ascent, pop_stability
+from lens import collapse, directed_foraging, exploration_rate, gradient_ascent, pop_stability
 from lens.base import ChronicleReader
 
 GRID = 64
@@ -67,12 +67,14 @@ def _write_run(
     tmp_path: Path, moves: dict[str, np.ndarray] | None = None,
     aggregate: dict[str, np.ndarray] | None = None,
     perceptions: dict[str, np.ndarray] | None = None,
+    fog_block: int | None = None,
 ) -> Path:
     run = tmp_path / "run"
     (run / "chronicle").mkdir(parents=True, exist_ok=True)
-    (run / "config.yaml").write_text(
-        yaml.safe_dump({"world": {"grid": GRID}, "population": {"capacity": CAPACITY}})
-    )
+    cfg = {"world": {"grid": GRID}, "population": {"capacity": CAPACITY}}
+    if fog_block:
+        cfg["primitives"] = {"p2": {"level": 0, "block": fog_block, "known_radius": 2}}
+    (run / "config.yaml").write_text(yaml.safe_dump(cfg))
     (run / "meta.json").write_text("{}")
 
     if moves is not None:
@@ -428,3 +430,108 @@ def test_collapse_ignores_burn_in(tmp_path):
     with ChronicleReader(run) as reader:
         f = collapse.compute(reader, rng=np.random.default_rng(0))
     assert f.detail["n_episodes"] == 0, "the burn-in crash must not be counted"
+
+
+# --- exploration_rate ---------------------------------------------------------
+
+
+def _paths(n_agents: int, n_steps: int, persistence: float, seed: int = 0) -> dict:
+    """Synthetic MOVE rows for agents walking with a given heading persistence.
+
+    `persistence` is the chance of repeating the previous step. The step
+    *multiset* is what the shuffled-step null preserves, so persistence is
+    exactly the property the null destroys and the detector should see: at 0.0
+    the walk is already order-free and shuffling changes nothing, while a
+    committed walker covers ground that its own re-ordered steps would not.
+
+    Spread across `N_WORLDS` because the world is the replication unit.
+    """
+    rng = np.random.default_rng(seed)
+    deltas = np.array([[0, -1], [1, 0], [0, 1], [-1, 0]])  # N, E, S, W
+
+    tick, world, subject, xs, ys = [], [], [], [], []
+    for a in range(n_agents):
+        heading = int(rng.integers(0, 4))
+        x, y = int(rng.integers(0, GRID)), int(rng.integers(0, GRID))
+        for t in range(n_steps):
+            if rng.random() >= persistence:
+                heading = int(rng.integers(0, 4))
+            dx, dy = deltas[heading]
+            x, y = (x + int(dx)) % GRID, (y + int(dy)) % GRID
+            tick.append(t)
+            world.append(a % N_WORLDS)
+            subject.append(a + 1)
+            xs.append(x)
+            ys.append(y)
+
+    n = len(tick)
+    return {
+        "tick": np.array(tick), "world_id": np.array(world),
+        "subject": np.array(subject), "x": np.array(xs, dtype=float),
+        "y": np.array(ys, dtype=float), "energy": np.full(n, 50.0),
+    }
+
+
+def test_exploration_rate_fires_on_committed_walkers(tmp_path):
+    """An agent that holds a heading covers ground its own shuffled steps do not."""
+    run = _write_run(tmp_path, moves=_paths(64, 300, persistence=0.9, seed=1), fog_block=4)
+    with ChronicleReader(run) as reader:
+        f = exploration_rate.compute(reader, rng=np.random.default_rng(0))
+    assert f.fired, f
+    assert f.magnitude > 0.0
+    assert f.detail["observed_blocks_per_tick"] > f.detail["shuffled_blocks_per_tick"]
+
+
+def test_exploration_rate_silent_on_memoryless_walk(tmp_path):
+    """The null made flesh: an order-free walk is its own surrogate.
+
+    This is the case that matters. A detector that fires here would be reporting
+    curiosity from a random walk, which is the emergence theater the whole
+    suite exists to prevent.
+    """
+    run = _write_run(tmp_path, moves=_paths(64, 300, persistence=0.0, seed=2), fog_block=4)
+    with ChronicleReader(run) as reader:
+        f = exploration_rate.compute(reader, rng=np.random.default_rng(0))
+    assert not f.fired, f
+    assert abs(f.magnitude) < 0.02, f"memoryless walk should read ~0, got {f.magnitude}"
+
+
+def test_exploration_rate_is_graded(tmp_path):
+    """More commitment, more excess coverage — monotone, not just non-zero."""
+    got = []
+    for persistence in (0.0, 0.5, 0.9):
+        run = _write_run(tmp_path / f"p{persistence}",
+                         moves=_paths(48, 250, persistence, seed=3), fog_block=4)
+        with ChronicleReader(run) as reader:
+            got.append(exploration_rate.compute(reader, rng=np.random.default_rng(0)).magnitude)
+    assert got[0] < got[1] < got[2], got
+
+
+def test_exploration_rate_skips_a_run_without_fog(tmp_path):
+    """Skipped is not silent. Without a known map the statistic is undefined."""
+    run = _write_run(tmp_path, moves=_paths(32, 200, persistence=0.9, seed=4))
+    with ChronicleReader(run) as reader:
+        f = exploration_rate.compute(reader, rng=np.random.default_rng(0))
+    assert not f.fired
+    assert "skipped" in f.detail
+
+
+def test_exploration_rate_does_not_reward_distance(tmp_path):
+    """Two walks with the same steps in a different order must differ; the same
+    walk sped up must not.
+
+    Path length is the confound that would turn this detector into a speedometer.
+    The null holds it fixed by construction — the surrogate takes the agent's own
+    steps — so a walker that simply covers more ground per tick gains nothing
+    unless its *ordering* is what did the covering.
+    """
+    fast = _paths(48, 250, persistence=0.0, seed=5)
+    with ChronicleReader(_write_run(tmp_path / "a", moves=fast, fog_block=4)) as reader:
+        memoryless = exploration_rate.compute(reader, rng=np.random.default_rng(0))
+    # Same step budget, same grid, only the ordering differs.
+    with ChronicleReader(
+        _write_run(tmp_path / "b", moves=_paths(48, 250, persistence=0.9, seed=5),
+                   fog_block=4)
+    ) as reader:
+        committed = exploration_rate.compute(reader, rng=np.random.default_rng(0))
+    assert committed.magnitude > memoryless.magnitude

@@ -156,7 +156,7 @@ Depth requirements noted as `P1ᴸ²` where relevant.
 | `migration_wave` | net directional flux of agents between regions above baseline | spatial-scramble |
 | ~~`directed_foraging`~~ | ~~mean path straightness when energy < threshold~~ — **withdrawn**, conditions on an outcome of the behavior *(→ [D-056](DECISIONS.md#d-056))* | shuffled |
 | `gradient_ascent` | `(chosen − mean) / (best − mean)` over the four perceived directions, from `PERCEIVE` events | **blind-choice** |
-| `exploration_rate` | new cells entering `known_mask` per agent-tick | drift-only |
+| `exploration_rate` | distinct P2 blocks a path touches, per agent-tick | **shuffled-step** |
 
 ### Scarcity & economy
 

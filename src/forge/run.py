@@ -29,6 +29,7 @@ from core.config import Config, load, run_id
 from core.generators import world_gen
 from core.pending import Accumulators, PendingQueue
 from core.policy import s1_neural
+from core.primitives import p02_fog
 from core.policy.s0_reactive import GENOME_SIZE
 from core.rng import RngStreams
 from core.state import World
@@ -72,7 +73,18 @@ def init_world(cfg: Config, rng: RngStreams) -> World:
     neural = cfg.stage != "S0"
     lineages = int(cfg.get("intelligence.lineages")) if neural else 0
     hidden = int(cfg.get("intelligence.hidden")) if neural else 0
-    n_in = s1_neural.n_inputs(view_radius, genome_size) if neural else 0
+
+    # P2 at L0 is opt-in: absent `primitives.p2`, `block` stays 0 and the known
+    # map is zero-width, so a run without fog is byte-identical to one from
+    # before fog existed.
+    fog = cfg.get("primitives.p2")
+    block = int(fog["block"]) if fog else 0
+    known_radius = int(fog["known_radius"]) if fog else 0
+    n_in = (
+        s1_neural.n_inputs(view_radius, genome_size, p02_fog.N_FOG_INPUTS if fog else 0)
+        if neural
+        else 0
+    )
 
     world = World.allocate(
         n_worlds=n_worlds,
@@ -83,6 +95,8 @@ def init_world(cfg: Config, rng: RngStreams) -> World:
         lineages=lineages,
         hidden=hidden,
         n_inputs=n_in,
+        block=block,
+        known_radius=known_radius,
     )
 
     world.capacity[:] = generate = world_gen.generate_resource_field(cfg, rng)

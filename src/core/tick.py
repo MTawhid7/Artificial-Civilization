@@ -37,6 +37,7 @@ from core.pending import Accumulators, PendingQueue
 from core.policy import s0_reactive as s0
 from core.policy import s1_neural as s1
 from core.primitives import p01_scarcity as p1
+from core.primitives import p02_fog as p2
 from core.primitives import p10_drift as p10
 from core.rng import RngStreams
 from core.state import World
@@ -71,6 +72,12 @@ class TickContext:
     weight_mutation_scale: float
     cognition_cost: float
 
+    # P2 at L0. `fog_block` is 0 when fog is off, which is the only check any
+    # caller needs — the known map is then zero-width too.
+    fog_block: int
+    fog_radius: int
+    fog_masks: np.ndarray | None  # sector slices over the BLOCK patch, not the cell patch
+
     masks: np.ndarray  # [4, P] direction sectors
     world_offset: np.ndarray  # [W, 1] flat-index base per world
     n_cells: int
@@ -102,6 +109,16 @@ class TickContext:
                 cfg.get("intelligence.weight_mutation_scale", 0.0) or 0.0
             ),
             cognition_cost=float(cfg.get("intelligence.cognition_cost", 0.0) or 0.0),
+            fog_block=int((cfg.get("primitives.p2") or {}).get("block", 0)),
+            fog_radius=int((cfg.get("primitives.p2") or {}).get("known_radius", 0)),
+            # A second mask set, over the block patch. Same function, different
+            # radius: the cell patch is view_radius wide and the block patch is
+            # known_radius wide, and reusing one mask set for both would silently
+            # read the wrong slice bounds.
+            fog_masks=(
+                s0.sector_masks(int(cfg.get("primitives.p2")["known_radius"]))
+                if cfg.get("primitives.p2") else None
+            ),
             masks=s0.sector_masks(world.view_radius),
             world_offset=(np.arange(w, dtype=np.int64) * (g * g))[:, None],
             n_cells=g * g,
@@ -142,6 +159,21 @@ def step(
     cell = (world.y.astype(np.int64) * G + world.x).astype(np.int64)
     density = _observe(world, cell, ctx)
 
+    # 3b. P2 fog, still phase 3: this builds observation, so it is part of
+    # OBSERVE rather than a new phase — the order is a spec and does not get
+    # renegotiated for a primitive.
+    #
+    # Marking happens before the sector read, so an agent already knows where it
+    # is standing when it chooses. Mark-after-decide would make the blocks under
+    # its feet read as unexplored for one tick, and the policy would perceive
+    # novelty it had already consumed.
+    fog_extra = None
+    if ctx.fog_block:
+        newly = p2.mark_seen(world.known, world.y, world.x, world.alive,
+                             world.view_radius, G, ctx.fog_block)
+        fog_extra = p2.unknown_by_sector(world.known, world.y, world.x,
+                                         ctx.fog_block, ctx.fog_radius, ctx.fog_masks)
+
     # --- 4. DECIDE ------------------------------------------------------------
     # `sector` is what each agent perceived in each direction. It is carried out of
     # the policy so the Chronicle can record the alternatives that were on offer:
@@ -155,7 +187,7 @@ def step(
             rng.policy, ctx.sated_gradient_factor,
         )
     else:
-        action, sector = s1.choose_action(world, density, ctx.masks, rng.policy)
+        action, sector = s1.choose_action(world, density, ctx.masks, rng.policy, fog_extra)
 
     # --- 5. RESOLVE -----------------------------------------------------------
     # a. movement
@@ -206,7 +238,7 @@ def step(
     # --- 9. EMIT --------------------------------------------------------------
     if chronicle is not None:
         _emit(world, ctx, chronicle, tick, action, sector, gained, died, dead_ids,
-              dead_worlds, born)
+              dead_worlds, born, newly if ctx.fog_block else None)
 
     # --- 10. LEARN ------------------------------------------------------------
     # Still a no-op at S1, and that is a result rather than an omission (D-071).
@@ -414,6 +446,7 @@ def _emit(
     dead_ids: np.ndarray,
     dead_worlds: np.ndarray,
     born: dict,
+    newly_known: np.ndarray | None,
 ) -> None:
     if dead_ids.size:
         chronicle.emit(
@@ -437,6 +470,21 @@ def _emit(
         got = alive & (gained > 0)
         if got.any():
             chronicle.emit(tick, S.GATHER, w_idx[got], world.id[got], a=gained[got])
+
+        # EXPLORE_CELL — how much of the world became known this tick.
+        #
+        # `a` is a count of blocks, not a cell id, because P2 at L0 stores
+        # knowledge per block (D-073). Emitting one row per newly-known block
+        # would be the literal reading of the event name and would also be the
+        # most voluminous event in the log; the count is what every question
+        # about exploration actually asks of it.
+        if newly_known is not None:
+            learned = alive & (newly_known > 0)
+            if learned.any():
+                chronicle.emit(
+                    tick, S.EXPLORE_CELL, w_idx[learned], world.id[learned],
+                    a=newly_known[learned].astype(np.float32),
+                )
 
         # PERCEIVE — the decision context, not the decision's consequences.
         #
