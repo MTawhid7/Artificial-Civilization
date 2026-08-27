@@ -69,10 +69,25 @@ def compute(
     reader: ChronicleReader,
     rng: np.random.Generator | None = None,
     max_tick: int | None = None,
+    block: int | None = None,
 ) -> Firing:
+    """`block` overrides the run's own P2 geometry. Use it only to compare arms.
+
+    By default a run without P2 is **skipped**, not silent, and that is the
+    conservative reading: this statistic measures coverage driven by the ordering
+    of an agent's steps, and under fog that is exploration. On a run with no
+    known map the same number is heading persistence wearing the word
+    "exploration", which is precisely the substitution the detector suite exists
+    to prevent.
+
+    Passing `block` explicitly says *I am comparing a fog arm against a fogless
+    one and I know the fogless number is not a claim about exploration*. It is
+    recorded in `detail` so nobody has to reconstruct that from the caller.
+    """
     rng = rng or np.random.default_rng(0)
 
-    block, grid = _fog_geometry(reader)
+    run_block, grid = _fog_geometry(reader)
+    block = int(block) if block else run_block
     if not block:
         return _empty(
             "the run has no P2 fog: exploration is not defined without a known map"
@@ -179,6 +194,8 @@ def compute(
             "n_agents": int(ex.size),
             "n_worlds": int(worlds.size),
             "block": int(block),
+            "block_source": "run config" if run_block else "caller override (run has no P2)",
+            "has_fog": bool(run_block),
             "null": f"shuffled-step ({N_SURROGATES} surrogates per agent)",
             **_explore_cell_crosscheck(reader, where),
         },

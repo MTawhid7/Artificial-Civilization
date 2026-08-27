@@ -1,0 +1,96 @@
+name: b0-fog
+stage: B0.2
+
+# Does a sense of one's own ignorance change anything?
+#
+# B0.1 gave agents an evolved network and found it rediscovers gradient-following
+# from a blind start. It sees the local resource patch, its own genome, and three
+# scalars — and nothing at all about where it has already been. Every cell looks
+# the same whether the agent walked it a tick ago or has never been there.
+#
+# P2 at L0 adds that: a per-agent known map at block resolution, and four policy
+# inputs carrying the share of blocks that are unknown to the north, east, south
+# and west (D-073). Nothing makes the unknown attractive. Whether curiosity pays
+# is what the detector asks.
+#
+# THE NO-FOG ARM IS ALREADY ON DISK. b0-neural ran S1 at gather_efficiency 2.5,
+# 16 worlds, capacity 1200, 30,000 ticks, seeds 0-2 — which is this config
+# exactly, minus `primitives.p2`. So this spec runs one arm and analyse.py pairs
+# it against those committed run_ids, the way a1-run-length re-scored A1's runs
+# rather than re-running them. Three runs instead of six, and the two arms are
+# guaranteed identical in every parameter that is not fog, because one of them
+# literally is the earlier experiment.
+#
+# 2.5 is the dose where b0-neural lost the fewest worlds to extinction (2 of 48,
+# against 28 at 1.5), so it is the arm whose statistics are least
+# survivorship-biased.
+#
+# PAIRED BY LANDSCAPE, NOT BY NETWORK. Fog consumes no randomness, so the
+# `generator` stream is untouched and world w of seed s is the same terrain with
+# the same founders in both arms. The initial *weights* are not paired: fog
+# widens the input layer from 36 to 40, so `initial_weights` draws a different
+# shape from `policy_init`. That is unavoidable and worth stating — the arms
+# share a world and not a starting brain.
+#
+# THE CRITERION IS ABOUT ONE ARM, THE COMPARISON IS ABOUT BOTH.
+# `exploration_rate` fires or does not on the fog arm against its own
+# shuffled-step null; that is B0's second ship criterion. Whether fog *caused*
+# any difference is the fog-vs-no-fog comparison, and analyse.py scores both arms
+# with an explicit `block` so the raw numbers are comparable — while recording
+# that the fogless number is not a claim about exploration, only about how much
+# ground an ordering of steps covers.
+#
+# CAPACITY. 1200, carried over from b0-neural where all six points cleared the
+# full-length headroom precheck. It runs again here anyway: fog changes the
+# policy, and a policy change is exactly the kind of thing that moves a
+# population into the ceiling (D-065).
+
+seeds: [0, 1, 2]
+
+# No sweep axis: the comparison arm is b0-neural's, already committed.
+base:
+  world:
+    grid: 64
+    patchiness: 0.6
+    regrowth: 0.05
+    seed_rain: 0.004
+    resource_capacity: 1.0
+
+  primitives:
+    p1: { level: 0 }
+    p10: { level: 0, rate: 0.0 }
+    p2: { level: 0, block: 4, known_radius: 2 }
+
+  intelligence:
+    stage: S1
+    genome_size: 8
+    view_radius: 2
+    sated_gradient_factor: 0.25
+    hidden: 48
+    lineages: 8
+    speciation_rate: 0.02
+    weight_mutation_scale: 0.08
+    cognition_cost: 0.0
+
+  population:
+    initial: 120
+    capacity: 1200
+    mutation_rate: 0.02
+    mutation_scale: 0.05
+    birth_cap: 32
+
+  agent:
+    metabolism: 0.5
+    max_age: 400
+    birth_energy: 20.0
+    gather_efficiency: 2.5
+    start_energy: 50.0
+
+  run:
+    worlds: 16
+    ticks: 30000
+    checkpoint_every: 1500
+    aggregate_every: 50
+    log_tier: sampled
+    sample_rate: 32
+    shard_ticks: 5000
